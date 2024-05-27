@@ -1,1 +1,1 @@
-{"openapi":"3.0.0","paths":{},"info":{"title":"Report service","description":"","version":"1.0","contact":{}},"tags":[],"servers":[],"components":{"securitySchemes":{"bearer":{"scheme":"bearer","bearerFormat":"JWT","type":"http"}},"schemas":{}}}
+{"openapi":"3.0.0","paths":{},"info":{"title":"SUAI Achievements","description":"","version":"1.0","contact":{}},"tags":[],"servers":[],"components":{"schemas":{}}}

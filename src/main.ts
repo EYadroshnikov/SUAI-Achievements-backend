@@ -8,10 +8,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
   const config = new DocumentBuilder()
-    .setTitle('Report service')
+    .setTitle('SUAI Achievements')
     .setVersion('1.0')
-    .addBearerAuth()
-    // .setExternalDoc('Postman Collection', '/docs-json')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   fs.writeFileSync('./swagger-spec.json', JSON.stringify(document));
