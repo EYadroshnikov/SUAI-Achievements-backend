@@ -1,6 +1,9 @@
 import {
   Column,
   Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -36,16 +39,19 @@ export class User {
   @Column({ name: 'balance', type: 'integer' })
   balance: number;
 
-  @ManyToOne(() => Institute, (institute) => institute.users, {
-    nullable: true,
-  })
+  @ManyToOne(() => Institute, { nullable: true })
+  @JoinColumn({ name: 'institute_id' })
   institute: Institute;
-
-  @ManyToOne(() => Group, (group) => group.users, { nullable: true })
-  group: Group;
 
   @Column()
   is_banned: boolean;
+
+  @ManyToMany(() => Group, (group) => group.sputniks)
+  sputnikGroups: Group[];
+
+  @ManyToOne(() => Group, { nullable: true })
+  @JoinColumn({ name: 'group_id' })
+  group: Group;
 
   @OneToMany(
     () => IssuedAchievement,

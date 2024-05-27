@@ -1,6 +1,9 @@
 import {
   Column,
   Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -16,9 +19,18 @@ export class Group {
   @Column({ name: 'name', type: 'varchar' })
   name: string;
 
-  @ManyToOne(() => Institute, (institute) => institute.groups)
+  @ManyToOne(() => Institute)
+  @JoinColumn({ name: 'institute_id' })
   institute: Institute;
 
+  @ManyToMany(() => User, (user) => user.sputnikGroups)
+  @JoinTable({
+    name: 'sputnik_groups',
+    joinColumn: { name: 'group_id' },
+    inverseJoinColumn: { name: 'user_uuid' },
+  })
+  sputniks: User[];
+
   @OneToMany(() => User, (user) => user.group)
-  users: User[];
+  user: User;
 }

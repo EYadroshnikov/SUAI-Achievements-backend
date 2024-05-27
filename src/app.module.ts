@@ -19,7 +19,6 @@ import { InstituesModule } from './institues/institues.module';
       load: [postgresConfig],
     }),
     TypeOrmModule.forRootAsync({
-      name: 'postgres',
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',

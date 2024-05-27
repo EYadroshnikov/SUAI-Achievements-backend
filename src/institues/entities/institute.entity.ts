@@ -1,6 +1,4 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { User } from '../../users/entities/user.entity';
-import { Group } from '../../groups/entities/group.entity';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('institutes')
 export class Institute {
@@ -13,9 +11,6 @@ export class Institute {
   @Column({ name: 'short_name', type: 'varchar' })
   shortName: string;
 
-  @OneToMany(() => User, (user) => user.institute)
-  users: User[];
-
-  @OneToMany(() => Group, (group) => group.institute)
-  groups: Group[];
+  @Column({ name: 'number', type: 'integer' })
+  number: number;
 }

@@ -1,8 +1,7 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { AchievementType } from '../enums/achievement-type.enum';
 import { AchievementCategory } from '../enums/achievement-category.enum';
 import { AchievementRarity } from '../enums/achievement-rarity.enum';
-import { IssuedAchievement } from './issued-achievement.entity';
 
 @Entity('achievements')
 export class Achievement {
@@ -45,10 +44,4 @@ export class Achievement {
 
   @Column({ name: 'rofl_description', type: 'varchar', nullable: true })
   roflDescription: string;
-
-  @OneToMany(
-    () => IssuedAchievement,
-    (issuedAchievement) => issuedAchievement.achievement,
-  )
-  issuedAchievements: IssuedAchievement[];
 }
