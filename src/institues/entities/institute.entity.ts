@@ -8,9 +8,9 @@ export class Institute {
   @Column({ name: 'name', type: 'varchar' })
   name: string;
 
-  @Column({ name: 'short_name', type: 'varchar' })
+  @Column({ name: 'short_name', type: 'varchar', nullable: true })
   shortName: string;
 
-  @Column({ name: 'number', type: 'integer' })
+  @Column({ name: 'number', type: 'integer', nullable: true })
   number: number;
 }

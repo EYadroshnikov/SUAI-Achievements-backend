@@ -2,7 +2,6 @@ import {
   Column,
   Entity,
   JoinColumn,
-  JoinTable,
   ManyToMany,
   ManyToOne,
   OneToMany,
@@ -12,13 +11,16 @@ import { UserRole } from '../enums/user-role.enum';
 import { Group } from '../../groups/entities/group.entity';
 import { Institute } from '../../institues/entities/institute.entity';
 import { IssuedAchievement } from '../../achievements/entities/issued-achievement.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
+  @Exclude()
   uuid: string;
 
   @Column({ name: 'registration_code', type: 'varchar' })
+  @Exclude()
   registrationCode: string;
 
   @Column({ name: 'vk_id', type: 'varchar' })
@@ -43,7 +45,7 @@ export class User {
   @JoinColumn({ name: 'institute_id' })
   institute: Institute;
 
-  @Column()
+  @Column({ default: false })
   is_banned: boolean;
 
   @ManyToMany(() => Group, (group) => group.sputniks)
