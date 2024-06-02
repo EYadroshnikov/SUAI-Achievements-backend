@@ -10,7 +10,7 @@ export class InstitutesService {
     private readonly instituteRepository: Repository<Institute>,
   ) {}
 
-  findOne(id: number) {
+  async findOne(id: number) {
     return this.instituteRepository.findOneOrFail({ where: { id } });
   }
 

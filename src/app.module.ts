@@ -30,6 +30,7 @@ import { InstitutesModule } from './institues/institutes.module';
         autoLoadEntities: true,
         synchronize: true,
         connectTimeoutMS: 15000,
+        logging: true,
       }),
       inject: [ConfigService],
     }),

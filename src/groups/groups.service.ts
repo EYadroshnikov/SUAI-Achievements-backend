@@ -33,7 +33,7 @@ export class GroupsService {
 
   async create(createGroupDto: CreateGroupDto): Promise<Group> {
     const institute = await this.instituteService.findOne(
-      createGroupDto.institute_id,
+      createGroupDto.instituteId,
     );
 
     const group = new Group();
@@ -42,4 +42,18 @@ export class GroupsService {
 
     return this.groupRepository.save(group);
   }
+
+  async getGroupsByInstitute(id: number) {
+    await this.instituteService.findOne(id);
+    return this.groupRepository.find({
+      where: { institute: { id } },
+    });
+  }
+
+  // async getStudentsByInstitute(id: number) {
+  //   await this.instituteService.findOne(id);
+  //   return this.userRepository.find({
+  //     where: { institute: { id }, role: UserRole.STUDENT },
+  //   });
+  // }
 }

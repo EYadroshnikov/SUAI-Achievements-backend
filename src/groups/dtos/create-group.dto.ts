@@ -8,5 +8,5 @@ export class CreateGroupDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  institute_id: number;
+  instituteId: number;
 }

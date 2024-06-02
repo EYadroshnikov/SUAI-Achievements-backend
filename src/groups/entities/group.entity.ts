@@ -32,5 +32,5 @@ export class Group {
   sputniks: User[];
 
   @OneToMany(() => User, (user) => user.group)
-  user: User;
+  students: User[];
 }

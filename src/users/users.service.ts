@@ -2,13 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
-import { CuratorDto } from './dtos/curator.dto';
 import { plainToClass } from 'class-transformer';
 import { UserRole } from './enums/user-role.enum';
 import { CreateSputnikDto } from './dtos/create.sputnik.dto';
 import { CreateStudentDto } from './dtos/create.student.dto';
 import { GroupsService } from '../groups/groups.service';
 import { InstitutesService } from '../institues/institutes.service';
+import { CreateCuratorDto } from './dtos/create.curator.dto';
 
 @Injectable()
 export class UsersService {
@@ -19,11 +19,11 @@ export class UsersService {
     private readonly groupsService: GroupsService,
   ) {}
 
-  async createCurator(curatorDto: CuratorDto): Promise<User> {
+  async createCurator(curatorDto: CreateCuratorDto): Promise<User> {
     const institute = await this.instituteService.findOne(
       curatorDto.instituteId,
     );
-
+    //TODO: refactor to create
     const curator: User = plainToClass(User, curatorDto);
     curator.institute = institute;
     curator.role = UserRole.CURATOR;
@@ -39,7 +39,6 @@ export class UsersService {
       sputnikDto.instituteId,
     );
 
-    // проверерить что есть такой институт и группа пренадлежит этому институту
     const sputnikGroups = await this.groupsService.findAndCountBy(
       sputnikDto.groupIds,
       institute,
@@ -72,36 +71,39 @@ export class UsersService {
     return this.userRepository.save(student);
   }
 
-  //   async createUser(data: any): Promise<User> {
-  //     // Парсинг данных
-  //     const { vkId, firstName, lastName, patronymic, role, instituteId, groupId } = data;
-  //
-  //     // Создание нового пользователя
-  //     const user = new User();
-  //     user.vkId = vkId;
-  //     user.firstName = firstName;
-  //     user.lastName = lastName;
-  //     user.patronymic = patronymic;
-  //     user.role = role;
-  //
-  //     // Получение института по ID
-  //     const institute = await this.instituteRepository.findOne({ id: instituteId });
-  //     if (!institute) {
-  //       throw new Error('Institute not found');
-  //     }
-  //     user.institute = institute;
-  //
-  //     // Если пользователь имеет роль sputnik, то назначаем его в группу
-  //     if (role === UserRole.SPUTNIK) {
-  //       const group = await this.groupRepository.findOne({ id: groupId });
-  //       if (!group) {
-  //         throw new Error('Group not found');
-  //       }
-  //       user.group = group;
-  //     }
-  //
-  //     // Сохранение пользователя в базе данных
-  //     return await this.userRepository.save(user);
-  //   }
-  // }
+  async getStudentsByGroup(id: number) {
+    await this.groupsService.findOne(id);
+    return this.userRepository.find({
+      where: { group: { id }, role: UserRole.STUDENT },
+    });
+  }
+
+  async getStudentsByInstitute(id: number) {
+    await this.instituteService.findOne(id);
+    return this.userRepository.find({
+      where: { institute: { id }, role: UserRole.STUDENT },
+    });
+  }
+
+  async getSputniksByGroup(id: number) {
+    await this.groupsService.findOne(id);
+    return this.userRepository.find({
+      where: { sputnikGroups: { id }, role: UserRole.SPUTNIK },
+      relations: ['sputnikGroups'],
+    });
+  }
+
+  async getSputniksByInstitute(id: number) {
+    await this.instituteService.findOne(id);
+    return this.userRepository.find({
+      where: { institute: { id }, role: UserRole.SPUTNIK },
+    });
+  }
+
+  async getCuratorsByInstitute(id: number) {
+    await this.instituteService.findOne(id);
+    return this.userRepository.find({
+      where: { institute: { id }, role: UserRole.CURATOR },
+    });
+  }
 }
