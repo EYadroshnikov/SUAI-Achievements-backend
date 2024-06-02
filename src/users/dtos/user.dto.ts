@@ -1,14 +1,17 @@
-import { UserDto } from './user.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose } from 'class-transformer';
 
 @Exclude()
-export class StudentDto extends UserDto {
+export class UserDto {
   @ApiProperty()
   @Expose()
-  instituteId: number;
+  firstName: string;
 
   @ApiProperty()
   @Expose()
-  groupId: number;
+  lastName: string;
+
+  @ApiProperty()
+  @Expose()
+  patronymic: string;
 }

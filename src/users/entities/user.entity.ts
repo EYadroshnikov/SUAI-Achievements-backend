@@ -6,24 +6,22 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  Unique,
 } from 'typeorm';
 import { UserRole } from '../enums/user-role.enum';
 import { Group } from '../../groups/entities/group.entity';
 import { Institute } from '../../institues/entities/institute.entity';
 import { IssuedAchievement } from '../../achievements/entities/issued-achievement.entity';
-import { Exclude } from 'class-transformer';
 
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
-  @Exclude()
   uuid: string;
 
   @Column({ name: 'registration_code', type: 'varchar' })
-  @Exclude()
   registrationCode: string;
 
-  @Column({ name: 'vk_id', type: 'varchar' })
+  @Column({ name: 'vk_id', type: 'varchar', unique: true })
   vkId: string;
 
   @Column({ name: 'role', type: 'enum', enum: UserRole })
@@ -38,15 +36,15 @@ export class User {
   @Column({ name: 'patronymic', type: 'varchar' })
   patronymic: string;
 
-  @Column({ name: 'balance', type: 'integer' })
+  @Column({ name: 'balance', type: 'integer', default: 0 })
   balance: number;
 
   @ManyToOne(() => Institute, { nullable: true })
   @JoinColumn({ name: 'institute_id' })
   institute: Institute;
 
-  @Column({ default: false })
-  is_banned: boolean;
+  @Column({ name: 'is_banned', default: false })
+  isBanned: boolean;
 
   @ManyToMany(() => Group, (group) => group.sputniks)
   sputnikGroups: Group[];

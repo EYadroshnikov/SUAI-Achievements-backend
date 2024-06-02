@@ -1,10 +1,10 @@
-import { IsNotEmpty, IsNumber } from 'class-validator';
-import { BaseUserDto } from './base-user.dto';
 import { ApiProperty } from '@nestjs/swagger';
+import { Exclude, Expose } from 'class-transformer';
+import { UserDto } from './user.dto';
 
-export class CuratorDto extends BaseUserDto {
+@Exclude()
+export class CuratorDto extends UserDto {
   @ApiProperty()
-  @IsNotEmpty()
-  @IsNumber()
+  @Expose()
   instituteId: number;
 }

@@ -1,15 +1,15 @@
-import { IsNotEmpty, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { BaseUserDto } from './base-user.dto';
+import { Exclude, Expose } from 'class-transformer';
+import { UserDto } from './user.dto';
 
-export class SputnikDto extends BaseUserDto {
+@Exclude()
+export class SputnikDto extends UserDto {
+  // TODO: Frontend sync
   @ApiProperty()
-  @IsNotEmpty()
-  @IsNumber()
-  instituteId: number;
+  @Expose()
+  instituteId?: number;
 
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsNumber()
-  groupId: number;
+  @ApiProperty({ isArray: true, example: [0, 1] })
+  @Expose()
+  groupIds?: number[];
 }

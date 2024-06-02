@@ -11,14 +11,14 @@ export class Achievement {
   @Column({ name: 'name', type: 'varchar' })
   name: string;
 
-  @Column({ name: 'achievement_type', type: 'enum', enum: AchievementType })
+  @Column({ name: 'type', type: 'enum', enum: AchievementType })
   type: AchievementType;
 
   @Column({ name: 'category', type: 'enum', enum: AchievementCategory })
   category: AchievementCategory;
 
   @Column({
-    name: 'achievement_rarity',
+    name: 'rarity',
     type: 'enum',
     enum: AchievementCategory,
   })
@@ -40,8 +40,8 @@ export class Achievement {
   studentRequirement: string;
 
   @Column({ name: 'hint', type: 'varchar', nullable: true })
-  hint: string;
+  hint?: string;
 
   @Column({ name: 'rofl_description', type: 'varchar', nullable: true })
-  roflDescription: string;
+  roflDescription?: string;
 }

@@ -9,7 +9,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import postgresConfig from './config/postres/postgres.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { GroupsModule } from './groups/groups.module';
-import { InstituesModule } from './institues/institues.module';
+import { InstitutesModule } from './institues/institutes.module';
 
 @Module({
   imports: [
@@ -37,7 +37,7 @@ import { InstituesModule } from './institues/institues.module';
     UsersModule,
     AuthModule,
     GroupsModule,
-    InstituesModule,
+    InstitutesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
