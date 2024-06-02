@@ -1,7 +1,7 @@
 export enum AchievementRarity {
-  RARE = 'rare',
-  COMMON = 'common',
-  EPIC = 'epic',
-  LEGENDARY = 'legendary',
-  HEROIC = 'heroic',
+  RARE = 'RARE',
+  COMMON = 'COMMON',
+  EPIC = 'EPIC',
+  LEGENDARY = 'LEGENDARY',
+  HEROIC = 'HEROIC',
 }

@@ -1,4 +1,4 @@
-import { ApiTags } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
   Body,
   Controller,
@@ -12,6 +12,7 @@ import { UsersService } from '../users.service';
 import { TransformInterceptor } from '../../interceptors/transform.interceptor';
 import { StudentDto } from '../dtos/student.dto';
 import { CreateStudentDto } from '../dtos/create.student.dto';
+import { TransformCreatedApiResponse } from '../../decorators/transform-created-api-response.decorator';
 
 @ApiTags('students')
 @Controller()
@@ -19,7 +20,7 @@ export class StudentsController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post('/students')
-  @UseInterceptors(new TransformInterceptor(StudentDto))
+  @TransformCreatedApiResponse(StudentDto)
   async createStudent(@Body() studentDto: CreateStudentDto) {
     return this.usersService.createStudent(studentDto);
   }

@@ -33,9 +33,12 @@ export class IssuedAchievement {
   @Column({ name: 'is_canceled', type: 'boolean' })
   isCanceled: boolean;
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
+  @Column({ name: 'cancellation_reason', type: 'varchar' })
+  cancellationReason: number;
+
+  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;
 
-  @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
   updatedAt: Date;
 }

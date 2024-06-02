@@ -11,7 +11,4 @@ export class InstitutesController {
   async getInstitutes() {
     return this.institutesService.getAll();
   }
-
-  // @Get('/groups/:id')
-  // async getInstituteGroup(@Param('id') id: string) {}
 }

@@ -20,7 +20,7 @@ export class Achievement {
   @Column({
     name: 'rarity',
     type: 'enum',
-    enum: AchievementCategory,
+    enum: AchievementRarity,
   })
   rarity: AchievementRarity;
 

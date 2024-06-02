@@ -1,5 +1,5 @@
 export enum AchievementType {
-  OPENED = 'opened',
-  HIDDEN = 'hidden',
-  HINTED = 'hinted',
+  OPENED = 'OPENED',
+  HIDDEN = 'HIDDEN',
+  HINTED = 'HINTED',
 }

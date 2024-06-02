@@ -23,14 +23,14 @@ export class UsersService {
     const institute = await this.instituteService.findOne(
       curatorDto.instituteId,
     );
-    //TODO: refactor to create
-    const curator: User = plainToClass(User, curatorDto);
-    curator.institute = institute;
-    curator.role = UserRole.CURATOR;
-    curator.group = null;
-    curator.registrationCode = Math.floor(
-      100000 + Math.random() * 900000,
-    ).toString(); // maybe temp
+
+    const curator = this.userRepository.create({
+      ...curatorDto,
+      institute,
+      registrationCode: Math.floor(100000 + Math.random() * 900000).toString(),
+      role: UserRole.CURATOR,
+    });
+
     return this.userRepository.save(curator);
   }
 
@@ -60,13 +60,13 @@ export class UsersService {
     );
     const group = await this.groupsService.findOne(studentDto.groupId);
 
-    const student: User = plainToClass(User, studentDto);
-    student.institute = institute;
-    student.role = UserRole.STUDENT;
-    student.group = group;
-    student.registrationCode = Math.floor(
-      100000 + Math.random() * 900000,
-    ).toString(); // maybe temp
+    const student = this.userRepository.create({
+      ...studentDto,
+      institute,
+      group,
+      role: UserRole.STUDENT,
+      registrationCode: Math.floor(100000 + Math.random() * 900000).toString(),
+    });
 
     return this.userRepository.save(student);
   }

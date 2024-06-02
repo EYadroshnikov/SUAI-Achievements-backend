@@ -1,6 +1,6 @@
 export enum AchievementCategory {
-  PERSONAL = 'personal',
-  GROUP = 'group',
-  URBAN = 'urban',
-  UNIVERSITY = 'university',
+  PERSONAL = 'PERSONAL',
+  GROUP = 'GROUP',
+  URBAN = 'URBAN',
+  UNIVERSITY = 'UNIVERSITY',
 }

@@ -12,6 +12,7 @@ import { UsersService } from '../users.service';
 import { TransformInterceptor } from '../../interceptors/transform.interceptor';
 import { CuratorDto } from '../dtos/curator.dto';
 import { CreateCuratorDto } from '../dtos/create.curator.dto';
+import { TransformCreatedApiResponse } from '../../decorators/transform-created-api-response.decorator';
 
 @ApiTags('curators')
 @Controller()
@@ -19,7 +20,7 @@ export class CuratorsController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post('/curator')
-  @UseInterceptors(new TransformInterceptor(CuratorDto))
+  @TransformCreatedApiResponse(CuratorDto)
   async createCurator(@Body() curatorDto: CreateCuratorDto) {
     return this.usersService.createCurator(curatorDto);
   }

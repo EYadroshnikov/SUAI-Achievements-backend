@@ -12,6 +12,7 @@ import { TransformInterceptor } from '../../interceptors/transform.interceptor';
 import { SputnikDto } from '../dtos/sputnik.dto';
 import { CreateSputnikDto } from '../dtos/create.sputnik.dto';
 import { UsersService } from '../users.service';
+import { TransformCreatedApiResponse } from '../../decorators/transform-created-api-response.decorator';
 
 @ApiTags('sputniks')
 @Controller()
@@ -19,7 +20,7 @@ export class SputniksController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post('/sputniks')
-  @UseInterceptors(new TransformInterceptor(SputnikDto))
+  @TransformCreatedApiResponse(SputnikDto)
   async createSputnik(
     @Body() sputnikDto: CreateSputnikDto,
   ): Promise<SputnikDto> {
