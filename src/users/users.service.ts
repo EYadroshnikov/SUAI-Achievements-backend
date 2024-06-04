@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
-import { plainToClass } from 'class-transformer';
 import { UserRole } from './enums/user-role.enum';
 import { CreateSputnikDto } from './dtos/create.sputnik.dto';
 import { CreateStudentDto } from './dtos/create.student.dto';

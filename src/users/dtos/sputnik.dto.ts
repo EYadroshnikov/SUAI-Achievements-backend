@@ -9,7 +9,7 @@ export class SputnikDto extends UserDto {
   @Expose()
   instituteId?: number;
 
-  @ApiProperty({ isArray: true, example: [0, 1] })
+  @ApiProperty({ isArray: true })
   @Expose()
   groupIds?: number[];
 }

@@ -1,4 +1,9 @@
-import { ApiCreatedResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import {
   Body,
   Controller,
@@ -26,12 +31,14 @@ export class StudentsController {
   }
 
   @Get('/groups/:id/students')
+  @ApiOkResponse({ type: StudentDto, isArray: true })
   @UseInterceptors(new TransformInterceptor(StudentDto))
   async getStudentsByGroup(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.getStudentsByGroup(id);
   }
 
   @Get('/institutes/:id/students')
+  @ApiOkResponse({ type: StudentDto, isArray: true })
   @UseInterceptors(new TransformInterceptor(StudentDto))
   async getStudentsByInstitute(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.getStudentsByInstitute(id);

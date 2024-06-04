@@ -1,4 +1,4 @@
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import {
   Body,
   Controller,
@@ -26,6 +26,7 @@ export class CuratorsController {
   }
 
   @Get('/institutes/:id/curators')
+  @ApiOkResponse({ type: CuratorDto, isArray: true })
   @UseInterceptors(new TransformInterceptor(CuratorDto))
   async getCuratorsByInstitute(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.getCuratorsByInstitute(id);
