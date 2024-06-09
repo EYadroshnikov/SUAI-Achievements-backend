@@ -13,7 +13,6 @@ import { SputnikDto } from '../dtos/sputnik.dto';
 import { CreateSputnikDto } from '../dtos/create.sputnik.dto';
 import { UsersService } from '../users.service';
 import { TransformCreatedApiResponse } from '../../decorators/transform-created-api-response.decorator';
-import { StudentDto } from '../dtos/student.dto';
 
 @ApiTags('sputniks')
 @Controller()

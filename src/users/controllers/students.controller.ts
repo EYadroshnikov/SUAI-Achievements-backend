@@ -10,6 +10,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   UseInterceptors,
 } from '@nestjs/common';
@@ -18,6 +19,7 @@ import { TransformInterceptor } from '../../interceptors/transform.interceptor';
 import { StudentDto } from '../dtos/student.dto';
 import { CreateStudentDto } from '../dtos/create.student.dto';
 import { TransformCreatedApiResponse } from '../../decorators/transform-created-api-response.decorator';
+import { UpdateResult } from 'typeorm';
 
 @ApiTags('students')
 @Controller()
@@ -28,6 +30,18 @@ export class StudentsController {
   @TransformCreatedApiResponse(StudentDto)
   async createStudent(@Body() studentDto: CreateStudentDto) {
     return this.usersService.createStudent(studentDto);
+  }
+
+  @Patch('students/:uuid/ban')
+  @ApiOkResponse({ type: UpdateResult })
+  async banStudent(@Param('uuid') uuid: string) {
+    return this.usersService.banStudent(uuid);
+  }
+
+  @Patch('students/:uuid/unban')
+  @ApiOkResponse({ type: UpdateResult })
+  async unbanStudent(@Param('uuid') uuid: string) {
+    return this.usersService.unbanStudent(uuid);
   }
 
   @Get('/groups/:id/students')

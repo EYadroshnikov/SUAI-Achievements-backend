@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { Repository, UpdateResult } from 'typeorm';
 import { UserRole } from './enums/user-role.enum';
 import { CreateSputnikDto } from './dtos/create.sputnik.dto';
 import { CreateStudentDto } from './dtos/create.student.dto';
@@ -68,6 +68,20 @@ export class UsersService {
     });
 
     return this.userRepository.save(student);
+  }
+
+  async banStudent(uuid: string): Promise<UpdateResult> {
+    return this.userRepository.update(
+      { uuid, role: UserRole.STUDENT },
+      { isBanned: true },
+    );
+  }
+
+  async unbanStudent(uuid: string): Promise<UpdateResult> {
+    return this.userRepository.update(
+      { uuid, role: UserRole.STUDENT },
+      { isBanned: false },
+    );
   }
 
   async getStudentsByGroup(id: number) {

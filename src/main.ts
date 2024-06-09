@@ -7,6 +7,7 @@ import { GlobalExceptionFilter } from './common/filters/global-exception.filter'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  // app.use(helmet());
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.useGlobalFilters(new GlobalExceptionFilter());
 
@@ -17,6 +18,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   fs.writeFileSync('./swagger-spec.json', JSON.stringify(document));
   SwaggerModule.setup('api', app, document);
+
   await app.listen(3000);
 }
 bootstrap();
