@@ -8,6 +8,9 @@ import { Roles } from '../auth/roles.decorator';
 import { UserRole } from '../users/enums/user-role.enum';
 import { AchievementDto } from './dtos/achievement.dto';
 import { UsersService } from '../users/users.service';
+import { StudentDto } from '../users/dtos/student.dto';
+import { AchievementType } from './enums/achievement-type.enum';
+import { isArray } from 'class-validator';
 
 @ApiTags('Achievements')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -21,7 +24,7 @@ export class AchievementsController {
   @Get()
   @Roles(UserRole.STUDENT, UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
   @ApiOperation({ summary: 'Get achievements for the authenticated user' })
-  @ApiOkResponse({ type: [AchievementDto], isArray: true })
+  @ApiOkResponse({ type: AchievementDto, isArray: true })
   async getAchievements(
     @Req() req: AuthorizedRequestDto,
   ): Promise<AchievementDto[]> {
@@ -35,8 +38,10 @@ export class AchievementsController {
     summary:
       'Get achievements for the authenticated user\nCan access: sputnik, curator',
   })
-  @ApiOkResponse({ type: [AchievementDto], isArray: true })
-  async getAchievementForUser(@Param('uuid') uuid: string) {
+  @ApiOkResponse({ type: AchievementDto, isArray: true })
+  async getAchievementForUser(
+    @Param('uuid') uuid: string,
+  ): Promise<AchievementDto[]> {
     const user = await this.userService.getUser(uuid);
     return this.achievementsService.getAchievementsForUser(user);
   }

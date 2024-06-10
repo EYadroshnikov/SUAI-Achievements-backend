@@ -10,13 +10,13 @@ export class AchievementDto {
   @ApiProperty()
   name?: string;
 
-  @ApiProperty({ type: AchievementType })
+  @ApiProperty({ enum: AchievementType })
   type: AchievementType;
 
-  @ApiProperty({ type: AchievementCategory })
+  @ApiProperty({ enum: AchievementCategory })
   category: AchievementCategory;
 
-  @ApiProperty({ type: AchievementRarity })
+  @ApiProperty({ enum: AchievementRarity })
   rarity: AchievementRarity;
 
   @ApiProperty()
