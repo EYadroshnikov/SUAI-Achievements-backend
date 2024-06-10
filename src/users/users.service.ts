@@ -18,6 +18,17 @@ export class UsersService {
     private readonly groupsService: GroupsService,
   ) {}
 
+  async findByVkId(vkId: string): Promise<User | undefined> {
+    return this.userRepository.findOne({ where: { vkId: vkId } });
+  }
+
+  async getMe(uuid: string): Promise<User> {
+    return this.userRepository.findOne({
+      where: { uuid },
+      relations: ['group', 'institute', 'sputnikGroups'],
+    });
+  }
+
   async createCurator(curatorDto: CreateCuratorDto): Promise<User> {
     const institute = await this.instituteService.findOne(
       curatorDto.instituteId,

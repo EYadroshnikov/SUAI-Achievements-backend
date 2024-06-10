@@ -12,5 +12,6 @@ import { CuratorsController } from './controllers/curators.controller';
   imports: [TypeOrmModule.forFeature([User]), GroupsModule, InstitutesModule],
   controllers: [StudentsController, SputniksController, CuratorsController],
   providers: [UsersService],
+  exports: [UsersService],
 })
 export class UsersModule {}

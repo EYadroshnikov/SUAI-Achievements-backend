@@ -1,7 +1,8 @@
 import {
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
-  ApiResponse,
+  ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
 import {
@@ -12,39 +13,56 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Req,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from '../users.service';
 import { TransformInterceptor } from '../../interceptors/transform.interceptor';
 import { StudentDto } from '../dtos/student.dto';
 import { CreateStudentDto } from '../dtos/create.student.dto';
-import { TransformCreatedApiResponse } from '../../decorators/transform-created-api-response.decorator';
 import { UpdateResult } from 'typeorm';
+import { RolesGuard } from '../../auth/roles.guard';
+import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
+import { Roles } from '../../auth/roles.decorator';
+import { UserRole } from '../enums/user-role.enum';
+import { AuthorizedRequestDto } from '../dtos/authorized.request.dto';
 
-@ApiTags('students')
+@ApiTags('Students')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller()
 export class StudentsController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post('/students')
-  @TransformCreatedApiResponse(StudentDto)
+  @ApiOperation({ summary: 'can access: sputnik, curator' })
+  @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
+  @ApiCreatedResponse({ type: StudentDto })
+  @UseInterceptors(new TransformInterceptor(StudentDto))
   async createStudent(@Body() studentDto: CreateStudentDto) {
     return this.usersService.createStudent(studentDto);
   }
 
   @Patch('students/:uuid/ban')
+  @ApiOperation({ summary: 'can access: sputnik, curator' })
+  @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
   @ApiOkResponse({ type: UpdateResult })
   async banStudent(@Param('uuid') uuid: string) {
     return this.usersService.banStudent(uuid);
   }
 
   @Patch('students/:uuid/unban')
+  @ApiOperation({ summary: 'can access: sputnik, curator' })
+  @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
   @ApiOkResponse({ type: UpdateResult })
   async unbanStudent(@Param('uuid') uuid: string) {
     return this.usersService.unbanStudent(uuid);
   }
 
   @Get('/groups/:id/students')
+  @ApiOperation({ summary: 'can access: all' })
+  @Roles(UserRole.STUDENT, UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
   @ApiOkResponse({ type: StudentDto, isArray: true })
   @UseInterceptors(new TransformInterceptor(StudentDto))
   async getStudentsByGroup(@Param('id', ParseIntPipe) id: number) {
@@ -52,9 +70,20 @@ export class StudentsController {
   }
 
   @Get('/institutes/:id/students')
+  @ApiOperation({ summary: 'can access: all' })
+  @Roles(UserRole.STUDENT, UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
   @ApiOkResponse({ type: StudentDto, isArray: true })
   @UseInterceptors(new TransformInterceptor(StudentDto))
   async getStudentsByInstitute(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.getStudentsByInstitute(id);
+  }
+
+  @Get('/students/me')
+  @ApiOperation({ summary: 'can access: student' })
+  @Roles(UserRole.STUDENT)
+  @ApiOkResponse({ type: StudentDto })
+  @UseInterceptors(new TransformInterceptor(StudentDto))
+  async getMe(@Req() req: AuthorizedRequestDto) {
+    return this.usersService.getMe(req.user.uuid);
   }
 }

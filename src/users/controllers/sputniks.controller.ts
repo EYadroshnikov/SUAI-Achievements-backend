@@ -1,4 +1,10 @@
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import {
   Body,
   Controller,
@@ -6,21 +12,32 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Req,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { TransformInterceptor } from '../../interceptors/transform.interceptor';
 import { SputnikDto } from '../dtos/sputnik.dto';
 import { CreateSputnikDto } from '../dtos/create.sputnik.dto';
 import { UsersService } from '../users.service';
-import { TransformCreatedApiResponse } from '../../decorators/transform-created-api-response.decorator';
+import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
+import { RolesGuard } from '../../auth/roles.guard';
+import { Roles } from '../../auth/roles.decorator';
+import { UserRole } from '../enums/user-role.enum';
+import { AuthorizedRequestDto } from '../dtos/authorized.request.dto';
 
-@ApiTags('sputniks')
+@ApiTags('Sputniks')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller()
 export class SputniksController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post('/sputniks')
-  @TransformCreatedApiResponse(SputnikDto)
+  @ApiOperation({ summary: 'can access: curator' })
+  @Roles(UserRole.CURATOR, UserRole.ADMIN)
+  @ApiCreatedResponse({ type: SputnikDto })
+  @UseInterceptors(new TransformInterceptor(SputnikDto))
   async createSputnik(
     @Body() sputnikDto: CreateSputnikDto,
   ): Promise<SputnikDto> {
@@ -28,6 +45,8 @@ export class SputniksController {
   }
 
   @Get('/groups/:id/sputniks')
+  @ApiOperation({ summary: 'can access: all' })
+  @Roles(UserRole.STUDENT, UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
   @ApiOkResponse({ type: SputnikDto, isArray: true })
   @UseInterceptors(new TransformInterceptor(SputnikDto))
   async getSputniksByGroup(@Param('id', ParseIntPipe) id: number) {
@@ -35,9 +54,20 @@ export class SputniksController {
   }
 
   @Get('/institutes/:id/sputniks')
+  @ApiOperation({ summary: 'can access: all' })
+  @Roles(UserRole.STUDENT, UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
   @ApiOkResponse({ type: SputnikDto, isArray: true })
   @UseInterceptors(new TransformInterceptor(SputnikDto))
   async getSputniksByInstitute(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.getSputniksByInstitute(id);
+  }
+
+  @Get('/sputniks/me')
+  @ApiOperation({ summary: 'can access: sputnik' })
+  @Roles(UserRole.SPUTNIK)
+  @ApiOkResponse({ type: SputnikDto })
+  @UseInterceptors(new TransformInterceptor(SputnikDto))
+  async getMe(@Req() req: AuthorizedRequestDto) {
+    return this.usersService.getMe(req.user.uuid);
   }
 }

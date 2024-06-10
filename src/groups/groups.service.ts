@@ -26,7 +26,9 @@ export class GroupsService {
       });
 
     if (groupsCount != ids.length) {
-      throw new BadRequestException('Группы не в институте ил ты даун');
+      throw new BadRequestException(
+        'One or more groups does not exist or it does not belong to this institute',
+      );
     }
     return sputnikGroups;
   }
@@ -49,11 +51,4 @@ export class GroupsService {
       where: { institute: { id } },
     });
   }
-
-  // async getStudentsByInstitute(id: number) {
-  //   await this.instituteService.findOne(id);
-  //   return this.userRepository.find({
-  //     where: { institute: { id }, role: UserRole.STUDENT },
-  //   });
-  // }
 }

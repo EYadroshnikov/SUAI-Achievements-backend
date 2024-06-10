@@ -10,13 +10,15 @@ import postgresConfig from './config/postres/postgres.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { GroupsModule } from './groups/groups.module';
 import { InstitutesModule } from './institues/institutes.module';
+import { VkModule } from './vk/vk.module';
+import appConfig from './config/app/app.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       envFilePath: '.env',
       isGlobal: true,
-      load: [postgresConfig],
+      load: [postgresConfig, appConfig],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -39,6 +41,7 @@ import { InstitutesModule } from './institues/institutes.module';
     AuthModule,
     GroupsModule,
     InstitutesModule,
+    VkModule,
   ],
   controllers: [AppController],
   providers: [AppService],
