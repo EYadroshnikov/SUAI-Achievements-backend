@@ -4,7 +4,6 @@ import { AppService } from './app.service';
 import { AchievementsModule } from './achievements/achievements.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
-import { LoggingMiddleware } from './middlewares/logging.middleware';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import postgresConfig from './config/postres/postgres.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -12,6 +11,7 @@ import { GroupsModule } from './groups/groups.module';
 import { InstitutesModule } from './institues/institutes.module';
 import { VkModule } from './vk/vk.module';
 import appConfig from './config/app/app.config';
+import { LoggingMiddleware } from './common/middlewares/logging.middleware';
 
 @Module({
   imports: [

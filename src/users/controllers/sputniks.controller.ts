@@ -16,7 +16,6 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { TransformInterceptor } from '../../interceptors/transform.interceptor';
 import { SputnikDto } from '../dtos/sputnik.dto';
 import { CreateSputnikDto } from '../dtos/create.sputnik.dto';
 import { UsersService } from '../users.service';
@@ -25,6 +24,7 @@ import { RolesGuard } from '../../auth/roles.guard';
 import { Roles } from '../../auth/roles.decorator';
 import { UserRole } from '../enums/user-role.enum';
 import { AuthorizedRequestDto } from '../dtos/authorized.request.dto';
+import { TransformInterceptor } from '../../common/interceptors/transform.interceptor';
 
 @ApiTags('Sputniks')
 @ApiBearerAuth()

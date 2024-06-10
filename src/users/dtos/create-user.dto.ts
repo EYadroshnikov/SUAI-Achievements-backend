@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { UserRole } from '../enums/user-role.enum';
-import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { Capitalize } from '../../decorators/capitalize.decorator';
+import { IsNotEmpty, IsString } from 'class-validator';
+import { Capitalize } from '../../common/decorators/capitalize.decorator';
 
 export class CreateUserDto {
   @ApiProperty()

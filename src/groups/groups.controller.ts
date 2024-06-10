@@ -10,8 +10,8 @@ import {
 import { GroupsService } from './groups.service';
 import { CreateGroupDto } from './dtos/create-group.dto';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { TransformInterceptor } from '../interceptors/transform.interceptor';
 import { GroupDto } from './dtos/group.dto';
+import { TransformInterceptor } from '../common/interceptors/transform.interceptor';
 
 @ApiTags('Groups')
 @Controller()

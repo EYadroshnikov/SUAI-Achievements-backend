@@ -18,7 +18,6 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from '../users.service';
-import { TransformInterceptor } from '../../interceptors/transform.interceptor';
 import { StudentDto } from '../dtos/student.dto';
 import { CreateStudentDto } from '../dtos/create.student.dto';
 import { UpdateResult } from 'typeorm';
@@ -27,6 +26,7 @@ import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { Roles } from '../../auth/roles.decorator';
 import { UserRole } from '../enums/user-role.enum';
 import { AuthorizedRequestDto } from '../dtos/authorized.request.dto';
+import { TransformInterceptor } from '../../common/interceptors/transform.interceptor';
 
 @ApiTags('Students')
 @ApiBearerAuth()

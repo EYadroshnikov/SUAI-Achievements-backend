@@ -1,8 +1,8 @@
 import { IsNumber, IsString } from 'class-validator';
-import validateConfig from '../../utils/validate-config';
 import { registerAs } from '@nestjs/config';
 import * as process from 'node:process';
 import { AppConfig } from './app-config.type';
+import validateConfig from '../../common/utils/validate-config';
 
 class EnvironmentVariablesValidator {
   @IsNumber()

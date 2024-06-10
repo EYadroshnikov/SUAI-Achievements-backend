@@ -16,7 +16,6 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from '../users.service';
-import { TransformInterceptor } from '../../interceptors/transform.interceptor';
 import { CuratorDto } from '../dtos/curator.dto';
 import { CreateCuratorDto } from '../dtos/create.curator.dto';
 import { Roles } from '../../auth/roles.decorator';
@@ -24,6 +23,7 @@ import { UserRole } from '../enums/user-role.enum';
 import { AuthorizedRequestDto } from '../dtos/authorized.request.dto';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { RolesGuard } from '../../auth/roles.guard';
+import { TransformInterceptor } from '../../common/interceptors/transform.interceptor';
 
 @ApiTags('Curators')
 @UseGuards(JwtAuthGuard, RolesGuard)
