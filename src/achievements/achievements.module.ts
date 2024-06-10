@@ -4,9 +4,13 @@ import { AchievementsController } from './achievements.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Achievement } from './entities/achievement.entity';
 import { IssuedAchievement } from './entities/issued-achievement.entity';
+import { UsersModule } from '../users/users.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Achievement, IssuedAchievement])],
+  imports: [
+    TypeOrmModule.forFeature([Achievement, IssuedAchievement]),
+    UsersModule,
+  ],
   controllers: [AchievementsController],
   providers: [AchievementsService],
 })

@@ -22,7 +22,7 @@ export class UsersService {
     return this.userRepository.findOne({ where: { vkId: vkId } });
   }
 
-  async getMe(uuid: string): Promise<User> {
+  async getUser(uuid: string): Promise<User> {
     return this.userRepository.findOne({
       where: { uuid },
       relations: ['group', 'institute', 'sputnikGroups'],

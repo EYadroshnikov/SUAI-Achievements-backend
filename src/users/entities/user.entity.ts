@@ -6,7 +6,6 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
-  Unique,
 } from 'typeorm';
 import { UserRole } from '../enums/user-role.enum';
 import { Group } from '../../groups/entities/group.entity';

@@ -23,8 +23,8 @@ import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { RolesGuard } from '../../auth/roles.guard';
 import { Roles } from '../../auth/roles.decorator';
 import { UserRole } from '../enums/user-role.enum';
-import { AuthorizedRequestDto } from '../dtos/authorized.request.dto';
 import { TransformInterceptor } from '../../common/interceptors/transform.interceptor';
+import { AuthorizedRequestDto } from '../../common/dtos/authorized.request.dto';
 
 @ApiTags('Sputniks')
 @ApiBearerAuth()
@@ -68,6 +68,6 @@ export class SputniksController {
   @ApiOkResponse({ type: SputnikDto })
   @UseInterceptors(new TransformInterceptor(SputnikDto))
   async getMe(@Req() req: AuthorizedRequestDto) {
-    return this.usersService.getMe(req.user.uuid);
+    return this.usersService.getUser(req.user.uuid);
   }
 }

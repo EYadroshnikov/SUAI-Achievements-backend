@@ -20,10 +20,10 @@ import { CuratorDto } from '../dtos/curator.dto';
 import { CreateCuratorDto } from '../dtos/create.curator.dto';
 import { Roles } from '../../auth/roles.decorator';
 import { UserRole } from '../enums/user-role.enum';
-import { AuthorizedRequestDto } from '../dtos/authorized.request.dto';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { RolesGuard } from '../../auth/roles.guard';
 import { TransformInterceptor } from '../../common/interceptors/transform.interceptor';
+import { AuthorizedRequestDto } from '../../common/dtos/authorized.request.dto';
 
 @ApiTags('Curators')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -55,6 +55,6 @@ export class CuratorsController {
   @ApiOkResponse({ type: CuratorDto })
   @UseInterceptors(new TransformInterceptor(CuratorDto))
   async getMe(@Req() req: AuthorizedRequestDto) {
-    return this.usersService.getMe(req.user.uuid);
+    return this.usersService.getUser(req.user.uuid);
   }
 }
