@@ -49,8 +49,8 @@ export class SputniksController {
   }
 
   @Get('/groups/:id/sputniks')
-  @ApiOperation({ summary: 'can access: sputnik, curator' })
-  @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
+  @ApiOperation({ summary: 'can access: curator' })
+  @Roles(UserRole.CURATOR, UserRole.ADMIN)
   @ApiOkResponse({ type: SputnikDto, isArray: true })
   @UseInterceptors(new TransformInterceptor(SputnikDto))
   async getSputniksByGroup(@Param('id', ParseIntPipe) id: number) {
@@ -58,8 +58,8 @@ export class SputniksController {
   }
 
   @Get('/institutes/:id/sputniks')
-  @ApiOperation({ summary: 'can access: sputnik, curator' })
-  @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
+  @ApiOperation({ summary: 'can access: curator' })
+  @Roles(UserRole.CURATOR, UserRole.ADMIN)
   @ApiOkResponse({ type: SputnikDto, isArray: true })
   @UseInterceptors(new TransformInterceptor(SputnikDto))
   async getSputniksByInstitute(@Param('id', ParseIntPipe) id: number) {

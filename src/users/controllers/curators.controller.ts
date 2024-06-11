@@ -43,8 +43,8 @@ export class CuratorsController {
   }
 
   @Get('/institutes/:id/curators')
-  @ApiOperation({ summary: 'can access: sputnik, curator' })
-  @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
+  @ApiOperation({ summary: 'can access: curator' })
+  @Roles(UserRole.CURATOR, UserRole.ADMIN)
   @ApiOkResponse({ type: CuratorDto, isArray: true })
   @UseInterceptors(new TransformInterceptor(CuratorDto))
   async getCuratorsByInstitute(@Param('id', ParseIntPipe) id: number) {
