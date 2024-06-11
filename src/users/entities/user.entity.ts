@@ -38,7 +38,7 @@ export class User {
   @Column({ name: 'balance', type: 'integer', default: 0 })
   balance: number;
 
-  @ManyToOne(() => Institute, { nullable: true })
+  @ManyToOne(() => Institute, { nullable: true, eager: true })
   @JoinColumn({ name: 'institute_id' })
   institute: Institute;
 
@@ -48,7 +48,7 @@ export class User {
   @ManyToMany(() => Group, (group) => group.sputniks)
   sputnikGroups: Group[];
 
-  @ManyToOne(() => Group, { nullable: true })
+  @ManyToOne(() => Group, { nullable: true, eager: true })
   @JoinColumn({ name: 'group_id' })
   group: Group;
 

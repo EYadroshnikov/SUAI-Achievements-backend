@@ -7,6 +7,9 @@ export class AchievementDto {
   @ApiProperty()
   uuid: string;
 
+  // @ApiProperty()
+  // isUnlocked: boolean;
+
   @ApiProperty()
   name?: string;
 

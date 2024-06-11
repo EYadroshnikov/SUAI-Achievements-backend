@@ -84,6 +84,6 @@ export class StudentsController {
   @ApiOkResponse({ type: StudentDto })
   @UseInterceptors(new TransformInterceptor(StudentDto))
   async getMe(@Req() req: AuthorizedRequestDto) {
-    return this.usersService.getUser(req.user.uuid);
+    return this.usersService.getStudent(req.user.uuid);
   }
 }

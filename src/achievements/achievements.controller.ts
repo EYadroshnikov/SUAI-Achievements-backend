@@ -42,7 +42,7 @@ export class AchievementsController {
   async getAchievementForUser(
     @Param('uuid') uuid: string,
   ): Promise<AchievementDto[]> {
-    const user = await this.userService.getUser(uuid);
+    const user = await this.userService.getStudent(uuid);
     return this.achievementsService.getAchievementsForUser(user);
   }
 }

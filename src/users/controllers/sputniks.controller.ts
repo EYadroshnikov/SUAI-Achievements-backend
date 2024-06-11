@@ -68,6 +68,6 @@ export class SputniksController {
   @ApiOkResponse({ type: SputnikDto })
   @UseInterceptors(new TransformInterceptor(SputnikDto))
   async getMe(@Req() req: AuthorizedRequestDto) {
-    return this.usersService.getUser(req.user.uuid);
+    return this.usersService.getSputnik(req.user.uuid);
   }
 }

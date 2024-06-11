@@ -22,10 +22,22 @@ export class UsersService {
     return this.userRepository.findOne({ where: { vkId: vkId } });
   }
 
-  async getUser(uuid: string): Promise<User> {
+  async getStudent(uuid: string): Promise<User> {
+    return this.userRepository.findOneOrFail({
+      where: { uuid, role: UserRole.STUDENT },
+    });
+  }
+
+  async getSputnik(uuid: string): Promise<User> {
     return this.userRepository.findOne({
       where: { uuid },
-      relations: ['group', 'institute', 'sputnikGroups'],
+      relations: ['sputnikGroups'],
+    });
+  }
+
+  async getCurator(uuid: string): Promise<User> {
+    return this.userRepository.findOne({
+      where: { uuid },
     });
   }
 

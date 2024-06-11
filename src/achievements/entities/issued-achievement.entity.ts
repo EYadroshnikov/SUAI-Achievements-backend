@@ -33,8 +33,8 @@ export class IssuedAchievement {
   @Column({ name: 'is_canceled', type: 'boolean' })
   isCanceled: boolean;
 
-  @Column({ name: 'cancellation_reason', type: 'varchar' })
-  cancellationReason: number;
+  @Column({ name: 'cancellation_reason', type: 'varchar', nullable: true })
+  cancellationReason?: number;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;

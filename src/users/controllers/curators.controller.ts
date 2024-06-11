@@ -31,7 +31,7 @@ import { AuthorizedRequestDto } from '../../common/dtos/authorized.request.dto';
 export class CuratorsController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post('/curator')
+  @Post('/curators')
   @ApiOperation({ summary: 'can access: admin only' })
   @Roles(UserRole.ADMIN)
   @ApiCreatedResponse({ type: CuratorDto })
@@ -55,6 +55,6 @@ export class CuratorsController {
   @ApiOkResponse({ type: CuratorDto })
   @UseInterceptors(new TransformInterceptor(CuratorDto))
   async getMe(@Req() req: AuthorizedRequestDto) {
-    return this.usersService.getUser(req.user.uuid);
+    return this.usersService.getCurator(req.user.uuid);
   }
 }
