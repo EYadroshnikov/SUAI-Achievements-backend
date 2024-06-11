@@ -1,4 +1,5 @@
 import {
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
@@ -26,6 +27,7 @@ import { TransformInterceptor } from '../../common/interceptors/transform.interc
 import { AuthorizedRequestDto } from '../../common/dtos/authorized.request.dto';
 
 @ApiTags('Curators')
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller()
 export class CuratorsController {
@@ -41,8 +43,8 @@ export class CuratorsController {
   }
 
   @Get('/institutes/:id/curators')
-  @ApiOperation({ summary: 'can access: all' })
-  @Roles(UserRole.STUDENT, UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
+  @ApiOperation({ summary: 'can access: sputnik, curator' })
+  @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
   @ApiOkResponse({ type: CuratorDto, isArray: true })
   @UseInterceptors(new TransformInterceptor(CuratorDto))
   async getCuratorsByInstitute(@Param('id', ParseIntPipe) id: number) {

@@ -28,6 +28,7 @@ import { AuthorizedRequestDto } from '../../common/dtos/authorized.request.dto';
 
 @ApiTags('Sputniks')
 @ApiBearerAuth()
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller()
 export class SputniksController {

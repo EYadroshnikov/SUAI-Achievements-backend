@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { AchievementsService } from './achievements.service';
 import {
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
@@ -29,6 +30,7 @@ import { TransformInterceptor } from '../common/interceptors/transform.intercept
 import { CancelAchievementDto } from './dtos/cancel-achievement.dto';
 
 @ApiTags('Achievements')
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('achievements')
 export class AchievementsController {
