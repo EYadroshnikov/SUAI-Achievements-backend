@@ -27,13 +27,18 @@ import { Roles } from '../../auth/roles.decorator';
 import { UserRole } from '../enums/user-role.enum';
 import { TransformInterceptor } from '../../common/interceptors/transform.interceptor';
 import { AuthorizedRequestDto } from '../../common/dtos/authorized.request.dto';
+import { GroupDto } from '../../groups/dtos/group.dto';
+import { GroupsService } from '../../groups/groups.service';
 
 @ApiTags('Students')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller()
 export class StudentsController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly groupService: GroupsService,
+  ) {}
 
   @Post('/students')
   @ApiOperation({ summary: 'can access: sputnik, curator' })
@@ -86,5 +91,14 @@ export class StudentsController {
   async getMe(@Req() req: AuthorizedRequestDto) {
     return this.usersService.getStudent(req.user.uuid);
   }
-  // students/me/groups/students
+
+  @Get('/students/me/groups/students')
+  @ApiOperation({ summary: 'can access: student' })
+  @Roles(UserRole.STUDENT)
+  @ApiOkResponse({ type: StudentDto, isArray: true })
+  @UseInterceptors(new TransformInterceptor(StudentDto))
+  async getMyGroupsStudents(@Req() req: AuthorizedRequestDto) {
+    const student = await this.usersService.getStudent(req.user.uuid);
+    return this.usersService.getStudentsByGroup(student.group.id);
+  }
 }
