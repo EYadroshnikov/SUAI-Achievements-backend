@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Achievement } from './entities/achievement.entity';
@@ -7,6 +7,9 @@ import { UserRole } from '../users/enums/user-role.enum';
 import { AchievementDto } from './dtos/achievement.dto';
 import { AchievementType } from './enums/achievement-type.enum';
 import { AuthorizedUserDto } from '../common/dtos/authorized-user.dto';
+import { IssueAchievementDto } from './dtos/issue-achievement.dto';
+import { UsersService } from '../users/users.service';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class AchievementsService {
@@ -15,6 +18,9 @@ export class AchievementsService {
     private readonly achievementsRepository: Repository<Achievement>,
     @InjectRepository(IssuedAchievement)
     private readonly issuedAchievementsRepository: Repository<IssuedAchievement>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+    private readonly userService: UsersService,
   ) {}
 
   async getAchievementsForUser(
@@ -27,7 +33,7 @@ export class AchievementsService {
     }
 
     const issuedAchievements = await this.issuedAchievementsRepository.find({
-      where: { student: user },
+      where: { student: user, isCanceled: false },
       relations: ['achievement'],
     });
 
@@ -94,5 +100,45 @@ export class AchievementsService {
     }
 
     return dto;
+  }
+
+  async issueAchievement(
+    user: AuthorizedUserDto,
+    issueAchievementDto: IssueAchievementDto,
+  ) {
+    const achievement = await this.achievementsRepository.findOneOrFail({
+      where: { uuid: issueAchievementDto.achievementUuid },
+    });
+
+    const student = await this.userService.getStudent(
+      issueAchievementDto.studentUuid,
+    );
+
+    const issuer = await this.userService.getNotStudentUser(user.uuid);
+
+    return await this.issuedAchievementsRepository.manager.transaction(
+      async (transactionalEntityManager) => {
+        await transactionalEntityManager
+          .createQueryBuilder()
+          .update(User)
+          .set({ balance: () => `balance + ${achievement.reward}` })
+          .where('uuid = :studentUuid', {
+            studentUuid: issueAchievementDto.studentUuid,
+          })
+          .execute();
+
+        const issuedAchievement = new IssuedAchievement();
+        issuedAchievement.achievement = achievement;
+        issuedAchievement.issuer = issuer;
+        issuedAchievement.student = student;
+        issuedAchievement.reward = achievement.reward;
+        issuedAchievement.isCanceled = false;
+        issuedAchievement.cancellationReason = null;
+
+        await transactionalEntityManager.save(issuedAchievement);
+
+        return issuedAchievement;
+      },
+    );
   }
 }

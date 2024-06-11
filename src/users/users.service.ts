@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { Repository, UpdateResult } from 'typeorm';
+import { Not, Repository, UpdateResult } from 'typeorm';
 import { UserRole } from './enums/user-role.enum';
 import { CreateSputnikDto } from './dtos/create.sputnik.dto';
 import { CreateStudentDto } from './dtos/create.student.dto';
@@ -39,6 +39,21 @@ export class UsersService {
     return this.userRepository.findOne({
       where: { uuid },
     });
+  }
+
+  async getNotStudentUser(uuid: string): Promise<User> {
+    return this.userRepository.findOneOrFail({
+      where: { uuid, role: Not(UserRole.STUDENT) },
+    });
+  }
+
+  async updateStudentBalance(studentUuid: string, amount: number) {
+    return this.userRepository
+      .createQueryBuilder()
+      .update(User)
+      .set({ balance: () => `balance + ${amount}` })
+      .where('uuid = :studentUuid', { studentUuid })
+      .execute();
   }
 
   async createCurator(curatorDto: CreateCuratorDto): Promise<User> {

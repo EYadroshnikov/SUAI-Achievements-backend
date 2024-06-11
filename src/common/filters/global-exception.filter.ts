@@ -40,7 +40,11 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
     switch (exception.constructor) {
       case QueryFailedError:
-        status = HttpStatus.UNPROCESSABLE_ENTITY;
+        status = (exception as QueryFailedError).message.includes(
+          'duplicate key value',
+        )
+          ? HttpStatus.CONFLICT
+          : HttpStatus.UNPROCESSABLE_ENTITY;
         message = (exception as QueryFailedError).message;
         code = (exception as any).code;
         break;

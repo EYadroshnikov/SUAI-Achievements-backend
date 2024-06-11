@@ -5,12 +5,14 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Unique,
   UpdateDateColumn,
 } from 'typeorm';
 import { Achievement } from './achievement.entity';
 import { User } from '../../users/entities/user.entity';
 
 @Entity('issued_achievements')
+@Unique(['student', 'achievement'])
 export class IssuedAchievement {
   @PrimaryGeneratedColumn('uuid')
   uuid: string;

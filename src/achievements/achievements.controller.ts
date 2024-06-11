@@ -1,6 +1,19 @@
-import { Controller, Get, Param, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { AchievementsService } from './achievements.service';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AuthorizedRequestDto } from '../common/dtos/authorized.request.dto';
 import { RolesGuard } from '../auth/roles.guard';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -8,9 +21,7 @@ import { Roles } from '../auth/roles.decorator';
 import { UserRole } from '../users/enums/user-role.enum';
 import { AchievementDto } from './dtos/achievement.dto';
 import { UsersService } from '../users/users.service';
-import { StudentDto } from '../users/dtos/student.dto';
-import { AchievementType } from './enums/achievement-type.enum';
-import { isArray } from 'class-validator';
+import { IssueAchievementDto } from './dtos/issue-achievement.dto';
 
 @ApiTags('Achievements')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -44,5 +55,21 @@ export class AchievementsController {
   ): Promise<AchievementDto[]> {
     const user = await this.userService.getStudent(uuid);
     return this.achievementsService.getAchievementsForUser(user);
+  }
+
+  @Post('/issue')
+  @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
+  @ApiOperation({
+    summary: 'Can access: sputnik, curator',
+  })
+  @ApiCreatedResponse() //TODO: add type
+  async issueAchievement(
+    @Req() req: AuthorizedRequestDto,
+    @Body() issueAchievementsDto: IssueAchievementDto,
+  ) {
+    return this.achievementsService.issueAchievement(
+      req.user,
+      issueAchievementsDto,
+    );
   }
 }
