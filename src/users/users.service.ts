@@ -1,13 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { Not, Repository, UpdateResult } from 'typeorm';
+import { In, Not, Repository, UpdateResult } from 'typeorm';
 import { UserRole } from './enums/user-role.enum';
 import { CreateSputnikDto } from './dtos/create.sputnik.dto';
 import { CreateStudentDto } from './dtos/create.student.dto';
 import { GroupsService } from '../groups/groups.service';
 import { InstitutesService } from '../institues/institutes.service';
 import { CreateCuratorDto } from './dtos/create.curator.dto';
+import { Group } from '../groups/entities/group.entity';
+import { Institute } from '../institues/entities/institute.entity';
 
 @Injectable()
 export class UsersService {
@@ -25,6 +27,21 @@ export class UsersService {
   async getStudent(uuid: string): Promise<User> {
     return this.userRepository.findOneOrFail({
       where: { uuid, role: UserRole.STUDENT },
+    });
+  }
+
+  async getGroupsStudent(uuid: string, group: Group[]): Promise<User> {
+    return this.userRepository.findOneOrFail({
+      where: { uuid, role: UserRole.STUDENT, group: In(group) },
+    });
+  }
+
+  async getInstitutesStudent(
+    uuid: string,
+    institute: Institute,
+  ): Promise<User> {
+    return this.userRepository.findOneOrFail({
+      where: { uuid, role: UserRole.STUDENT, institute },
     });
   }
 

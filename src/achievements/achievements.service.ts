@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Achievement } from './entities/achievement.entity';
@@ -10,6 +10,7 @@ import { AuthorizedUserDto } from '../common/dtos/authorized-user.dto';
 import { IssueAchievementDto } from './dtos/issue-achievement.dto';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/entities/user.entity';
+import { CancelAchievementDto } from './dtos/cancel-achievement.dto';
 
 @Injectable()
 export class AchievementsService {
@@ -19,7 +20,6 @@ export class AchievementsService {
     @InjectRepository(IssuedAchievement)
     private readonly issuedAchievementsRepository: Repository<IssuedAchievement>,
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
     private readonly userService: UsersService,
   ) {}
 
@@ -110,23 +110,15 @@ export class AchievementsService {
       where: { uuid: issueAchievementDto.achievementUuid },
     });
 
-    const student = await this.userService.getStudent(
+    const issuer = await this.userService.getNotStudentUser(user.uuid);
+
+    const student = await this.getStudent(
+      issuer,
       issueAchievementDto.studentUuid,
     );
 
-    const issuer = await this.userService.getNotStudentUser(user.uuid);
-
     return await this.issuedAchievementsRepository.manager.transaction(
       async (transactionalEntityManager) => {
-        await transactionalEntityManager
-          .createQueryBuilder()
-          .update(User)
-          .set({ balance: () => `balance + ${achievement.reward}` })
-          .where('uuid = :studentUuid', {
-            studentUuid: issueAchievementDto.studentUuid,
-          })
-          .execute();
-
         const issuedAchievement = new IssuedAchievement();
         issuedAchievement.achievement = achievement;
         issuedAchievement.issuer = issuer;
@@ -137,7 +129,82 @@ export class AchievementsService {
 
         await transactionalEntityManager.save(issuedAchievement);
 
+        await transactionalEntityManager
+          .createQueryBuilder()
+          .update(User)
+          .set({ balance: () => `balance + ${achievement.reward}` })
+          .where('uuid = :studentUuid', {
+            studentUuid: issueAchievementDto.studentUuid,
+          })
+          .execute();
         return issuedAchievement;
+      },
+    );
+  }
+
+  private async getStudent(issuer: User, studentUuid: string) {
+    if (issuer.role === UserRole.CURATOR) {
+      return await this.userService.getInstitutesStudent(
+        studentUuid,
+        issuer.institute,
+      );
+    } else {
+      return await this.userService.getGroupsStudent(
+        studentUuid,
+        issuer.sputnikGroups,
+      );
+    }
+  }
+
+  async cancelIssuing(
+    user: AuthorizedUserDto,
+    cancelAchievementDto: CancelAchievementDto,
+  ) {
+    // const achievement = await this.achievementsRepository.findOneOrFail({
+    //   where: { uuid: cancelAchievementDto.achievementUuid },
+    // });
+    const canceler = await this.userService.getNotStudentUser(user.uuid);
+    const student = await this.getStudent(
+      canceler,
+      cancelAchievementDto.studentUuid,
+    );
+
+    // const issuing = await this.issuedAchievementsRepository.findOneOrFail({
+    //   where: { student, achievement },
+    // });
+
+    const issuing = await this.issuedAchievementsRepository.findOneOrFail({
+      where: {
+        student,
+        achievement: {
+          uuid: cancelAchievementDto.achievementUuid,
+        },
+      },
+    });
+
+    return await this.issuedAchievementsRepository.manager.transaction(
+      async (transactionalEntityManager) => {
+        await transactionalEntityManager.update(
+          IssuedAchievement,
+          {
+            achievement: issuing.achievement,
+            student,
+          },
+          {
+            isCanceled: true,
+            canceler: canceler,
+            cancellationReason: cancelAchievementDto.cancellationReason,
+          },
+        );
+
+        await transactionalEntityManager
+          .createQueryBuilder()
+          .update(User)
+          .set({ balance: () => `balance - ${issuing.reward}` })
+          .where('uuid = :studentUuid', {
+            studentUuid: cancelAchievementDto.studentUuid,
+          })
+          .execute();
       },
     );
   }

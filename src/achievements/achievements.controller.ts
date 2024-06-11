@@ -3,9 +3,11 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Post,
   Req,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AchievementsService } from './achievements.service';
 import {
@@ -22,6 +24,9 @@ import { UserRole } from '../users/enums/user-role.enum';
 import { AchievementDto } from './dtos/achievement.dto';
 import { UsersService } from '../users/users.service';
 import { IssueAchievementDto } from './dtos/issue-achievement.dto';
+import { IssuedAchievementDto } from './dtos/issued-achievement.dto';
+import { TransformInterceptor } from '../common/interceptors/transform.interceptor';
+import { CancelAchievementDto } from './dtos/cancel-achievement.dto';
 
 @ApiTags('Achievements')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -62,7 +67,8 @@ export class AchievementsController {
   @ApiOperation({
     summary: 'Can access: sputnik, curator',
   })
-  @ApiCreatedResponse() //TODO: add type
+  @ApiCreatedResponse({ type: IssuedAchievementDto })
+  @UseInterceptors(new TransformInterceptor(IssuedAchievementDto))
   async issueAchievement(
     @Req() req: AuthorizedRequestDto,
     @Body() issueAchievementsDto: IssueAchievementDto,
@@ -70,6 +76,21 @@ export class AchievementsController {
     return this.achievementsService.issueAchievement(
       req.user,
       issueAchievementsDto,
+    );
+  }
+
+  @Patch('cancel')
+  @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
+  @ApiOperation({
+    summary: 'Can access: sputnik, curator',
+  })
+  async cancelIssuing(
+    @Req() req: AuthorizedRequestDto,
+    @Body() cancelAchievementDto: CancelAchievementDto,
+  ) {
+    return this.achievementsService.cancelIssuing(
+      req.user,
+      cancelAchievementDto,
     );
   }
 }

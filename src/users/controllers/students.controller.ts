@@ -61,8 +61,8 @@ export class StudentsController {
   }
 
   @Get('/groups/:id/students')
-  @ApiOperation({ summary: 'can access: all' })
-  @Roles(UserRole.STUDENT, UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
+  @ApiOperation({ summary: 'can access: sputnik, curator' })
+  @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
   @ApiOkResponse({ type: StudentDto, isArray: true })
   @UseInterceptors(new TransformInterceptor(StudentDto))
   async getStudentsByGroup(@Param('id', ParseIntPipe) id: number) {
@@ -70,8 +70,8 @@ export class StudentsController {
   }
 
   @Get('/institutes/:id/students')
-  @ApiOperation({ summary: 'can access: all' })
-  @Roles(UserRole.STUDENT, UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
+  @ApiOperation({ summary: 'can access: sputnik, curator' })
+  @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
   @ApiOkResponse({ type: StudentDto, isArray: true })
   @UseInterceptors(new TransformInterceptor(StudentDto))
   async getStudentsByInstitute(@Param('id', ParseIntPipe) id: number) {
@@ -86,4 +86,5 @@ export class StudentsController {
   async getMe(@Req() req: AuthorizedRequestDto) {
     return this.usersService.getStudent(req.user.uuid);
   }
+  // students/me/groups/students
 }
