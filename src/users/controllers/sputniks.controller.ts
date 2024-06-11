@@ -9,6 +9,7 @@ import {
   Body,
   Controller,
   Get,
+  NotFoundException,
   Param,
   ParseIntPipe,
   Post,
@@ -25,6 +26,9 @@ import { Roles } from '../../auth/roles.decorator';
 import { UserRole } from '../enums/user-role.enum';
 import { TransformInterceptor } from '../../common/interceptors/transform.interceptor';
 import { AuthorizedRequestDto } from '../../common/dtos/authorized.request.dto';
+import { Group } from '../../groups/entities/group.entity';
+import { GroupDto } from '../../groups/dtos/group.dto';
+import { StudentDto } from '../dtos/student.dto';
 
 @ApiTags('Sputniks')
 @ApiBearerAuth()
@@ -69,5 +73,21 @@ export class SputniksController {
   @UseInterceptors(new TransformInterceptor(SputnikDto))
   async getMe(@Req() req: AuthorizedRequestDto) {
     return this.usersService.getSputnik(req.user.uuid);
+  }
+
+  @Get('/sputniks/me/groups/:id/students')
+  @ApiOperation({ summary: 'can access: sputnik' })
+  @Roles(UserRole.SPUTNIK)
+  @ApiOkResponse({ type: StudentDto, isArray: true })
+  @UseInterceptors(new TransformInterceptor(StudentDto))
+  async getMySputnikGroups(
+    @Req() req: AuthorizedRequestDto,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    const sputnik = await this.usersService.getSputnik(req.user.uuid);
+    if (!sputnik.sputnikGroups.some((group) => group.id === id)) {
+      throw new NotFoundException('Group not found');
+    }
+    return this.usersService.getStudentsByGroup(id);
   }
 }
