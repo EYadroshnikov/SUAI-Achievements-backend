@@ -13,6 +13,7 @@ import { VkModule } from './vk/vk.module';
 import appConfig from './config/app/app.config';
 import { LoggingMiddleware } from './common/middlewares/logging.middleware';
 import { NodeEnv } from './config/app/enums/node-env.enum';
+import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { NodeEnv } from './config/app/enums/node-env.enum';
     GroupsModule,
     InstitutesModule,
     VkModule,
+    FilesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -10,6 +10,7 @@ async function bootstrap() {
   // app.use(helmet());
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.useGlobalFilters(new GlobalExceptionFilter());
+  // app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
 
   const config = new DocumentBuilder()
     .setTitle('SUAI Achievements')
