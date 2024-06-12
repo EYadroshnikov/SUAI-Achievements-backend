@@ -36,7 +36,7 @@ export class IssuedAchievement {
   isCanceled: boolean;
 
   @ManyToOne(() => User, { nullable: true })
-  @JoinColumn({ name: 'canceler' })
+  @JoinColumn({ name: 'canceler_uuid' })
   canceler?: User;
 
   @Column({ name: 'cancellation_reason', type: 'varchar', nullable: true })

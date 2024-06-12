@@ -12,6 +12,7 @@ import { InstitutesModule } from './institues/institutes.module';
 import { VkModule } from './vk/vk.module';
 import appConfig from './config/app/app.config';
 import { LoggingMiddleware } from './common/middlewares/logging.middleware';
+import { NodeEnv } from './config/app/enums/node-env.enum';
 
 @Module({
   imports: [
@@ -30,7 +31,7 @@ import { LoggingMiddleware } from './common/middlewares/logging.middleware';
         password: configService.get('postgres.password'),
         database: configService.get('postgres.database'),
         autoLoadEntities: true,
-        synchronize: true,
+        synchronize: configService.get('app.nodeEnv') === NodeEnv.DEV,
         connectTimeoutMS: 15000,
         logging: false,
       }),

@@ -32,8 +32,8 @@ export class GroupsController {
   constructor(private readonly groupsService: GroupsService) {}
 
   @Post('/groups')
-  @ApiOperation({ summary: 'can access: sputnik' })
-  @Roles(UserRole.SPUTNIK, UserRole.ADMIN)
+  @ApiOperation({ summary: 'can access: sputnik, curator' })
+  @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
   @UseInterceptors(new TransformInterceptor(GroupDto))
   @ApiCreatedResponse({ type: GroupDto })
   async create(@Body() createGroupDto: CreateGroupDto) {
