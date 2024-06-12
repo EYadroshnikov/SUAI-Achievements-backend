@@ -46,6 +46,6 @@ export class GroupsController {
   @UseInterceptors(new TransformInterceptor(GroupDto))
   @ApiOkResponse({ type: GroupDto, isArray: true })
   async getGroupsByInstitute(@Param('id', ParseIntPipe) id: number) {
-    return this.groupsService.getGroupsByInstitute(id); //TODO: add pagination
+    return this.groupsService.getGroupsByInstitute(id);
   }
 }

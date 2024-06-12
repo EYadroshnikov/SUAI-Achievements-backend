@@ -12,6 +12,7 @@ export class GroupsService {
     @InjectRepository(Group)
     private readonly groupRepository: Repository<Group>,
     private instituteService: InstitutesService,
+    // private userService: UsersService,
   ) {}
 
   findOne(id: number) {
@@ -51,4 +52,20 @@ export class GroupsService {
       where: { institute: { id } },
     });
   }
+  //
+  // async addSputnik(addSputnikDto: AddSputnikDto): Promise<Group> {
+  //   const { sputnikUuid, groupId } = addSputnikDto;
+  //
+  //   const group = await this.groupRepository.findOneOrFail({
+  //     where: { id: groupId },
+  //     relations: ['sputniks'],
+  //   });
+  //
+  //   const sputnik = await this.userService.getSputnik(sputnikUuid);
+  //
+  //   group.sputniks.push(sputnik);
+  //   await this.groupRepository.save(group);
+  //
+  //   return group;
+  // } TODO: Resolve circular dependency
 }

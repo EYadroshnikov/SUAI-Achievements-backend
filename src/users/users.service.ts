@@ -52,14 +52,14 @@ export class UsersService {
   }
 
   async getSputnik(uuid: string): Promise<User> {
-    return this.userRepository.findOne({
+    return this.userRepository.findOneOrFail({
       where: { uuid },
       relations: ['sputnikGroups'],
     });
   }
 
   async getCurator(uuid: string): Promise<User> {
-    return this.userRepository.findOne({
+    return this.userRepository.findOneOrFail({
       where: { uuid },
     });
   }
