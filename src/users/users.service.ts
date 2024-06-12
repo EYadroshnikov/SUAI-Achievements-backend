@@ -10,6 +10,12 @@ import { InstitutesService } from '../institues/institutes.service';
 import { CreateCuratorDto } from './dtos/create.curator.dto';
 import { Group } from '../groups/entities/group.entity';
 import { Institute } from '../institues/entities/institute.entity';
+import {
+  FilterOperator,
+  paginate,
+  Paginated,
+  PaginateQuery,
+} from 'nestjs-paginate';
 
 @Injectable()
 export class UsersService {
@@ -169,6 +175,27 @@ export class UsersService {
     await this.instituteService.findOne(id);
     return this.userRepository.find({
       where: { institute: { id }, role: UserRole.CURATOR },
+    });
+  }
+
+  async getTopStudents(query: PaginateQuery): Promise<Paginated<User>> {
+    return paginate<User>(query, this.userRepository, {
+      where: { role: UserRole.STUDENT, isBanned: false },
+      sortableColumns: ['balance'],
+      filterableColumns: {
+        'group.id': [FilterOperator.EQ],
+        'institute.id': [FilterOperator.EQ],
+      },
+      defaultSortBy: [['balance', 'DESC']],
+      // loadEagerRelations: true,
+      relations: ['group', 'institute'],
+    });
+  }
+
+  async getStudentsTopGroup(id: number) {
+    return this.userRepository.find({
+      where: { group: { id }, role: UserRole.STUDENT },
+      order: { balance: 'DESC' },
     });
   }
 }

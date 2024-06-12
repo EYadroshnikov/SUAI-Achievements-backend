@@ -26,9 +26,14 @@ import { Roles } from '../../auth/roles.decorator';
 import { UserRole } from '../enums/user-role.enum';
 import { TransformInterceptor } from '../../common/interceptors/transform.interceptor';
 import { AuthorizedRequestDto } from '../../common/dtos/authorized.request.dto';
-import { Group } from '../../groups/entities/group.entity';
-import { GroupDto } from '../../groups/dtos/group.dto';
 import { StudentDto } from '../dtos/student.dto';
+import {
+  ApiOkPaginatedResponse,
+  ApiPaginationQuery,
+  Paginate,
+  Paginated,
+} from 'nestjs-paginate';
+import { PaginateDto } from '../dtos/paginate.dto';
 
 @ApiTags('Sputniks')
 @ApiBearerAuth()
@@ -80,7 +85,7 @@ export class SputniksController {
   @Roles(UserRole.SPUTNIK)
   @ApiOkResponse({ type: StudentDto, isArray: true })
   @UseInterceptors(new TransformInterceptor(StudentDto))
-  async getMySputnikGroups(
+  async getMySputnikGroupsStudents(
     @Req() req: AuthorizedRequestDto,
     @Param('id', ParseIntPipe) id: number,
   ) {
@@ -90,4 +95,39 @@ export class SputniksController {
     }
     return this.usersService.getStudentsByGroup(id);
   }
+
+  @Get('/sputniks/me/top/groups/:id/')
+  @ApiOperation({ summary: 'can access: sputnik' })
+  @Roles(UserRole.SPUTNIK)
+  @ApiOkResponse({ type: StudentDto, isArray: true })
+  @UseInterceptors(new TransformInterceptor(StudentDto))
+  async getMySputnikGroupsStudentsTop(
+    @Req() req: AuthorizedRequestDto,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    const sputnik = await this.usersService.getSputnik(req.user.uuid);
+    if (!sputnik.sputnikGroups.some((group) => group.id === id)) {
+      throw new NotFoundException('Group not found');
+    }
+    return this.usersService.getStudentsTopGroup(id);
+  }
+
+  @Get('/sputniks/me/top/institutes')
+  @ApiOperation({ summary: 'can access: sputnik' })
+  @Roles(UserRole.SPUTNIK)
+  @ApiPaginationQuery({ sortableColumns: ['balance'] })
+  @ApiOkPaginatedResponse(SputnikDto, { sortableColumns: ['balance'] })
+  @UseInterceptors(new TransformInterceptor(Paginated<SputnikDto>))
+  async getMySputnikInstituteStudentsTop(
+    @Req() req: AuthorizedRequestDto,
+    @Paginate() paginateDto: PaginateDto,
+  ) {
+    const sputnik = await this.usersService.getSputnik(req.user.uuid);
+    return this.usersService.getTopStudents({
+      ...paginateDto,
+      filter: { 'institute.id': '$eq:' + sputnik.institute.id },
+    });
+  }
+
+  //TODO: add group to sputnik or sputnik to group
 }

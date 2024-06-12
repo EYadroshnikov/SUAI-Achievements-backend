@@ -27,8 +27,14 @@ import { Roles } from '../../auth/roles.decorator';
 import { UserRole } from '../enums/user-role.enum';
 import { TransformInterceptor } from '../../common/interceptors/transform.interceptor';
 import { AuthorizedRequestDto } from '../../common/dtos/authorized.request.dto';
-import { GroupDto } from '../../groups/dtos/group.dto';
 import { GroupsService } from '../../groups/groups.service';
+import {
+  ApiOkPaginatedResponse,
+  ApiPaginationQuery,
+  Paginate,
+  Paginated,
+} from 'nestjs-paginate';
+import { PaginateDto } from '../dtos/paginate.dto';
 
 @ApiTags('Students')
 @ApiBearerAuth()
@@ -100,5 +106,67 @@ export class StudentsController {
   async getMyGroupsStudents(@Req() req: AuthorizedRequestDto) {
     const student = await this.usersService.getStudent(req.user.uuid);
     return this.usersService.getStudentsByGroup(student.group.id);
+  }
+
+  @Get('/students/top')
+  @ApiOperation({ summary: 'can access: all' })
+  @Roles(UserRole.STUDENT, UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
+  @ApiPaginationQuery({ sortableColumns: ['balance'] })
+  @ApiOkPaginatedResponse(StudentDto, { sortableColumns: ['balance'] })
+  @UseInterceptors(new TransformInterceptor(Paginated<StudentDto>))
+  async getTopStudents(@Paginate() query: PaginateDto) {
+    return this.usersService.getTopStudents(query);
+  }
+
+  @Get('/groups/:id/students/top')
+  @ApiOperation({ summary: 'can access: all' })
+  @Roles(UserRole.STUDENT, UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
+  @ApiOkResponse({ type: StudentDto, isArray: true })
+  @UseInterceptors(new TransformInterceptor(StudentDto))
+  async getGroupsTopById(@Param('id', ParseIntPipe) id: number) {
+    return this.usersService.getStudentsTopGroup(id);
+  }
+
+  @Get('/institutes/:id/students/top')
+  @ApiOperation({ summary: 'can access: all' })
+  @Roles(UserRole.STUDENT, UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
+  @ApiPaginationQuery({ sortableColumns: ['balance'] })
+  @ApiOkPaginatedResponse(StudentDto, { sortableColumns: ['balance'] })
+  @UseInterceptors(new TransformInterceptor(Paginated<StudentDto>))
+  async getInstitutesTopById(
+    @Param('id', ParseIntPipe) id: number,
+    @Paginate() paginateDto: PaginateDto,
+  ) {
+    return this.usersService.getTopStudents({
+      ...paginateDto,
+      filter: { 'institute.id': '$eq:' + id },
+    });
+  }
+
+  @Get('/students/top/me/groups')
+  @ApiOperation({ summary: 'can access: student' })
+  @Roles(UserRole.STUDENT)
+  @ApiOkResponse({ type: StudentDto, isArray: true })
+  @UseInterceptors(new TransformInterceptor(StudentDto))
+  async getTopMyGroupsStudents(@Req() req: AuthorizedRequestDto) {
+    const student = await this.usersService.getStudent(req.user.uuid);
+    return this.usersService.getStudentsTopGroup(student.group.id);
+  }
+
+  @Get('/students/top/me/institutes')
+  @ApiOperation({ summary: 'can access: student' })
+  @Roles(UserRole.STUDENT)
+  @ApiPaginationQuery({ sortableColumns: ['balance'] })
+  @ApiOkPaginatedResponse(StudentDto, { sortableColumns: ['balance'] })
+  @UseInterceptors(new TransformInterceptor(Paginated<StudentDto>))
+  async getTopMyInstituteStudents(
+    @Req() req: AuthorizedRequestDto,
+    @Paginate() paginateDto: PaginateDto,
+  ) {
+    const student = await this.usersService.getStudent(req.user.uuid);
+    return this.usersService.getTopStudents({
+      ...paginateDto,
+      filter: { 'institute.id': '$eq:' + student.institute.id },
+    });
   }
 }
