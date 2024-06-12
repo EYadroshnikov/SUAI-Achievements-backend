@@ -81,7 +81,6 @@ export class UsersService {
     const curator = this.userRepository.create({
       ...curatorDto,
       institute,
-      registrationCode: Math.floor(100000 + Math.random() * 900000).toString(),
       role: UserRole.CURATOR,
     });
 
@@ -102,7 +101,6 @@ export class UsersService {
       ...sputnikDto,
       institute,
       sputnikGroups,
-      registrationCode: Math.floor(100000 + Math.random() * 900000).toString(),
       role: UserRole.SPUTNIK,
     });
     return this.userRepository.save(sputnik);
@@ -119,7 +117,6 @@ export class UsersService {
       institute,
       group,
       role: UserRole.STUDENT,
-      registrationCode: Math.floor(100000 + Math.random() * 900000).toString(),
     });
 
     return this.userRepository.save(student);

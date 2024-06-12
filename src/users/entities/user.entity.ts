@@ -17,9 +17,6 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   uuid: string;
 
-  @Column({ name: 'registration_code', type: 'varchar' })
-  registrationCode: string;
-
   @Column({ name: 'vk_id', type: 'varchar', unique: true })
   vkId: string;
 

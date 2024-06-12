@@ -29,7 +29,7 @@ export class Migration1718190674720 implements MigrationInterface {
       `CREATE TYPE "public"."users_role_enum" AS ENUM('ADMIN', 'CURATOR', 'SPUTNIK', 'STUDENT')`,
     );
     await queryRunner.query(
-      `CREATE TABLE "users" ("uuid" uuid NOT NULL DEFAULT uuid_generate_v4(), "registration_code" character varying NOT NULL, "vk_id" character varying NOT NULL, "role" "public"."users_role_enum" NOT NULL, "first_name" character varying NOT NULL, "last_name" character varying NOT NULL, "patronymic" character varying NOT NULL, "balance" integer NOT NULL DEFAULT '0', "is_banned" boolean NOT NULL DEFAULT false, "institute_id" integer, "group_id" integer, CONSTRAINT "UQ_233f440ff87f5926e15492cc402" UNIQUE ("vk_id"), CONSTRAINT "PK_951b8f1dfc94ac1d0301a14b7e1" PRIMARY KEY ("uuid"))`,
+      `CREATE TABLE "users" ("uuid" uuid NOT NULL DEFAULT uuid_generate_v4(), "vk_id" character varying NOT NULL, "role" "public"."users_role_enum" NOT NULL, "first_name" character varying NOT NULL, "last_name" character varying NOT NULL, "patronymic" character varying NOT NULL, "balance" integer NOT NULL DEFAULT '0', "is_banned" boolean NOT NULL DEFAULT false, "institute_id" integer, "group_id" integer, CONSTRAINT "UQ_233f440ff87f5926e15492cc402" UNIQUE ("vk_id"), CONSTRAINT "PK_951b8f1dfc94ac1d0301a14b7e1" PRIMARY KEY ("uuid"))`,
     );
     await queryRunner.query(
       `CREATE TABLE "sputnik_groups" ("group_id" integer NOT NULL, "user_uuid" uuid NOT NULL, CONSTRAINT "PK_85d7988a41cfa05182c99f3a8b4" PRIMARY KEY ("group_id", "user_uuid"))`,
