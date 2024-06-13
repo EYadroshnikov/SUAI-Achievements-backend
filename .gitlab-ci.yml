@@ -1,0 +1,32 @@
+image: docker:latest
+
+services:
+  - docker:dind
+
+stages:
+  - build
+  - deploy
+
+variables:
+  IMAGE_TAG: $CI_COMMIT_REF_NAME
+
+before_script:
+  - echo "$DOCKERHUB_ACCESS_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+
+build:
+  stage: build
+  tags:
+    - docker
+  script:
+    - docker build -t $DOCKERHUB_REPO:${IMAGE_TAG}_${CI_PIPELINE_ID} .
+    - docker push $DOCKERHUB_REPO:${IMAGE_TAG}_${CI_PIPELINE_ID}
+
+deploy:
+  stage: deploy
+  tags:
+    - docker
+  script:
+    docker pull $DOCKERHUB_REPO:${IMAGE_TAG}_${CI_PIPELINE_ID}
+    docker rm -f suai-achievements-backend
+    docker run --restart on-failure -d -p3000:3000 --env-file /home/gitlab-runner/suai-achievements-backend/.env --name suai-achievements-backend $DOCKERHUB_REPO:${IMAGE_TAG}_${CI_PIPELINE_ID}
+    docker image prune -a -f
