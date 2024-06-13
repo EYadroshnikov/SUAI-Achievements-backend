@@ -128,6 +128,4 @@ export class SputniksController {
       filter: { 'institute.id': '$eq:' + sputnik.institute.id },
     });
   }
-
-  //TODO: add group to sputnik or sputnik to group
 }

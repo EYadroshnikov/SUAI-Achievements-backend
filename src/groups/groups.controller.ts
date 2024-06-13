@@ -48,4 +48,6 @@ export class GroupsController {
   async getGroupsByInstitute(@Param('id', ParseIntPipe) id: number) {
     return this.groupsService.getGroupsByInstitute(id);
   }
+
+  //TODO: add group to sputnik or sputnik to group
 }

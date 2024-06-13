@@ -13,7 +13,8 @@ import { VkModule } from './vk/vk.module';
 import appConfig from './config/app/app.config';
 import { LoggingMiddleware } from './common/middlewares/logging.middleware';
 import { NodeEnv } from './config/app/enums/node-env.enum';
-import { FilesModule } from './files/files.module';
+import { join } from 'path';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 @Module({
   imports: [
@@ -44,7 +45,13 @@ import { FilesModule } from './files/files.module';
     GroupsModule,
     InstitutesModule,
     VkModule,
-    FilesModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'achievementIcons'),
+      serveRoot: '/achievementIcons',
+      serveStaticOptions: {
+        dotfiles: 'deny',
+      }, //TODO: catch not found exception
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
