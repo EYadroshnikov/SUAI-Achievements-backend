@@ -1,5 +1,5 @@
 # Base image
-FROM --platform=linux/amd64 node:18
+FROM --platform=linux/amd64 node:20
 #FROM node:20
 LABEL authors="Egor Yadroshnikov"
 
