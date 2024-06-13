@@ -49,6 +49,30 @@ export class GroupsController {
     return this.groupsService.create(createGroupDto);
   }
 
+  @Post('groups/add-sputnik')
+  @ApiOperation({ summary: 'can access: curator' })
+  @Roles(UserRole.CURATOR, UserRole.ADMIN)
+  @UseInterceptors(new TransformInterceptor(GroupSputniksDto))
+  @ApiOkResponse({ type: GroupSputniksDto })
+  async addSputnikToGroup(
+    @Body() addSputnikDto: AddSputnikDto,
+    @Req() req: AuthorizedRequestDto,
+  ) {
+    const curator = await this.userService.getCurator(req.user.uuid);
+    const sputnik = await this.userService.getSputnik(
+      addSputnikDto.sputnikUuid,
+    );
+    if (
+      req.user.role !== UserRole.ADMIN &&
+      curator.institute.id !== sputnik.institute.id
+    ) {
+      throw new BadRequestException(
+        `sputnik with uuid: ${sputnik.uuid} doesn't belong to your institute with id: ${curator.institute.id}`,
+      );
+    }
+    return this.groupsService.addSputnik(addSputnikDto);
+  }
+
   @Get('groups/:id')
   @ApiOperation({ summary: 'can access: sputnik, curator' })
   @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
@@ -76,28 +100,4 @@ export class GroupsController {
   async getGroupsByInstitute(@Param('id', ParseIntPipe) id: number) {
     return this.groupsService.getGroupsByInstitute(id);
   }
-
-  @Post('groups/add-sputnik')
-  @ApiOperation({ summary: 'can access: curator' })
-  @Roles(UserRole.CURATOR, UserRole.ADMIN)
-  async addSputnikToGroup(
-    @Body() addSputnikDto: AddSputnikDto,
-    @Req() req: AuthorizedRequestDto,
-  ) {
-    const curator = await this.userService.getCurator(req.user.uuid);
-    const sputnik = await this.userService.getSputnik(
-      addSputnikDto.sputnikUuid,
-    );
-    if (
-      req.user.role !== UserRole.ADMIN &&
-      curator.institute.id !== sputnik.institute.id
-    ) {
-      throw new BadRequestException(
-        `sputnik with uuid: ${sputnik.uuid} doesn't belong to your institute with id: ${curator.institute.id}`,
-      );
-    }
-    return this.groupsService.addSputnik(addSputnikDto);
-  }
-
-  //TODO: add group to sputnik or sputnik to group
 }
