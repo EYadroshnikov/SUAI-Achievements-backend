@@ -5,6 +5,7 @@ import { In, Repository } from 'typeorm';
 import { Group } from './entities/group.entity';
 import { Institute } from '../institues/entities/institute.entity';
 import { InstitutesService } from '../institues/institutes.service';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class GroupsService {
@@ -52,6 +53,14 @@ export class GroupsService {
       where: { institute: { id } },
     });
   }
+
+  async getGroup(id: number) {
+    return this.groupRepository.findOneOrFail({
+      where: { id },
+      relations: ['sputniks'],
+    });
+  }
+
   //
   // async addSputnik(addSputnikDto: AddSputnikDto): Promise<Group> {
   //   const { sputnikUuid, groupId } = addSputnikDto;

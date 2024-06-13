@@ -5,6 +5,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Req,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -23,13 +24,19 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { UserRole } from '../users/enums/user-role.enum';
+import { GroupSputniksDto } from './dtos/group-sputniks.dto';
+import { AuthorizedRequestDto } from '../common/dtos/authorized.request.dto';
+import { UsersService } from '../users/users.service';
 
 @ApiTags('Groups')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller()
 export class GroupsController {
-  constructor(private readonly groupsService: GroupsService) {}
+  constructor(
+    private readonly groupsService: GroupsService,
+    private userService: UsersService,
+  ) {}
 
   @Post('/groups')
   @ApiOperation({ summary: 'can access: sputnik, curator' })
@@ -38,6 +45,25 @@ export class GroupsController {
   @ApiCreatedResponse({ type: GroupDto })
   async create(@Body() createGroupDto: CreateGroupDto) {
     return this.groupsService.create(createGroupDto);
+  }
+
+  @Get('groups/:id')
+  @ApiOperation({ summary: 'can access: sputnik, curator' })
+  @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
+  @UseInterceptors(new TransformInterceptor(GroupSputniksDto))
+  @ApiOkResponse({ type: GroupSputniksDto, isArray: true })
+  async getGroupById(@Param('id', ParseIntPipe) id: number) {
+    return this.groupsService.getGroup(id);
+  }
+
+  @Get('groups/me')
+  @ApiOperation({ summary: 'can access: student' })
+  @Roles(UserRole.STUDENT)
+  @UseInterceptors(new TransformInterceptor(GroupSputniksDto))
+  @ApiOkResponse({ type: GroupSputniksDto, isArray: true })
+  async getMyGroup(@Req() req: AuthorizedRequestDto) {
+    const student = await this.userService.getStudent(req.user.uuid);
+    return this.groupsService.getGroup(student.group.id);
   }
 
   @Get('/institutes/:id/groups')

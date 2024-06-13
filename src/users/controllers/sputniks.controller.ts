@@ -96,7 +96,7 @@ export class SputniksController {
     return this.usersService.getStudentsByGroup(id);
   }
 
-  @Get('/sputniks/me/top/groups/:id/')
+  @Get('/sputniks/top/me/groups/:id/')
   @ApiOperation({ summary: 'can access: sputnik' })
   @Roles(UserRole.SPUTNIK)
   @ApiOkResponse({ type: StudentDto, isArray: true })
@@ -112,7 +112,7 @@ export class SputniksController {
     return this.usersService.getStudentsTopGroup(id);
   }
 
-  @Get('/sputniks/me/top/institutes')
+  @Get('/sputniks/top/me/institutes')
   @ApiOperation({ summary: 'can access: sputnik' })
   @Roles(UserRole.SPUTNIK)
   @ApiPaginationQuery({ sortableColumns: ['balance'] })
