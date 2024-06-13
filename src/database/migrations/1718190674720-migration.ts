@@ -14,7 +14,7 @@ export class Migration1718190674720 implements MigrationInterface {
       `CREATE TYPE "public"."achievements_type_enum" AS ENUM('OPENED', 'HINTED', 'HIDDEN')`,
     );
     await queryRunner.query(
-      `CREATE TYPE "public"."achievements_category_enum" AS ENUM('PERSONAL', 'GROUP', 'URBAN', 'UNIVERSITY')`,
+      `CREATE TYPE "public"."achievements_category_enum" AS ENUM('PERSONAL', 'GROUP', 'URBAN', 'UNIVERSITY', 'EDUCATIONAL')`,
     );
     await queryRunner.query(
       `CREATE TYPE "public"."achievements_rarity_enum" AS ENUM('RARE', 'COMMON', 'EPIC', 'LEGENDARY', 'HEROIC')`,
