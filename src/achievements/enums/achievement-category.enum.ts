@@ -3,4 +3,5 @@ export enum AchievementCategory {
   GROUP = 'GROUP',
   URBAN = 'URBAN',
   UNIVERSITY = 'UNIVERSITY',
+  EDUCATIONAL = 'EDUCATIONAL',
 }
