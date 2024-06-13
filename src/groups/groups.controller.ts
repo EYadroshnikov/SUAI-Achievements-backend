@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -27,6 +28,7 @@ import { UserRole } from '../users/enums/user-role.enum';
 import { GroupSputniksDto } from './dtos/group-sputniks.dto';
 import { AuthorizedRequestDto } from '../common/dtos/authorized.request.dto';
 import { UsersService } from '../users/users.service';
+import { AddSputnikDto } from './dtos/add-sputnik.dto';
 
 @ApiTags('Groups')
 @ApiBearerAuth()
@@ -73,6 +75,28 @@ export class GroupsController {
   @ApiOkResponse({ type: GroupDto, isArray: true })
   async getGroupsByInstitute(@Param('id', ParseIntPipe) id: number) {
     return this.groupsService.getGroupsByInstitute(id);
+  }
+
+  @Post('groups/add-sputnik')
+  @ApiOperation({ summary: 'can access: curator' })
+  @Roles(UserRole.CURATOR, UserRole.ADMIN)
+  async addSputnikToGroup(
+    @Body() addSputnikDto: AddSputnikDto,
+    @Req() req: AuthorizedRequestDto,
+  ) {
+    const curator = await this.userService.getCurator(req.user.uuid);
+    const sputnik = await this.userService.getSputnik(
+      addSputnikDto.sputnikUuid,
+    );
+    if (
+      req.user.role !== UserRole.ADMIN &&
+      curator.institute.id !== sputnik.institute.id
+    ) {
+      throw new BadRequestException(
+        `sputnik with uuid: ${sputnik.uuid} doesn't belong to your institute with id: ${curator.institute.id}`,
+      );
+    }
+    return this.groupsService.addSputnik(addSputnikDto);
   }
 
   //TODO: add group to sputnik or sputnik to group
