@@ -8,6 +8,7 @@
   "scripts": {
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
     "typeorm:generate": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js -- migration:generate src/database/migrations/migration -d src/database/data-source.ts",
+    "typeorm:migrate": "typeorm migration:run -- -d ./src/database/data-source.ts",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
@@ -34,6 +35,7 @@
     "@nestjs/typeorm": "^10.0.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "crypto-js": "^4.2.0",
     "dotenv": "^16.4.5",
     "nestjs-paginate": "^8.6.2",
     "passport": "^0.7.0",

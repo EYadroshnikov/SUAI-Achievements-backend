@@ -15,14 +15,17 @@ export class AuthService {
   ) {}
 
   async validateUser(authDto: AuthDto): Promise<AuthResponseDto> {
-    const { vkId, vkToken } = authDto;
+    const { launchParams, sign } = authDto;
 
-    const isValid = await this.vkService.verifyVkToken(vkId, vkToken);
-    if (!isValid) {
+    const { isSignValid, vkUserID } = await this.vkService.verifyVkToken(
+      launchParams,
+      sign,
+    );
+    if (!isSignValid) {
       throw new UnauthorizedException('Invalid VK token');
     }
 
-    const user = await this.usersService.findByVkId(vkId);
+    const user = await this.usersService.findByVkId(vkUserID);
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }

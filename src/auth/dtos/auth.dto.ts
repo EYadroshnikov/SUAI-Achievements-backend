@@ -4,9 +4,9 @@ import { IsNotEmpty } from 'class-validator';
 export class AuthDto {
   @ApiProperty()
   @IsNotEmpty()
-  vkId: string;
+  launchParams: string;
 
   @ApiProperty()
   @IsNotEmpty()
-  vkToken: string;
+  sign: string;
 }

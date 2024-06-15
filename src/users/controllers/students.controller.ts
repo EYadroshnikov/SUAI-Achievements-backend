@@ -80,7 +80,7 @@ export class StudentsController {
     return this.usersService.getStudentsByGroup(id);
   }
 
-  @Get('/institutes/:id/students')
+  @Get('/institutes/:id/students') //TODO: add pagination
   @ApiOperation({ summary: 'can access: curator' })
   @Roles(UserRole.CURATOR, UserRole.ADMIN)
   @ApiOkResponse({ type: StudentDto, isArray: true })
