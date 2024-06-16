@@ -80,13 +80,17 @@ export class StudentsController {
     return this.usersService.getStudentsByGroup(id);
   }
 
-  @Get('/institutes/:id/students') //TODO: add pagination
+  @Get('/institutes/:id/students')
   @ApiOperation({ summary: 'can access: curator' })
   @Roles(UserRole.CURATOR, UserRole.ADMIN)
-  @ApiOkResponse({ type: StudentDto, isArray: true })
-  @UseInterceptors(new TransformInterceptor(StudentDto))
-  async getStudentsByInstitute(@Param('id', ParseIntPipe) id: number) {
-    return this.usersService.getStudentsByInstitute(id);
+  @ApiPaginationQuery({ sortableColumns: ['balance'] })
+  @ApiOkPaginatedResponse(StudentDto, { sortableColumns: ['balance'] })
+  @UseInterceptors(new TransformInterceptor(Paginated<StudentDto>))
+  async getStudentsByInstitute(
+    @Param('id', ParseIntPipe) id: number,
+    @Paginate() paginateDto: PaginateDto,
+  ) {
+    return this.usersService.getStudentsByInstitute(id, paginateDto);
   }
 
   @Get('/students/me')

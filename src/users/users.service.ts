@@ -150,10 +150,19 @@ export class UsersService {
     });
   }
 
-  async getStudentsByInstitute(id: number) {
+  async getStudentsByInstitute(
+    id: number,
+    query: PaginateQuery,
+  ): Promise<Paginated<User>> {
     await this.instituteService.findOne(id);
-    return this.userRepository.find({
-      where: { institute: { id }, role: UserRole.STUDENT },
+    return paginate<User>(query, this.userRepository, {
+      where: { role: UserRole.STUDENT, isBanned: false, institute: { id } },
+      filterableColumns: {
+        'group.id': [FilterOperator.EQ],
+      },
+      sortableColumns: ['createdAt'],
+      defaultSortBy: [['createdAt', 'DESC']],
+      relations: ['institute'],
     });
   }
 

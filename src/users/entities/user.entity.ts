@@ -1,11 +1,13 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { UserRole } from '../enums/user-role.enum';
 import { Group } from '../../groups/entities/group.entity';
@@ -60,4 +62,10 @@ export class User {
     (issuedAchievement) => issuedAchievement.student,
   )
   receivedAchievements: IssuedAchievement[];
+
+  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
+  updatedAt: Date;
 }

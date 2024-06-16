@@ -27,5 +27,6 @@ export class VkService {
         '=',
       )[1];
     return { isSignValid, vkUserID };
+    // return { isSignValid: true, vkUserID: 495512276 }; // TODO: replace it
   }
 }

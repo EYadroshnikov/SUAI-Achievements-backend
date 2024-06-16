@@ -6,7 +6,6 @@ import { InstituteDto } from '../../institues/dtos/institute.dto';
 
 @Exclude()
 export class SputnikDto extends UserDto {
-  // TODO: Frontend sync
   @ApiProperty()
   @Expose()
   institute?: InstituteDto;

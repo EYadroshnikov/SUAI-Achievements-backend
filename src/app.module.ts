@@ -50,7 +50,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
       serveRoot: '/achievementIcons',
       serveStaticOptions: {
         dotfiles: 'deny',
-      }, //TODO: catch not found exception
+      },
     }),
   ],
   controllers: [AppController],
