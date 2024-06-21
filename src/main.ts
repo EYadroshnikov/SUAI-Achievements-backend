@@ -10,6 +10,7 @@ async function bootstrap() {
   // app.use(helmet());
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.useGlobalFilters(new GlobalExceptionFilter());
+  app.setGlobalPrefix('api');
   // app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
 
   const config = new DocumentBuilder()
@@ -19,7 +20,7 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   fs.writeFileSync('./swagger-spec.json', JSON.stringify(document));
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('docs', app, document);
 
   await app.listen(3000);
 }
