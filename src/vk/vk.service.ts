@@ -9,6 +9,7 @@ export class VkService {
     // if (sign === this.configService.get('app.trustedVkSign')) {
     //   return true;
     // }
+    console.log(`\n${launchParams}:${sign}\n`);
     const hmac = CryptoJS.HmacSHA256(
       launchParams,
       this.configService.get('app.vkSecret'),
