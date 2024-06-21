@@ -6,12 +6,17 @@ import * as CryptoJS from 'crypto-js';
 export class VkService {
   constructor(private configService: ConfigService) {}
   async verifyVkToken(launchParams: string, sign: string): Promise<any> {
-    // if (sign === this.configService.get('app.trustedVkSign')) {
-    //   return true;
-    // }
-    console.log(`\n${launchParams}:${sign}\n`);
+    const paramArray = launchParams.split('&');
+    const vkParams = paramArray.filter((param) => param.startsWith('vk_'));
+
+    vkParams.sort((a, b) => {
+      const keyA = a.split('=')[0];
+      const keyB = b.split('=')[0];
+      return keyA.localeCompare(keyB);
+    });
+    const vkParamsString = vkParams.join('&');
     const hmac = CryptoJS.HmacSHA256(
-      launchParams,
+      vkParamsString,
       this.configService.get('app.vkSecret'),
     );
     const base64 = CryptoJS.enc.Base64.stringify(hmac);
@@ -21,13 +26,12 @@ export class VkService {
       .replace(/\//g, '_')
       .replace(/=$/, '');
 
-    const splitLaunchParamsString = launchParams.split('&');
+    const splitLaunchParamsString = {};
+    for (const [key, value] of new URLSearchParams(launchParams)) {
+      splitLaunchParamsString[key] = value;
+    }
     const isSignValid = encryptedLaunchParams === sign;
-    const vkUserID =
-      +splitLaunchParamsString[splitLaunchParamsString.length - 1].split(
-        '=',
-      )[1];
+    const vkUserID = splitLaunchParamsString['vk_user_id'];
     return { isSignValid, vkUserID };
-    // return { isSignValid: true, vkUserID: 495512276 }; // TODO: replace it
   }
 }
