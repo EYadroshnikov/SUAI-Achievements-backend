@@ -1,6 +1,6 @@
 # Base image
 FROM --platform=linux/amd64 node:20
-#FROM node:20
+# FROM node:20
 LABEL authors="Egor Yadroshnikov"
 
 # Create app directory
@@ -17,6 +17,8 @@ COPY . .
 
 # Creates a "dist" folder with the production build
 RUN npm run build
+
+RUN rm -rf ./src
 
 # Start the server using the production build
 CMD [ "node", "dist/main.js" ]
