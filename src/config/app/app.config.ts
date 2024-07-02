@@ -16,9 +16,6 @@ class EnvironmentVariablesValidator {
   JWT_SECRET: string;
 
   @IsString()
-  TRUSTED_VK_SIGN: string;
-
-  @IsString()
   VK_SECRET: string;
 }
 
@@ -29,7 +26,6 @@ export default registerAs<AppConfig>('app', () => {
     nodeEnv: process.env.NODE_ENV as NodeEnv,
     port: +process.env.PORT,
     jwtSecret: process.env.JWT_SECRET,
-    trustedVkSign: process.env.TRUSTED_VK_SIGN,
     vkSecret: process.env.VK_SECRET,
   };
 });
