@@ -51,7 +51,11 @@ export class UsersService {
 
   async getGroupsStudent(uuid: string, group: Group[]): Promise<User> {
     return this.userRepository.findOneOrFail({
-      where: { uuid, role: UserRole.STUDENT, group: In(group) },
+      where: {
+        uuid,
+        role: UserRole.STUDENT,
+        group: In(group.map((group) => group.id)),
+      },
     });
   }
 
@@ -80,6 +84,7 @@ export class UsersService {
   async getNotStudentUser(uuid: string): Promise<User> {
     return this.userRepository.findOneOrFail({
       where: { uuid, role: Not(UserRole.STUDENT) },
+      relations: ['sputnikGroups'],
     });
   }
 
