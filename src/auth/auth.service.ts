@@ -22,13 +22,10 @@ export class AuthService {
       sign,
     );
     if (!isSignValid) {
-      throw new UnauthorizedException('Invalid VK token');
+      throw new UnauthorizedException('Invalid sing');
     }
 
     const user = await this.usersService.findByVkId(vkUserID);
-    if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
 
     const payload: JwtPayload = {
       uuid: user.uuid,

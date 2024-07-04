@@ -29,7 +29,7 @@ export class UsersService {
   ) {}
 
   async findByVkId(vkId: string): Promise<User | undefined> {
-    return this.userRepository.findOne({ where: { vkId: vkId } });
+    return this.userRepository.findOneOrFail({ where: { vkId: vkId } });
   }
 
   async getStudent(uuid: string): Promise<User> {
