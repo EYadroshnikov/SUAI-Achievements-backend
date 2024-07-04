@@ -4,7 +4,7 @@
   "description": "",
   "author": "",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "GPL-3.0",
   "scripts": {
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
     "typeorm:generate": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js -- migration:generate src/database/migrations/migration -d src/database/data-source.ts",

@@ -27,7 +27,6 @@ import { Roles } from '../../auth/roles.decorator';
 import { UserRole } from '../enums/user-role.enum';
 import { TransformInterceptor } from '../../common/interceptors/transform.interceptor';
 import { AuthorizedRequestDto } from '../../common/dtos/authorized.request.dto';
-import { GroupsService } from '../../groups/groups.service';
 import {
   ApiOkPaginatedResponse,
   ApiPaginationQuery,
@@ -35,16 +34,14 @@ import {
   Paginated,
 } from 'nestjs-paginate';
 import { PaginateDto } from '../dtos/paginate.dto';
+import { UserDto } from '../dtos/user.dto';
 
 @ApiTags('Students')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller()
 export class StudentsController {
-  constructor(
-    private readonly usersService: UsersService,
-    private readonly groupService: GroupsService,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @Post('/students')
   @ApiOperation({ summary: 'can access: sputnik, curator' })
@@ -53,6 +50,14 @@ export class StudentsController {
   @UseInterceptors(new TransformInterceptor(StudentDto))
   async createStudent(@Body() studentDto: CreateStudentDto) {
     return this.usersService.createStudent(studentDto);
+  }
+
+  @Patch('/students/:uuid')
+  @ApiOperation({ summary: 'can access: sputnik, curator' })
+  @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
+  @ApiOkResponse({ type: UpdateResult })
+  async updateStudent(@Param('uuid') uuid: string, @Body() userDto: UserDto) {
+    return this.usersService.updateStudent(uuid, userDto);
   }
 
   @Patch('students/:uuid/ban')

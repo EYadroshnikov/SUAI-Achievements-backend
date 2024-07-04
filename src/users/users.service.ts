@@ -16,6 +16,7 @@ import {
   Paginated,
   PaginateQuery,
 } from 'nestjs-paginate';
+import { UserDto } from './dtos/user.dto';
 
 @Injectable()
 export class UsersService {
@@ -35,6 +36,17 @@ export class UsersService {
     return this.userRepository.findOneOrFail({
       where: { uuid, role: UserRole.STUDENT },
     });
+  }
+
+  async updateStudent(uuid: string, userDto: UserDto): Promise<UpdateResult> {
+    return this.userRepository.update(
+      { uuid, role: UserRole.STUDENT },
+      {
+        firstName: userDto.firstName,
+        lastName: userDto.lastName,
+        patronymic: userDto.patronymic,
+      },
+    );
   }
 
   async getGroupsStudent(uuid: string, group: Group[]): Promise<User> {
