@@ -35,7 +35,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
         autoLoadEntities: true,
         synchronize: configService.get('app.nodeEnv') === NodeEnv.DEV,
         connectTimeoutMS: 15000,
-        logging: false,
+        logging: true,
       }),
       inject: [ConfigService],
     }),

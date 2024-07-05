@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose } from 'class-transformer';
 import { UserDto } from './user.dto';
-import { Group } from '../../groups/entities/group.entity';
 import { InstituteDto } from '../../institues/dtos/institute.dto';
+import { GroupDto } from '../../groups/dtos/group.dto';
 
 @Exclude()
 export class SputnikDto extends UserDto {
@@ -10,7 +10,7 @@ export class SputnikDto extends UserDto {
   @Expose()
   institute?: InstituteDto;
 
-  @ApiProperty({ isArray: true })
+  @ApiProperty({ isArray: true, type: GroupDto })
   @Expose()
-  sputnikGroups?: Group[];
+  sputnikGroups?: GroupDto[];
 }

@@ -101,6 +101,14 @@ export class AchievementsService {
     return dto;
   }
 
+  async getUnlockedAchievements(user: AuthorizedUserDto) {
+    const issuedAchievements = await this.issuedAchievementsRepository.find({
+      where: { student: user },
+      relations: ['achievement', 'issuer', 'student', 'canceler'],
+    });
+    return issuedAchievements;
+  }
+
   async issueAchievement(
     user: AuthorizedUserDto,
     issueAchievementDto: IssueAchievementDto,
@@ -174,10 +182,11 @@ export class AchievementsService {
 
     const issuing = await this.issuedAchievementsRepository.findOneOrFail({
       where: {
-        student,
+        student: { uuid: student.uuid },
         achievement: {
           uuid: cancelAchievementDto.achievementUuid,
         },
+        isCanceled: false,
       },
     });
 
@@ -186,8 +195,8 @@ export class AchievementsService {
         await transactionalEntityManager.update(
           IssuedAchievement,
           {
-            achievement: issuing.achievement,
-            student,
+            achievement: { uuid: cancelAchievementDto.achievementUuid },
+            student: { uuid: student.uuid },
           },
           {
             isCanceled: true,

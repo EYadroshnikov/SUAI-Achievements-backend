@@ -1,7 +1,7 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { In, Not, Repository, UpdateResult } from 'typeorm';
+import { ArrayContains, In, Not, Repository, UpdateResult } from 'typeorm';
 import { UserRole } from './enums/user-role.enum';
 import { CreateSputnikDto } from './dtos/create.sputnik.dto';
 import { CreateStudentDto } from './dtos/create.student.dto';
@@ -38,9 +38,17 @@ export class UsersService {
     });
   }
 
-  async updateStudent(uuid: string, userDto: UserDto): Promise<UpdateResult> {
+  async updateStudent(
+    uuid: string,
+    userDto: UserDto,
+    updaterUuid: string,
+  ): Promise<UpdateResult> {
     return this.userRepository.update(
-      { uuid, role: UserRole.STUDENT },
+      {
+        uuid,
+        role: UserRole.STUDENT,
+        group: { sputniks: ArrayContains([updaterUuid]) },
+      },
       {
         firstName: userDto.firstName,
         lastName: userDto.lastName,

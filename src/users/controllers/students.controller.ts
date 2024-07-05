@@ -56,8 +56,12 @@ export class StudentsController {
   @ApiOperation({ summary: 'can access: sputnik, curator' })
   @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
   @ApiOkResponse({ type: UpdateResult })
-  async updateStudent(@Param('uuid') uuid: string, @Body() userDto: UserDto) {
-    return this.usersService.updateStudent(uuid, userDto);
+  async updateStudent(
+    @Req() req: AuthorizedRequestDto,
+    @Param('uuid') uuid: string,
+    @Body() userDto: UserDto,
+  ) {
+    return this.usersService.updateStudent(uuid, userDto, req.user.uuid);
   }
 
   @Patch('students/:uuid/ban')

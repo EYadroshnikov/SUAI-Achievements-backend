@@ -64,6 +64,14 @@ export class AchievementsController {
     return this.achievementsService.getAchievementsForUser(user);
   }
 
+  @Get('/me/unlocked')
+  @Roles(UserRole.STUDENT)
+  @ApiOperation({ summary: 'Can access: student' })
+  @UseInterceptors(new TransformInterceptor(IssuedAchievementDto))
+  async getUnlockedAchievements(@Req() req: AuthorizedRequestDto) {
+    return this.achievementsService.getUnlockedAchievements(req.user);
+  }
+
   @Post('/issue')
   @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
   @ApiOperation({
