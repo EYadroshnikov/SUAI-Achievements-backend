@@ -6,17 +6,17 @@ import { Exclude, Expose, Type } from 'class-transformer';
 
 @Exclude()
 export class IssuedAchievementDto {
-  @ApiProperty()
+  @ApiProperty({ type: AchievementDto })
   @Expose()
   @Type(() => AchievementDto)
   achievement: AchievementDto;
 
-  @ApiProperty()
+  @ApiProperty({ type: UserDto })
   @Expose()
   @Type(() => UserDto)
   issuer: UserDto;
 
-  @ApiProperty()
+  @ApiProperty({ type: StudentDto })
   @Expose()
   @Type(() => StudentDto)
   student: StudentDto;
@@ -27,9 +27,9 @@ export class IssuedAchievementDto {
 
   @ApiProperty()
   @Expose()
-  isCanceled: number;
+  isCanceled: boolean;
 
-  @ApiProperty()
+  @ApiProperty({ type: UserDto })
   @Expose()
   @Type(() => UserDto)
   canceler: UserDto;

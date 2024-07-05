@@ -67,6 +67,7 @@ export class AchievementsController {
   @Get('/me/unlocked')
   @Roles(UserRole.STUDENT)
   @ApiOperation({ summary: 'Can access: student' })
+  @ApiOkResponse({ type: IssuedAchievementDto, isArray: true })
   @UseInterceptors(new TransformInterceptor(IssuedAchievementDto))
   async getUnlockedAchievements(@Req() req: AuthorizedRequestDto) {
     return this.achievementsService.getUnlockedAchievements(req.user);
