@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty } from 'class-validator';
+import { IsInt, IsNotEmpty } from 'class-validator';
 
 export class CreateGroupDto {
   @ApiProperty()
@@ -8,5 +8,6 @@ export class CreateGroupDto {
 
   @ApiProperty()
   @IsNotEmpty()
+  @IsInt()
   instituteId: number;
 }

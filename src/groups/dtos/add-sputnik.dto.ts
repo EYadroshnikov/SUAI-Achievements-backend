@@ -1,4 +1,4 @@
-import { IsNumber, IsUUID } from 'class-validator';
+import { IsInt, IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class AddSputnikDto {
@@ -7,6 +7,6 @@ export class AddSputnikDto {
   sputnikUuid: string;
 
   @ApiProperty()
-  @IsNumber()
+  @IsInt()
   groupId: number;
 }

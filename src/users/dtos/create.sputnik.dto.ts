@@ -1,4 +1,4 @@
-import { IsInt, IsNotEmpty, IsNumber } from 'class-validator';
+import { IsInt, IsNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { CreateUserDto } from './create-user.dto';
 import { Transform } from 'class-transformer';
@@ -6,7 +6,7 @@ import { Transform } from 'class-transformer';
 export class CreateSputnikDto extends CreateUserDto {
   @ApiProperty()
   @IsNotEmpty()
-  @IsNumber()
+  @IsInt()
   instituteId: number;
 
   @ApiProperty({ isArray: true, example: [0, 1] })
