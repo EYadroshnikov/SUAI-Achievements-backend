@@ -35,6 +35,7 @@ import {
 } from 'nestjs-paginate';
 import { PaginateDto } from '../dtos/paginate.dto';
 import { UserDto } from '../dtos/user.dto';
+import { UpdateStudentDto } from '../dtos/update.student.dto';
 
 @ApiTags('Students')
 @ApiBearerAuth()
@@ -59,9 +60,13 @@ export class StudentsController {
   async updateStudent(
     @Req() req: AuthorizedRequestDto,
     @Param('uuid') uuid: string,
-    @Body() userDto: UserDto,
+    @Body() updateStudentDto: UpdateStudentDto,
   ) {
-    return this.usersService.updateStudent(uuid, userDto, req.user.uuid);
+    return this.usersService.updateStudent(
+      uuid,
+      updateStudentDto,
+      req.user.uuid,
+    );
   }
 
   @Patch('students/:uuid/ban')

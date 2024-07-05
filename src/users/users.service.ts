@@ -17,6 +17,7 @@ import {
   PaginateQuery,
 } from 'nestjs-paginate';
 import { UserDto } from './dtos/user.dto';
+import { UpdateStudentDto } from './dtos/update.student.dto';
 
 @Injectable()
 export class UsersService {
@@ -40,7 +41,7 @@ export class UsersService {
 
   async updateStudent(
     uuid: string,
-    userDto: UserDto,
+    updateStudentDto: UpdateStudentDto,
     updaterUuid: string,
   ): Promise<UpdateResult> {
     return this.userRepository.update(
@@ -50,9 +51,9 @@ export class UsersService {
         group: { sputniks: ArrayContains([updaterUuid]) },
       },
       {
-        firstName: userDto.firstName,
-        lastName: userDto.lastName,
-        patronymic: userDto.patronymic,
+        firstName: updateStudentDto.firstName,
+        lastName: updateStudentDto.lastName,
+        patronymic: updateStudentDto.patronymic,
       },
     );
   }
