@@ -3,7 +3,6 @@ import { Exclude, Expose } from 'class-transformer';
 import { UserDto } from './user.dto';
 import { InstituteDto } from '../../institues/dtos/institute.dto';
 import { GroupDto } from '../../groups/dtos/group.dto';
-import { GroupStudentsCountDto } from '../../groups/dtos/group-students-count.dto';
 
 @Exclude()
 export class SputnikDto extends UserDto {
@@ -11,7 +10,7 @@ export class SputnikDto extends UserDto {
   @Expose()
   institute?: InstituteDto;
 
-  @ApiProperty({ isArray: true, type: GroupStudentsCountDto })
+  @ApiProperty({ isArray: true, type: GroupDto })
   @Expose()
-  sputnikGroups?: GroupStudentsCountDto[];
+  sputnikGroups?: GroupDto[];
 }
