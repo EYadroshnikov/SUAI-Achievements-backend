@@ -5,7 +5,7 @@ import { Exclude, Expose, Type } from 'class-transformer';
 
 @Exclude()
 export class GroupStudentsDto extends GroupDto {
-  @ApiProperty()
+git   @ApiProperty({ type: StudentDto, isArray: true })
   @Type(() => StudentDto)
   @Expose()
   students: StudentDto[];
