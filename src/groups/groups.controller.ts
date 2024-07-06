@@ -73,15 +73,6 @@ export class GroupsController {
     return this.groupsService.addSputnik(addSputnikDto);
   }
 
-  @Get('groups/:id')
-  @ApiOperation({ summary: 'can access: sputnik, curator' })
-  @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
-  @UseInterceptors(new TransformInterceptor(GroupSputniksDto))
-  @ApiOkResponse({ type: GroupSputniksDto, isArray: true })
-  async getGroupById(@Param('id', ParseIntPipe) id: number) {
-    return this.groupsService.getGroup(id);
-  }
-
   @Get('groups/me')
   @ApiOperation({ summary: 'can access: student' })
   @Roles(UserRole.STUDENT)
@@ -90,6 +81,15 @@ export class GroupsController {
   async getMyGroup(@Req() req: AuthorizedRequestDto) {
     const student = await this.userService.getStudent(req.user.uuid);
     return this.groupsService.getGroup(student.group.id);
+  }
+
+  @Get('groups/:id')
+  @ApiOperation({ summary: 'can access: sputnik, curator' })
+  @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
+  @UseInterceptors(new TransformInterceptor(GroupSputniksDto))
+  @ApiOkResponse({ type: GroupSputniksDto, isArray: true })
+  async getGroupById(@Param('id', ParseIntPipe) id: number) {
+    return this.groupsService.getGroup(id);
   }
 
   @Get('/institutes/:id/groups')

@@ -62,10 +62,11 @@ export class GroupsService {
   }
 
   async getGroup(id: number) {
-    return this.groupRepository.findOneOrFail({
+    const group = await this.groupRepository.findOneOrFail({
       where: { id },
-      relations: ['sputniks'],
+      relations: ['sputniks', 'students'],
     });
+    return { ...group, studentsCount: group.students.length };
   }
 
   async addSputnik(addSputnikDto: AddSputnikDto): Promise<Group> {

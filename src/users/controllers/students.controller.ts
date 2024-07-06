@@ -34,7 +34,6 @@ import {
   Paginated,
 } from 'nestjs-paginate';
 import { PaginateDto } from '../dtos/paginate.dto';
-import { UserDto } from '../dtos/user.dto';
 import { UpdateStudentDto } from '../dtos/update.student.dto';
 
 @ApiTags('Students')
