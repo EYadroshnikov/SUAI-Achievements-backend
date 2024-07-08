@@ -12,6 +12,7 @@ import { Institute } from '../institues/entities/institute.entity';
 import { InstitutesService } from '../institues/institutes.service';
 import { UsersService } from '../users/users.service';
 import { AddSputnikDto } from './dtos/add-sputnik.dto';
+import { SpecialtiesService } from '../specialties/specialties.service';
 
 @Injectable()
 export class GroupsService {
@@ -19,6 +20,7 @@ export class GroupsService {
     @InjectRepository(Group)
     private readonly groupRepository: Repository<Group>,
     private instituteService: InstitutesService,
+    private specialtiesService: SpecialtiesService,
     @Inject(forwardRef(() => UsersService))
     private userService: UsersService,
   ) {}
@@ -46,10 +48,14 @@ export class GroupsService {
     const institute = await this.instituteService.findOne(
       createGroupDto.instituteId,
     );
+    const speciality = await this.specialtiesService.findOne(
+      createGroupDto.specialityId,
+    );
 
     const group = new Group();
     group.name = createGroupDto.name;
     group.institute = institute;
+    group.speciality = speciality;
 
     return this.groupRepository.save(group);
   }

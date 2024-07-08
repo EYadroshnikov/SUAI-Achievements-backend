@@ -16,20 +16,3 @@ export const AppDataSource = new DataSource({
   entities: [__dirname + '/../**/*.entity{.ts,.js}'],
   migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
 } as DataSourceOptions);
-
-// export class DataSource implements TypeOrmOptionsFactory {
-//   constructor(private configService: ConfigService<AllConfigType>) {}
-//
-//   createTypeOrmOptions(): TypeOrmModuleOptions {
-//     return {
-//       type: 'postgres',
-//       host: this.configService.get('postgres.host', { infer: true }),
-//       port: this.configService.get('postgres.port', { infer: true }),
-//       username: this.configService.get('postgres.username', { infer: true }),
-//       password: this.configService.get('postgres.password', { infer: true }),
-//       database: this.configService.get('postgres.database', { infer: true }),
-//       entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-//       migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
-//     } as TypeOrmModuleOptions;
-//   }
-// }

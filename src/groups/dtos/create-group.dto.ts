@@ -10,4 +10,9 @@ export class CreateGroupDto {
   @IsNotEmpty()
   @IsInt()
   instituteId: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsInt()
+  specialityId: number;
 }

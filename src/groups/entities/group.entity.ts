@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Institute } from '../../institues/entities/institute.entity';
+import { Speciality } from '../../specialties/enities/speciality.entity';
 
 @Entity('groups')
 export class Group {
@@ -22,6 +23,10 @@ export class Group {
   @ManyToOne(() => Institute)
   @JoinColumn({ name: 'institute_id' })
   institute: Institute;
+
+  @ManyToOne(() => Speciality, { eager: true })
+  @JoinColumn({ name: 'speciality_id' })
+  speciality: Speciality;
 
   @ManyToMany(() => User, (user) => user.sputnikGroups)
   @JoinTable({

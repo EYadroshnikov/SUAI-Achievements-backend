@@ -12,9 +12,9 @@ import { InstitutesModule } from './institues/institutes.module';
 import { VkModule } from './vk/vk.module';
 import appConfig from './config/app/app.config';
 import { LoggingMiddleware } from './common/middlewares/logging.middleware';
-import { NodeEnv } from './config/app/enums/node-env.enum';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { SpecialtiesModule } from './specialties/specialties.module';
 
 @Module({
   imports: [
@@ -33,9 +33,9 @@ import { ServeStaticModule } from '@nestjs/serve-static';
         password: configService.get('postgres.password'),
         database: configService.get('postgres.database'),
         autoLoadEntities: true,
-        synchronize: configService.get('app.nodeEnv') === NodeEnv.DEV,
+        synchronize: false,
         connectTimeoutMS: 15000,
-        logging: true,
+        logging: false,
       }),
       inject: [ConfigService],
     }),
@@ -46,12 +46,13 @@ import { ServeStaticModule } from '@nestjs/serve-static';
     InstitutesModule,
     VkModule,
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'achievementIcons'),
-      serveRoot: '/achievementIcons',
+      rootPath: join(__dirname, '..', 'achievement-icons'),
+      serveRoot: '/achievement-icons',
       serveStaticOptions: {
         dotfiles: 'deny',
       },
     }),
+    SpecialtiesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
