@@ -18,7 +18,6 @@ import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { TransformInterceptor } from '../common/interceptors/transform.interceptor';
 import { SpecialityDto } from './dtos/speciality.dto';
-import { GroupDto } from '../groups/dtos/group.dto';
 import { UserRole } from '../users/enums/user-role.enum';
 
 @ApiTags('Specialities')
@@ -32,7 +31,7 @@ export class SpecialtiesController {
   @ApiOperation({ summary: 'can access: curator' })
   @Roles(UserRole.CURATOR, UserRole.ADMIN)
   @UseInterceptors(new TransformInterceptor(SpecialityDto))
-  @ApiOkResponse({ type: GroupDto })
+  @ApiOkResponse({ type: SpecialityDto })
   async getByInstituteId(@Param('id', ParseIntPipe) id: number) {
     return this.specialtiesService.getSpecialitiesByInstituteId(id);
   }

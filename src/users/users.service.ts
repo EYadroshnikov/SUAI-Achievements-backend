@@ -16,7 +16,6 @@ import {
   Paginated,
   PaginateQuery,
 } from 'nestjs-paginate';
-import { UserDto } from './dtos/user.dto';
 import { UpdateStudentDto } from './dtos/update.student.dto';
 
 @Injectable()
