@@ -42,7 +42,7 @@ export class GroupsController {
 
   @Post('/groups')
   @ApiOperation({ summary: 'can access: sputnik, curator' })
-  @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
+  @Roles(UserRole.CURATOR, UserRole.ADMIN)
   @UseInterceptors(new TransformInterceptor(GroupDto))
   @ApiCreatedResponse({ type: GroupDto })
   async create(@Body() createGroupDto: CreateGroupDto) {
@@ -95,8 +95,8 @@ export class GroupsController {
   @Get('/institutes/:id/groups')
   @ApiOperation({ summary: 'can access: sputnik, curator' })
   @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
-  @UseInterceptors(new TransformInterceptor(GroupDto))
-  @ApiOkResponse({ type: GroupDto, isArray: true })
+  @UseInterceptors(new TransformInterceptor(GroupSputniksDto))
+  @ApiOkResponse({ type: GroupSputniksDto, isArray: true })
   async getGroupsByInstitute(@Param('id', ParseIntPipe) id: number) {
     return this.groupsService.getGroupsByInstitute(id);
   }

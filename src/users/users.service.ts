@@ -1,7 +1,14 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { ArrayContains, In, Not, Repository, UpdateResult } from 'typeorm';
+import {
+  ArrayContains,
+  DataSource,
+  In,
+  Not,
+  Repository,
+  UpdateResult,
+} from 'typeorm';
 import { UserRole } from './enums/user-role.enum';
 import { CreateSputnikDto } from './dtos/create.sputnik.dto';
 import { CreateStudentDto } from './dtos/create.student.dto';
@@ -21,6 +28,7 @@ import { UpdateStudentDto } from './dtos/update.student.dto';
 @Injectable()
 export class UsersService {
   constructor(
+    private readonly dataSource: DataSource,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly instituteService: InstitutesService,
@@ -232,6 +240,21 @@ export class UsersService {
     return this.userRepository.find({
       where: { group: { id }, role: UserRole.STUDENT },
       order: { balance: 'DESC' },
+    });
+  }
+
+  async countStudentsInGroup(groups: Group[]) {
+    return this.dataSource.transaction(async (manager) => {
+      const usersRepository = manager.getRepository(User);
+      return groups.map(async (group: Group) => {
+        const studentsCount = await usersRepository.count({
+          where: {
+            role: UserRole.STUDENT,
+            group: { id: group.id },
+          },
+        });
+        return { ...group, studentsCount };
+      });
     });
   }
 }

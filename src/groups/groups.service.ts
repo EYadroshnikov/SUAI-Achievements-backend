@@ -6,13 +6,14 @@ import {
 } from '@nestjs/common';
 import { CreateGroupDto } from './dtos/create-group.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { DataSource, In, Repository } from 'typeorm';
 import { Group } from './entities/group.entity';
 import { Institute } from '../institues/entities/institute.entity';
 import { InstitutesService } from '../institues/institutes.service';
 import { UsersService } from '../users/users.service';
 import { AddSputnikDto } from './dtos/add-sputnik.dto';
 import { SpecialtiesService } from '../specialties/specialties.service';
+import { UserRole } from '../users/enums/user-role.enum';
 
 @Injectable()
 export class GroupsService {
@@ -62,9 +63,12 @@ export class GroupsService {
 
   async getGroupsByInstitute(id: number) {
     await this.instituteService.findOne(id);
-    return this.groupRepository.find({
+    const groups = await this.groupRepository.find({
       where: { institute: { id } },
+      relations: ['sputniks'],
     });
+
+    return this.userService.countStudentsInGroup(groups);
   }
 
   async getGroup(id: number) {
