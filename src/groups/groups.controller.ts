@@ -87,7 +87,7 @@ export class GroupsController {
   @ApiOperation({ summary: 'can access: sputnik, curator' })
   @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
   @UseInterceptors(new TransformInterceptor(GroupSputniksDto))
-  @ApiOkResponse({ type: GroupSputniksDto, isArray: true })
+  @ApiOkResponse({ type: GroupSputniksDto })
   async getGroupById(@Param('id', ParseIntPipe) id: number) {
     return this.groupsService.getGroup(id);
   }
