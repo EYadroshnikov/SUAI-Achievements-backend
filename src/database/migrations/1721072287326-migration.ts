@@ -1,17 +1,17 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class Migration1721061809227 implements MigrationInterface {
-  name = 'Migration1721061809227';
+export class Migration1721072287326 implements MigrationInterface {
+  name = 'Migration1721072287326';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
       `CREATE TABLE "specialties"
        (
-           "id"          SERIAL            NOT NULL,
-           "code"        character varying NOT NULL,
-           "name"        character varying NOT NULL,
-           "short_name"  character varying NOT NULL,
-           "instituteId" integer,
+           "id"           SERIAL            NOT NULL,
+           "code"         character varying NOT NULL,
+           "name"         character varying NOT NULL,
+           "short_name"   character varying NOT NULL,
+           "institute_id" integer,
            CONSTRAINT "PK_ba01cec5aa8ac48778a1d097e98" PRIMARY KEY ("id")
        )`,
     );
@@ -119,7 +119,7 @@ export class Migration1721061809227 implements MigrationInterface {
     );
     await queryRunner.query(
       `ALTER TABLE "specialties"
-          ADD CONSTRAINT "FK_fee2e64947115c8662b9b0cb56a" FOREIGN KEY ("instituteId") REFERENCES "institutes" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+          ADD CONSTRAINT "FK_93b904dbb55085ef6623b66b50f" FOREIGN KEY ("institute_id") REFERENCES "institutes" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
       `ALTER TABLE "groups"
@@ -206,7 +206,7 @@ export class Migration1721061809227 implements MigrationInterface {
     );
     await queryRunner.query(
       `ALTER TABLE "specialties"
-          DROP CONSTRAINT "FK_fee2e64947115c8662b9b0cb56a"`,
+          DROP CONSTRAINT "FK_93b904dbb55085ef6623b66b50f"`,
     );
     await queryRunner.query(
       `DROP INDEX "public"."IDX_8c8fa2f234bc8cc280401bde20"`,

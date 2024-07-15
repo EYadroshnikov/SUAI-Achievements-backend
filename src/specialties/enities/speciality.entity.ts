@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -23,6 +24,7 @@ export class Speciality {
   shortName: string;
 
   @ManyToOne(() => Institute)
+  @JoinColumn({ name: 'institute_id' })
   institute: Institute;
 
   @OneToMany(() => Group, (group) => group.speciality)
