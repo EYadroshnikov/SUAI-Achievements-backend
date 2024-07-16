@@ -19,7 +19,7 @@ export class Group {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'name', type: 'varchar' })
+  @Column({ name: 'name', type: 'varchar', unique: true })
   name: string;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })

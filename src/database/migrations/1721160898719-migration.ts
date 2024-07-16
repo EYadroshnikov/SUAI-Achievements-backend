@@ -90,6 +90,7 @@ export class Migration1721160898719 implements MigrationInterface {
            "updated_at"    TIMESTAMP         NOT NULL DEFAULT now(),
            "institute_id"  integer,
            "speciality_id" integer,
+           CONSTRAINT "UQ_664ea405ae2a10c264d582ee563" UNIQUE ("name"),
            CONSTRAINT "PK_659d1483316afb28afd3a90646e" PRIMARY KEY ("id")
        )`,
     );
