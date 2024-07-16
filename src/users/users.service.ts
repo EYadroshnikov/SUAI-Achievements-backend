@@ -246,7 +246,7 @@ export class UsersService {
   async countStudentsInGroup(groups: Group[]) {
     return this.dataSource.transaction(async (manager) => {
       const usersRepository = manager.getRepository(User);
-      return groups.map(async (group: Group) => {
+      const countPromises = groups.map(async (group: Group) => {
         const studentsCount = await usersRepository.count({
           where: {
             role: UserRole.STUDENT,
@@ -255,6 +255,7 @@ export class UsersService {
         });
         return { ...group, studentsCount };
       });
+      return Promise.all(countPromises);
     });
   }
 }

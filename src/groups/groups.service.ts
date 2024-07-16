@@ -67,7 +67,6 @@ export class GroupsService {
       where: { institute: { id } },
       relations: ['sputniks'],
     });
-
     return this.userService.countStudentsInGroup(groups);
   }
 
