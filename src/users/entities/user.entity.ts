@@ -31,7 +31,7 @@ export class User {
   @Column({ name: 'last_name', type: 'varchar' })
   lastName: string;
 
-  @Column({ name: 'patronymic', type: 'varchar' })
+  @Column({ name: 'patronymic', type: 'varchar', nullable: true })
   patronymic: string;
 
   @Column({ name: 'balance', type: 'integer', default: 0 })

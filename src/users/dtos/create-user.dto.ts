@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { Capitalize } from '../../common/decorators/capitalize.decorator';
 
 export class CreateUserDto {
@@ -16,7 +16,7 @@ export class CreateUserDto {
   lastName: string;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   @Capitalize()
   patronymic: string;
