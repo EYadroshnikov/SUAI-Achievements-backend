@@ -27,7 +27,7 @@ import { UserRole } from '../users/enums/user-role.enum';
 export class SpecialtiesController {
   constructor(private readonly specialtiesService: SpecialtiesService) {}
 
-  @Get('/institutes/specialities/:id')
+  @Get('/institutes/:id/specialities')
   @ApiOperation({ summary: 'can access: curator' })
   @Roles(UserRole.CURATOR, UserRole.ADMIN)
   @UseInterceptors(new TransformInterceptor(SpecialityDto))
