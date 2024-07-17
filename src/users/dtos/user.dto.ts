@@ -18,6 +18,10 @@ export class UserDto {
 
   @ApiProperty()
   @Expose()
+  vkId: string;
+
+  @ApiProperty()
+  @Expose()
   role: UserRole;
 
   @ApiProperty()
