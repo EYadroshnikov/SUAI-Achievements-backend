@@ -36,6 +36,7 @@ import {
 import { PaginateDto } from '../dtos/paginate.dto';
 import { UpdateStudentDto } from '../dtos/update.student.dto';
 import { GroupStudentsDto } from '../../groups/dtos/group-students.dto';
+import { RankDto } from '../dtos/rank.dto';
 
 @ApiTags('Students')
 @ApiBearerAuth()
@@ -189,5 +190,32 @@ export class StudentsController {
       ...paginateDto,
       filter: { 'institute.id': '$eq:' + student.institute.id },
     });
+  }
+
+  @Get('/students/me/groups/rank')
+  @ApiOperation({ summary: 'can access: student' })
+  @Roles(UserRole.STUDENT)
+  @ApiOkResponse({ type: RankDto })
+  @UseInterceptors(new TransformInterceptor(RankDto))
+  async getMyGroupRank(@Req() req: AuthorizedRequestDto) {
+    return this.usersService.getMyGroupRank(req.user);
+  }
+
+  @Get('/students/me/institutes/rank')
+  @ApiOperation({ summary: 'can access: student' })
+  @Roles(UserRole.STUDENT)
+  @ApiOkResponse({ type: RankDto })
+  @UseInterceptors(new TransformInterceptor(RankDto))
+  async getMyInstituteRank(@Req() req: AuthorizedRequestDto) {
+    return this.usersService.getMyInstituteRank(req.user);
+  }
+
+  @Get('/students/me/rank')
+  @ApiOperation({ summary: 'can access: student' })
+  @Roles(UserRole.STUDENT)
+  @ApiOkResponse({ type: RankDto })
+  @UseInterceptors(new TransformInterceptor(RankDto))
+  async getMyRank(@Req() req: AuthorizedRequestDto) {
+    return this.usersService.getMyRank(req.user);
   }
 }

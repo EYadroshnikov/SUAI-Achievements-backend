@@ -24,6 +24,7 @@ import {
   PaginateQuery,
 } from 'nestjs-paginate';
 import { UpdateStudentDto } from './dtos/update.student.dto';
+import { AuthorizedUserDto } from '../common/dtos/authorized-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -271,5 +272,46 @@ export class UsersService {
       });
       return Promise.all(countPromises);
     });
+  }
+
+  async getMyGroupRank(AuthorizedUser: AuthorizedUserDto) {
+    const user = await this.userRepository.findOneOrFail({
+      where: { uuid: AuthorizedUser.uuid },
+    });
+
+    const rank = await this.userRepository
+      .createQueryBuilder('user')
+      .where('user.group = :groupId', { groupId: user.group.id })
+      .andWhere('user.balance > :balance', { balance: user.balance })
+      .getCount();
+
+    return { rank: rank + 1 };
+  }
+
+  async getMyInstituteRank(AuthorizedUser: AuthorizedUserDto) {
+    const user = await this.userRepository.findOneOrFail({
+      where: { uuid: AuthorizedUser.uuid },
+    });
+
+    const rank = await this.userRepository
+      .createQueryBuilder('user')
+      .where('user.institute = :groupId', { groupId: user.institute.id })
+      .andWhere('user.balance > :balance', { balance: user.balance })
+      .getCount();
+
+    return { rank: rank + 1 };
+  }
+
+  async getMyRank(AuthorizedUser: AuthorizedUserDto) {
+    const user = await this.userRepository.findOneOrFail({
+      where: { uuid: AuthorizedUser.uuid },
+    });
+
+    const rank = await this.userRepository
+      .createQueryBuilder('user')
+      .where('user.balance > :balance', { balance: user.balance })
+      .getCount();
+
+    return { rank: rank + 1 };
   }
 }
