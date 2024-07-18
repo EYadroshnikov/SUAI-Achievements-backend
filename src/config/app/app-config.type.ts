@@ -5,4 +5,5 @@ export type AppConfig = {
   port: number;
   jwtSecret: string;
   vkSecret: string;
+  tgSecret: string;
 };

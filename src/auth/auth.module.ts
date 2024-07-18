@@ -7,6 +7,7 @@ import { UsersModule } from '../users/users.module';
 import { VkModule } from '../vk/vk.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './jwt.strategy';
+import { TelegramModule } from '../telegram/telegram.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { JwtStrategy } from './jwt.strategy';
     }),
     UsersModule,
     VkModule,
+    TelegramModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],

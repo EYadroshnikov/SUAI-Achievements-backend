@@ -15,6 +15,7 @@ import { LoggingMiddleware } from './common/middlewares/logging.middleware';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { SpecialtiesModule } from './specialties/specialties.module';
+import { TelegramModule } from './telegram/telegram.module';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { SpecialtiesModule } from './specialties/specialties.module';
       },
     }),
     SpecialtiesModule,
+    TelegramModule,
   ],
   controllers: [AppController],
   providers: [AppService],

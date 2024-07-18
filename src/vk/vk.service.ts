@@ -30,9 +30,8 @@ export class VkService {
     for (const [key, value] of new URLSearchParams(launchParams)) {
       splitLaunchParamsString[key] = value;
     }
-    let isSignValid = encryptedLaunchParams === sign;
+    const isSignValid = encryptedLaunchParams === sign;
     const vkUserID = splitLaunchParamsString['vk_user_id'];
-    isSignValid = true;
     return { isSignValid, vkUserID };
   }
 }

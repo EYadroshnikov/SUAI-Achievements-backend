@@ -22,6 +22,9 @@ export class User {
   @Column({ name: 'vk_id', type: 'varchar', unique: true })
   vkId: string;
 
+  @Column({ name: 'tg_id', type: 'varchar', unique: true, nullable: true })
+  tgId: string;
+
   @Column({ name: 'role', type: 'enum', enum: UserRole })
   role: UserRole;
 

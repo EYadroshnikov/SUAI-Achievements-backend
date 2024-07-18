@@ -40,6 +40,10 @@ export class UsersService {
     return this.userRepository.findOneOrFail({ where: { vkId: vkId } });
   }
 
+  async findByTgId(tgId: string): Promise<User | undefined> {
+    return this.userRepository.findOneOrFail({ where: { tgId: tgId } });
+  }
+
   async getStudent(uuid: string): Promise<User> {
     return this.userRepository.findOneOrFail({
       where: { uuid, role: UserRole.STUDENT },

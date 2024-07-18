@@ -5,6 +5,8 @@ import { VkService } from '../vk/vk.service';
 import { AuthDto } from './dtos/auth.dto';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { AuthResponseDto } from './dtos/auth-response.dto';
+import { TgAuthDto } from './dtos/tg-auth.dto';
+import { TelegramService } from '../telegram/telegram.service';
 
 @Injectable()
 export class AuthService {
@@ -12,6 +14,7 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
     private vkService: VkService,
+    private telegramService: TelegramService,
   ) {}
 
   async validateUser(authDto: AuthDto): Promise<AuthResponseDto> {
@@ -26,6 +29,25 @@ export class AuthService {
     }
 
     const user = await this.usersService.findByVkId(vkUserID);
+
+    const payload: JwtPayload = {
+      uuid: user.uuid,
+      vkId: user.vkId,
+      role: user.role,
+    };
+    const accessToken = this.jwtService.sign(payload);
+    return new AuthResponseDto(accessToken, user.role);
+  }
+
+  async validateTgUser(tgAuthDto: TgAuthDto) {
+    const { isSignValid, tgId } = await this.telegramService.verifyInitData(
+      tgAuthDto.initData,
+    );
+    if (!isSignValid) {
+      throw new UnauthorizedException('Invalid sing');
+    }
+
+    const user = await this.usersService.findByTgId(tgId);
 
     const payload: JwtPayload = {
       uuid: user.uuid,
