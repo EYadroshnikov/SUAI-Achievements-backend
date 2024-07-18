@@ -25,6 +25,14 @@ export class User {
   @Column({ name: 'tg_id', type: 'varchar', unique: true, nullable: true })
   tgId: string;
 
+  @Column({
+    name: 'tg_username',
+    type: 'varchar',
+    unique: true,
+    nullable: true,
+  })
+  tgUserName: string;
+
   @Column({ name: 'role', type: 'enum', enum: UserRole })
   role: UserRole;
 

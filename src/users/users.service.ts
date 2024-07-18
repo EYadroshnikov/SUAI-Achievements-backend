@@ -41,7 +41,13 @@ export class UsersService {
   }
 
   async findByTgId(tgId: string): Promise<User | undefined> {
-    return this.userRepository.findOneOrFail({ where: { tgId: tgId } });
+    return this.userRepository.findOne({ where: { tgId: tgId } });
+  }
+
+  async findByTgUsername(username: string): Promise<User | undefined> {
+    return this.userRepository.findOneOrFail({
+      where: { tgUserName: username },
+    });
   }
 
   async getStudent(uuid: string): Promise<User> {
@@ -67,6 +73,10 @@ export class UsersService {
         patronymic: updateStudentDto.patronymic,
       },
     );
+  }
+
+  async updateUserTgId(uuid: string, tgId: string): Promise<UpdateResult> {
+    return this.userRepository.update({ uuid }, { tgId: tgId });
   }
 
   async getGroupsStudent(uuid: string, group: Group[]): Promise<User> {

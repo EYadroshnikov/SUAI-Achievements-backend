@@ -47,7 +47,19 @@ export class AuthService {
       throw new UnauthorizedException('Invalid sing');
     }
 
-    const user = await this.usersService.findByTgId(tgId);
+    let user = await this.usersService.findByTgId(tgId);
+    if (!user) {
+      const params = new URLSearchParams(tgAuthDto.initData);
+      const vals: { [key: string]: string } = {};
+
+      params.forEach((value, key) => {
+        vals[key] = decodeURIComponent(value);
+      });
+      const tgUserObj = JSON.parse(vals['user']);
+
+      user = await this.usersService.findByTgUsername(tgUserObj.username);
+      await this.usersService.updateUserTgId(user.uuid, tgId);
+    }
 
     const payload: JwtPayload = {
       uuid: user.uuid,

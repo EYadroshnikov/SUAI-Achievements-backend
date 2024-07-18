@@ -5,6 +5,17 @@ export class Migration1721160898719 implements MigrationInterface {
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
+      `CREATE TABLE "specialties"
+       (
+           "id"           SERIAL            NOT NULL,
+           "code"         character varying NOT NULL,
+           "name"         character varying NOT NULL,
+           "short_name"   character varying NOT NULL,
+           "institute_id" integer,
+           CONSTRAINT "PK_ba01cec5aa8ac48778a1d097e98" PRIMARY KEY ("id")
+       )`,
+    );
+    await queryRunner.query(
       `CREATE TABLE "institutes"
        (
            "id"         SERIAL            NOT NULL,
@@ -12,6 +23,19 @@ export class Migration1721160898719 implements MigrationInterface {
            "short_name" character varying,
            "number"     integer,
            CONSTRAINT "PK_96d2373e91ae5841128f8eb3b42" PRIMARY KEY ("id")
+       )`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "groups"
+       (
+           "id"            SERIAL            NOT NULL,
+           "name"          character varying NOT NULL,
+           "created_at"    TIMESTAMP         NOT NULL DEFAULT now(),
+           "updated_at"    TIMESTAMP         NOT NULL DEFAULT now(),
+           "institute_id"  integer,
+           "speciality_id" integer,
+           CONSTRAINT "UQ_664ea405ae2a10c264d582ee563" UNIQUE ("name"),
+           CONSTRAINT "PK_659d1483316afb28afd3a90646e" PRIMARY KEY ("id")
        )`,
     );
     await queryRunner.query(
@@ -67,6 +91,7 @@ export class Migration1721160898719 implements MigrationInterface {
            "uuid"         uuid                       NOT NULL DEFAULT uuid_generate_v4(),
            "vk_id"        character varying          NOT NULL,
            "tg_id"        character varying,
+           "tg_username"  character varying,
            "role"         "public"."users_role_enum" NOT NULL,
            "first_name"   character varying          NOT NULL,
            "last_name"    character varying          NOT NULL,
@@ -79,31 +104,8 @@ export class Migration1721160898719 implements MigrationInterface {
            "group_id"     integer,
            CONSTRAINT "UQ_233f440ff87f5926e15492cc402" UNIQUE ("vk_id"),
            CONSTRAINT "UQ_9793d2defd72fffdb9a55c0d88f" UNIQUE ("tg_id"),
+           CONSTRAINT "UQ_7f0dc4e5790dd2834fe98c38495" UNIQUE ("tg_username"),
            CONSTRAINT "PK_951b8f1dfc94ac1d0301a14b7e1" PRIMARY KEY ("uuid")
-       )`,
-    );
-    await queryRunner.query(
-      `CREATE TABLE "groups"
-       (
-           "id"            SERIAL            NOT NULL,
-           "name"          character varying NOT NULL,
-           "created_at"    TIMESTAMP         NOT NULL DEFAULT now(),
-           "updated_at"    TIMESTAMP         NOT NULL DEFAULT now(),
-           "institute_id"  integer,
-           "speciality_id" integer,
-           CONSTRAINT "UQ_664ea405ae2a10c264d582ee563" UNIQUE ("name"),
-           CONSTRAINT "PK_659d1483316afb28afd3a90646e" PRIMARY KEY ("id")
-       )`,
-    );
-    await queryRunner.query(
-      `CREATE TABLE "specialties"
-       (
-           "id"           SERIAL            NOT NULL,
-           "code"         character varying NOT NULL,
-           "name"         character varying NOT NULL,
-           "short_name"   character varying NOT NULL,
-           "institute_id" integer,
-           CONSTRAINT "PK_ba01cec5aa8ac48778a1d097e98" PRIMARY KEY ("id")
        )`,
     );
     await queryRunner.query(
@@ -119,6 +121,18 @@ export class Migration1721160898719 implements MigrationInterface {
     );
     await queryRunner.query(
       `CREATE INDEX "IDX_8c8fa2f234bc8cc280401bde20" ON "sputnik_groups" ("user_uuid") `,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "specialties"
+          ADD CONSTRAINT "FK_93b904dbb55085ef6623b66b50f" FOREIGN KEY ("institute_id") REFERENCES "institutes" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "groups"
+          ADD CONSTRAINT "FK_886ad24a7f09bdeb7fd7c7707ba" FOREIGN KEY ("institute_id") REFERENCES "institutes" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "groups"
+          ADD CONSTRAINT "FK_48144a846fff5b9b25b8725a7e0" FOREIGN KEY ("speciality_id") REFERENCES "specialties" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
       `ALTER TABLE "issued_achievements"
@@ -145,18 +159,6 @@ export class Migration1721160898719 implements MigrationInterface {
           ADD CONSTRAINT "FK_b8d62b3714f81341caa13ab0ff0" FOREIGN KEY ("group_id") REFERENCES "groups" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
-      `ALTER TABLE "groups"
-          ADD CONSTRAINT "FK_886ad24a7f09bdeb7fd7c7707ba" FOREIGN KEY ("institute_id") REFERENCES "institutes" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE "groups"
-          ADD CONSTRAINT "FK_48144a846fff5b9b25b8725a7e0" FOREIGN KEY ("speciality_id") REFERENCES "specialties" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE "specialties"
-          ADD CONSTRAINT "FK_93b904dbb55085ef6623b66b50f" FOREIGN KEY ("institute_id") REFERENCES "institutes" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
-    );
-    await queryRunner.query(
       `ALTER TABLE "sputnik_groups"
           ADD CONSTRAINT "FK_8d6f11cdfa13e0ae12337946ded" FOREIGN KEY ("group_id") REFERENCES "groups" ("id") ON DELETE CASCADE ON UPDATE CASCADE`,
     );
@@ -174,18 +176,6 @@ export class Migration1721160898719 implements MigrationInterface {
     await queryRunner.query(
       `ALTER TABLE "sputnik_groups"
           DROP CONSTRAINT "FK_8d6f11cdfa13e0ae12337946ded"`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE "specialties"
-          DROP CONSTRAINT "FK_93b904dbb55085ef6623b66b50f"`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE "groups"
-          DROP CONSTRAINT "FK_48144a846fff5b9b25b8725a7e0"`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE "groups"
-          DROP CONSTRAINT "FK_886ad24a7f09bdeb7fd7c7707ba"`,
     );
     await queryRunner.query(
       `ALTER TABLE "users"
@@ -212,14 +202,24 @@ export class Migration1721160898719 implements MigrationInterface {
           DROP CONSTRAINT "FK_77a196e57fe4dd86a525d3d1955"`,
     );
     await queryRunner.query(
+      `ALTER TABLE "groups"
+          DROP CONSTRAINT "FK_48144a846fff5b9b25b8725a7e0"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "groups"
+          DROP CONSTRAINT "FK_886ad24a7f09bdeb7fd7c7707ba"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "specialties"
+          DROP CONSTRAINT "FK_93b904dbb55085ef6623b66b50f"`,
+    );
+    await queryRunner.query(
       `DROP INDEX "public"."IDX_8c8fa2f234bc8cc280401bde20"`,
     );
     await queryRunner.query(
       `DROP INDEX "public"."IDX_8d6f11cdfa13e0ae12337946de"`,
     );
     await queryRunner.query(`DROP TABLE "sputnik_groups"`);
-    await queryRunner.query(`DROP TABLE "specialties"`);
-    await queryRunner.query(`DROP TABLE "groups"`);
     await queryRunner.query(`DROP TABLE "users"`);
     await queryRunner.query(`DROP TYPE "public"."users_role_enum"`);
     await queryRunner.query(`DROP TABLE "issued_achievements"`);
@@ -227,6 +227,8 @@ export class Migration1721160898719 implements MigrationInterface {
     await queryRunner.query(`DROP TYPE "public"."achievements_rarity_enum"`);
     await queryRunner.query(`DROP TYPE "public"."achievements_category_enum"`);
     await queryRunner.query(`DROP TYPE "public"."achievements_type_enum"`);
+    await queryRunner.query(`DROP TABLE "groups"`);
     await queryRunner.query(`DROP TABLE "institutes"`);
+    await queryRunner.query(`DROP TABLE "specialties"`);
   }
 }
