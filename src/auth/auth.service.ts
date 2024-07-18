@@ -36,7 +36,7 @@ export class AuthService {
       role: user.role,
     };
     const accessToken = this.jwtService.sign(payload);
-    return new AuthResponseDto(accessToken, user.role);
+    return { accessToken, role: user.role };
   }
 
   async validateTgUser(tgAuthDto: TgAuthDto) {
@@ -67,6 +67,6 @@ export class AuthService {
       role: user.role,
     };
     const accessToken = this.jwtService.sign(payload);
-    return new AuthResponseDto(accessToken, user.role);
+    return { accessToken, role: user.role };
   }
 }

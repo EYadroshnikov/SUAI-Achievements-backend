@@ -5,11 +5,6 @@ export class AuthResponseDto {
   @ApiProperty()
   accessToken: string;
 
-  @ApiProperty()
+  @ApiProperty({ enum: UserRole })
   role: UserRole;
-
-  constructor(accessToken: string, role: UserRole) {
-    this.accessToken = accessToken;
-    this.role = role;
-  }
 }
