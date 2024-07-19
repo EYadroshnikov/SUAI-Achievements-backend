@@ -27,4 +27,8 @@ export class UserDto {
   @ApiProperty()
   @Expose()
   isBanned: boolean;
+
+  @ApiProperty()
+  @Expose()
+  avatar: string;
 }
