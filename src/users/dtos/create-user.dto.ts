@@ -26,8 +26,8 @@ export class CreateUserDto {
   @IsString()
   vkId: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  tgUserName: string;
+  tgUserName?: string;
 }
