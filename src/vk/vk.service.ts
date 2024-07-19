@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as CryptoJS from 'crypto-js';
 import { InjectQueue } from '@nestjs/bull';
@@ -10,6 +10,9 @@ export class VkService {
     private configService: ConfigService,
     @InjectQueue('vk-avatar-queue') private vkAvatarQueue: Queue,
   ) {}
+
+  private readonly logger = new Logger(VkService.name);
+
   async verifyVkToken(launchParams: string, sign: string): Promise<any> {
     const paramArray = launchParams.split('&');
     const vkParams = paramArray.filter((param) => param.startsWith('vk_'));

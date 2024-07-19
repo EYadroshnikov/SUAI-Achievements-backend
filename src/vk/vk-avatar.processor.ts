@@ -1,4 +1,4 @@
-import { OnQueueFailed, Process, Processor } from '@nestjs/bull';
+import { OnQueueError, OnQueueFailed, Process, Processor } from '@nestjs/bull';
 import { Job } from 'bull';
 import { ConfigService } from '@nestjs/config';
 import { forwardRef, Inject, Logger } from '@nestjs/common';
@@ -54,5 +54,10 @@ export class VkAvatarProcessor {
   @OnQueueFailed()
   async onQueueFailed(job: Job, error: any) {
     this.logger.error(`Task ${job.id} failed: ${error.message}`, error.stack);
+  }
+
+  @OnQueueError()
+  async onQueueError(error: any) {
+    this.logger.error(error);
   }
 }
