@@ -24,7 +24,7 @@ export class TelegramService {
     // Calculate HMAC
     const secretKey = crypto
       .createHmac('sha256', 'WebAppData')
-      .update(this.configService.get('tg.miniAppSecret'))
+      .update(this.configService.get('tg.botSecret'))
       .digest();
     const hmac = crypto
       .createHmac('sha256', secretKey)
