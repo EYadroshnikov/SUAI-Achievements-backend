@@ -1,10 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import * as crypto from 'node:crypto';
 import { ConfigService } from '@nestjs/config';
+import { IssuedAchievementDto } from '../achievements/dtos/issued-achievement.dto';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 
 @Injectable()
 export class TelegramService {
-  constructor(private configService: ConfigService) {}
+  constructor(
+    private configService: ConfigService,
+    @InjectQueue('telegram-notification-queue')
+    private telegramNotificationQueue: Queue,
+  ) {}
 
   async verifyInitData(initData: string) {
     const params = new URLSearchParams(initData);
@@ -34,5 +41,9 @@ export class TelegramService {
     const isSignValid = hmac === vals['hash'];
     const tgId = JSON.parse(vals['user']).id;
     return { isSignValid, tgId };
+  }
+
+  async addToTelegramNotificationQueue(tgUserId: string, text: string) {
+    return this.telegramNotificationQueue.add({ tgUserId, text });
   }
 }

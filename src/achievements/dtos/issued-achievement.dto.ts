@@ -32,7 +32,7 @@ export class IssuedAchievementDto {
   @ApiProperty({ type: UserDto })
   @Expose()
   @Type(() => UserDto)
-  canceler: UserDto;
+  canceler?: UserDto;
 
   @ApiProperty()
   @Expose()

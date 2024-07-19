@@ -6,11 +6,13 @@ import { Achievement } from './entities/achievement.entity';
 import { IssuedAchievement } from './entities/issued-achievement.entity';
 import { UsersModule } from '../users/users.module';
 import { User } from '../users/entities/user.entity';
+import { TelegramModule } from '../telegram/telegram.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Achievement, IssuedAchievement, User]),
     UsersModule,
+    TelegramModule,
   ],
   controllers: [AchievementsController],
   providers: [AchievementsService],

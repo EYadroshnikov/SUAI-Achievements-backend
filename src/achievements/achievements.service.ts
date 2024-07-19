@@ -11,6 +11,8 @@ import { IssueAchievementDto } from './dtos/issue-achievement.dto';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/entities/user.entity';
 import { CancelAchievementDto } from './dtos/cancel-achievement.dto';
+import { TelegramService } from '../telegram/telegram.service';
+import generateMessage from '../common/notification-templates/issue-achievement-notify';
 
 @Injectable()
 export class AchievementsService {
@@ -20,6 +22,7 @@ export class AchievementsService {
     @InjectRepository(IssuedAchievement)
     private readonly issuedAchievementsRepository: Repository<IssuedAchievement>,
     private readonly userService: UsersService,
+    private readonly telegramService: TelegramService,
   ) {}
 
   async getAchievementsForUser(
@@ -124,7 +127,7 @@ export class AchievementsService {
       issueAchievementDto.studentUuid,
     );
 
-    return await this.issuedAchievementsRepository.manager.transaction(
+    const result = await this.issuedAchievementsRepository.manager.transaction(
       async (transactionalEntityManager) => {
         const issuedAchievement = new IssuedAchievement();
         issuedAchievement.achievement = achievement;
@@ -147,6 +150,11 @@ export class AchievementsService {
         return issuedAchievement;
       },
     );
+    await this.telegramService.addToTelegramNotificationQueue(
+      student.tgId,
+      generateMessage(result),
+    );
+    return result;
   }
 
   private async getStudent(issuer: User, studentUuid: string) {
