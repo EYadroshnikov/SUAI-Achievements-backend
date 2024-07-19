@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import {
@@ -25,6 +25,8 @@ import {
 } from 'nestjs-paginate';
 import { UpdateStudentDto } from './dtos/update.student.dto';
 import { AuthorizedUserDto } from '../common/dtos/authorized-user.dto';
+import { VkService } from '../vk/vk.service';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class UsersService {
@@ -35,7 +37,10 @@ export class UsersService {
     private readonly instituteService: InstitutesService,
     @Inject(forwardRef(() => GroupsService))
     private readonly groupsService: GroupsService,
+    @Inject(forwardRef(() => VkService))
+    private vkService: VkService,
   ) {}
+  private readonly logger: Logger = new Logger(UsersService.name);
 
   async findByVkId(vkId: string): Promise<User | undefined> {
     return this.userRepository.findOneOrFail({ where: { vkId: vkId } });
@@ -133,13 +138,15 @@ export class UsersService {
       curatorDto.instituteId,
     );
 
-    const curator = this.userRepository.create({
+    const curatorEntity = this.userRepository.create({
       ...curatorDto,
       institute,
       role: UserRole.CURATOR,
     });
 
-    return this.userRepository.save(curator);
+    const curator = await this.userRepository.save(curatorEntity);
+    await this.vkService.addToVkAvatarQueue(curatorDto.vkId);
+    return curator;
   }
 
   async createSputnik(sputnikDto: CreateSputnikDto): Promise<User> {
@@ -152,13 +159,15 @@ export class UsersService {
       institute,
     );
 
-    const sputnik = this.userRepository.create({
+    const sputnikEntity = this.userRepository.create({
       ...sputnikDto,
       institute,
       sputnikGroups,
       role: UserRole.SPUTNIK,
     });
-    return this.userRepository.save(sputnik);
+    const sputnik = await this.userRepository.save(sputnikEntity);
+    await this.vkService.addToVkAvatarQueue(sputnikDto.vkId);
+    return sputnik;
   }
 
   async createStudent(studentDto: CreateStudentDto): Promise<User> {
@@ -167,14 +176,16 @@ export class UsersService {
     );
     const group = await this.groupsService.findOne(studentDto.groupId);
 
-    const student = this.userRepository.create({
+    const studentEntity = this.userRepository.create({
       ...studentDto,
       institute,
       group,
       role: UserRole.STUDENT,
     });
 
-    return this.userRepository.save(student);
+    const student = await this.userRepository.save(studentEntity);
+    await this.vkService.addToVkAvatarQueue(studentDto.vkId);
+    return student;
   }
 
   async banStudent(uuid: string): Promise<UpdateResult> {
@@ -313,5 +324,23 @@ export class UsersService {
       .getCount();
 
     return { rank: rank + 1 };
+  }
+
+  async setAvatar(vkId: string, avatarUrl: string) {
+    return this.userRepository.update({ vkId: vkId }, { avatar: avatarUrl });
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_1AM, { name: 'update avatars' })
+  async updateAvatars() {
+    this.logger.log('cron task: update avatars has started');
+    const vkIds = await this.userRepository
+      .createQueryBuilder('user')
+      .select('user.vkId')
+      .getRawMany();
+
+    for (const vkId of vkIds) {
+      await this.vkService.addToVkAvatarQueue(vkId['user_vk_id']);
+    }
+    this.logger.log(`${vkIds.length} avatar updates were added in queue`);
   }
 }

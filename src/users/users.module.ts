@@ -7,13 +7,18 @@ import { InstitutesModule } from '../institues/institutes.module';
 import { StudentsController } from './controllers/students.controller';
 import { SputniksController } from './controllers/sputniks.controller';
 import { CuratorsController } from './controllers/curators.controller';
+import { VkModule } from '../vk/vk.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     TypeOrmModule.forFeature([User]),
     forwardRef(() => GroupsModule),
     InstitutesModule,
+    forwardRef(() => VkModule),
   ],
+
   controllers: [StudentsController, SputniksController, CuratorsController],
   providers: [UsersService],
   exports: [UsersService],

@@ -62,6 +62,9 @@ export class User {
   @JoinColumn({ name: 'group_id' })
   group: Group;
 
+  @Column({ name: 'avatar', type: 'varchar', nullable: true, default: null })
+  avatar: string;
+
   @OneToMany(
     () => IssuedAchievement,
     (issuedAchievement) => issuedAchievement.issuer,

@@ -16,13 +16,17 @@ import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { SpecialtiesModule } from './specialties/specialties.module';
 import { TelegramModule } from './telegram/telegram.module';
+import redisConfig from './config/redis/redis.config';
+import { BullModule } from '@nestjs/bull';
+import vkConfig from './config/vk/vk.config';
+import telegramConfig from './config/telegram/telegram.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       envFilePath: '.env',
       isGlobal: true,
-      load: [postgresConfig, appConfig],
+      load: [postgresConfig, appConfig, redisConfig, vkConfig, telegramConfig],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -40,6 +44,17 @@ import { TelegramModule } from './telegram/telegram.module';
       }),
       inject: [ConfigService],
     }),
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        redis: {
+          host: configService.get('redis.host'),
+          port: configService.get('redis.port'),
+        },
+      }),
+    }),
+
     AchievementsModule,
     UsersModule,
     AuthModule,

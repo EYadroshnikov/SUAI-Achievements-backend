@@ -32,7 +32,7 @@ export class IssuedAchievement {
   @Column({ name: 'reward', type: 'integer' })
   reward: number;
 
-  @Column({ name: 'is_canceled', type: 'boolean' })
+  @Column({ name: 'is_canceled', type: 'boolean', default: false })
   isCanceled: boolean;
 
   @ManyToOne(() => User, { nullable: true })

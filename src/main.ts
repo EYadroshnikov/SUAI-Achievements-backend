@@ -11,7 +11,6 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.useGlobalFilters(new GlobalExceptionFilter());
   app.setGlobalPrefix('api');
-  // app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
 
   const config = new DocumentBuilder()
     .setTitle('SUAI Achievements')
