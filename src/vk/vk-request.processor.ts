@@ -5,23 +5,28 @@ import { forwardRef, Inject, Logger } from '@nestjs/common';
 import axios from 'axios';
 import { UsersService } from '../users/users.service';
 
-@Processor('vk-avatar-queue')
-export class VkAvatarProcessor {
+@Processor('vk-request-queue')
+export class VkRequestProcessor {
   constructor(
     private configService: ConfigService,
     @Inject(forwardRef(() => UsersService))
     private userService: UsersService,
   ) {}
 
-  private readonly logger = new Logger(VkAvatarProcessor.name);
+  private readonly logger = new Logger(VkRequestProcessor.name);
 
-  @Process()
+  @Process('avatar')
   async handleJob(job: Job) {
     const { vkId } = job.data;
-    await this.sendMessage(vkId);
+    await this.updateAvatar(vkId);
   }
 
-  private async sendMessage(vkId: string) {
+  @Process('notification')
+  async handleNotificationJob(job: Job) {
+    const { vkId, text } = job.data;
+  }
+
+  private async updateAvatar(vkId: string) {
     const access_token = this.configService.get('vk.communityApiKey');
 
     const data = new FormData();
@@ -50,6 +55,8 @@ export class VkAvatarProcessor {
       throw Error;
     }
   }
+
+  private async notify(vkId: string, text: string) {}
 
   @OnQueueFailed()
   async onQueueFailed(job: Job, error: any) {

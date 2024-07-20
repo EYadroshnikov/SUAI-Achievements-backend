@@ -8,7 +8,7 @@ import { Queue } from 'bull';
 export class VkService {
   constructor(
     private configService: ConfigService,
-    @InjectQueue('vk-avatar-queue') private vkAvatarQueue: Queue,
+    @InjectQueue('vk-request-queue') private vkRequestQueue: Queue,
   ) {}
 
   private readonly logger = new Logger(VkService.name);
@@ -45,6 +45,10 @@ export class VkService {
   }
 
   async addToVkAvatarQueue(vkId: string) {
-    await this.vkAvatarQueue.add({ vkId });
+    await this.vkRequestQueue.add('avatar', { vkId });
+  }
+
+  async addToVkNotificationQueue(vkId: string, text: string) {
+    await this.vkRequestQueue.add('notification', { vkId, text });
   }
 }

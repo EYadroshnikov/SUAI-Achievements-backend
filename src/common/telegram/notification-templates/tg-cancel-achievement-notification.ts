@@ -1,6 +1,6 @@
-import { IssuedAchievementDto } from '../../achievements/dtos/issued-achievement.dto';
+import { IssuedAchievementDto } from '../../../achievements/dtos/issued-achievement.dto';
 
-function generateCancelMessage(data: IssuedAchievementDto): string {
+function generateTgCancelMessage(data: IssuedAchievementDto): string {
   const { achievement, canceler } = data;
 
   return `
@@ -9,4 +9,4 @@ function generateCancelMessage(data: IssuedAchievementDto): string {
 `;
 }
 
-export default generateCancelMessage;
+export default generateTgCancelMessage;

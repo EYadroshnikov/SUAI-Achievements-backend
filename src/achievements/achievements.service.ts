@@ -12,9 +12,12 @@ import { UsersService } from '../users/users.service';
 import { User } from '../users/entities/user.entity';
 import { CancelAchievementDto } from './dtos/cancel-achievement.dto';
 import { TelegramService } from '../telegram/telegram.service';
-import generateIssueMessage from '../common/notification-templates/issue-achievement-notification';
-import generateCancelMessage from '../common/notification-templates/cancel-achievement-notification';
 import { IssuedAchievementDto } from './dtos/issued-achievement.dto';
+import generateTgIssueMessage from '../common/telegram/notification-templates/tg-issue-achievement-notification';
+import generateTgCancelMessage from '../common/telegram/notification-templates/tg-cancel-achievement-notification';
+import { VkService } from '../vk/vk.service';
+import generateVkIssueMessage from '../common/vk/notification-templates/vk-issue-achievement-notification';
+import generateVkCancelMessage from '../common/vk/notification-templates/vk-cancel-achievement-notification';
 
 @Injectable()
 export class AchievementsService {
@@ -25,6 +28,7 @@ export class AchievementsService {
     private readonly issuedAchievementsRepository: Repository<IssuedAchievement>,
     private readonly userService: UsersService,
     private readonly telegramService: TelegramService,
+    private readonly vkService: VkService,
   ) {}
 
   async getAchievementsForUser(
@@ -155,9 +159,13 @@ export class AchievementsService {
     if (student.tgId) {
       await this.telegramService.addToTelegramNotificationQueue(
         student.tgId,
-        generateIssueMessage(result),
+        generateTgIssueMessage(result),
       );
     }
+    await this.vkService.addToVkNotificationQueue(
+      student.vkId,
+      generateVkIssueMessage(result),
+    );
     return result;
   }
 
@@ -228,24 +236,27 @@ export class AchievementsService {
       },
     );
 
-    if (student.tgId) {
-      const issuedAchievementDto: IssuedAchievementDto =
-        await this.issuedAchievementsRepository.findOneOrFail({
-          where: {
-            student: { uuid: student.uuid },
-            achievement: {
-              uuid: cancelAchievementDto.achievementUuid,
-            },
-            isCanceled: true,
+    const issuedAchievementDto: IssuedAchievementDto =
+      await this.issuedAchievementsRepository.findOneOrFail({
+        where: {
+          student: { uuid: student.uuid },
+          achievement: {
+            uuid: cancelAchievementDto.achievementUuid,
           },
-          relations: ['achievement', 'canceler'],
-        });
-      console.log(issuedAchievementDto);
+          isCanceled: true,
+        },
+        relations: ['achievement', 'canceler'],
+      });
+    if (student.tgId) {
       await this.telegramService.addToTelegramNotificationQueue(
         student.tgId,
-        generateCancelMessage(issuedAchievementDto),
+        generateTgCancelMessage(issuedAchievementDto),
       );
     }
+    await this.vkService.addToVkNotificationQueue(
+      student.vkId,
+      generateVkCancelMessage(issuedAchievementDto),
+    );
     return result;
   }
 }
