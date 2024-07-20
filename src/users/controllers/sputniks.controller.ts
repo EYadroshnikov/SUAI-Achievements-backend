@@ -34,6 +34,7 @@ import {
   Paginated,
 } from 'nestjs-paginate';
 import { PaginateDto } from '../dtos/paginate.dto';
+import { PaginatedTransformInterceptor } from '../../common/interceptors/paginated-transform.interceptor';
 
 @ApiTags('Sputniks')
 @ApiBearerAuth()
@@ -117,7 +118,7 @@ export class SputniksController {
   @Roles(UserRole.SPUTNIK)
   @ApiPaginationQuery({ sortableColumns: ['balance'] })
   @ApiOkPaginatedResponse(SputnikDto, { sortableColumns: ['balance'] })
-  @UseInterceptors(new TransformInterceptor(Paginated<SputnikDto>))
+  @UseInterceptors(new PaginatedTransformInterceptor(SputnikDto))
   async getMySputnikInstituteStudentsTop(
     @Req() req: AuthorizedRequestDto,
     @Paginate() paginateDto: PaginateDto,

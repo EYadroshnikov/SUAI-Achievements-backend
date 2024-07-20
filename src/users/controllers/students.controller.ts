@@ -31,12 +31,12 @@ import {
   ApiOkPaginatedResponse,
   ApiPaginationQuery,
   Paginate,
-  Paginated,
 } from 'nestjs-paginate';
 import { PaginateDto } from '../dtos/paginate.dto';
 import { UpdateStudentDto } from '../dtos/update.student.dto';
 import { GroupStudentsDto } from '../../groups/dtos/group-students.dto';
 import { RankDto } from '../dtos/rank.dto';
+import { PaginatedTransformInterceptor } from '../../common/interceptors/paginated-transform.interceptor';
 
 @ApiTags('Students')
 @ApiBearerAuth()
@@ -103,7 +103,7 @@ export class StudentsController {
   @Roles(UserRole.CURATOR, UserRole.ADMIN)
   @ApiPaginationQuery({ sortableColumns: ['balance'] })
   @ApiOkPaginatedResponse(StudentDto, { sortableColumns: ['balance'] })
-  @UseInterceptors(new TransformInterceptor(Paginated<StudentDto>))
+  @UseInterceptors(new PaginatedTransformInterceptor(StudentDto))
   async getStudentsByInstitute(
     @Param('id', ParseIntPipe) id: number,
     @Paginate() paginateDto: PaginateDto,
@@ -135,7 +135,7 @@ export class StudentsController {
   @Roles(UserRole.STUDENT, UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
   @ApiPaginationQuery({ sortableColumns: ['balance'] })
   @ApiOkPaginatedResponse(StudentDto, { sortableColumns: ['balance'] })
-  @UseInterceptors(new TransformInterceptor(Paginated<StudentDto>))
+  @UseInterceptors(new PaginatedTransformInterceptor(StudentDto))
   async getTopStudents(@Paginate() query: PaginateDto) {
     return this.usersService.getTopStudents(query);
   }
@@ -154,7 +154,7 @@ export class StudentsController {
   @Roles(UserRole.STUDENT, UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
   @ApiPaginationQuery({ sortableColumns: ['balance'] })
   @ApiOkPaginatedResponse(StudentDto, { sortableColumns: ['balance'] })
-  @UseInterceptors(new TransformInterceptor(Paginated<StudentDto>))
+  @UseInterceptors(new PaginatedTransformInterceptor(StudentDto))
   async getInstitutesTopById(
     @Param('id', ParseIntPipe) id: number,
     @Paginate() paginateDto: PaginateDto,
@@ -180,7 +180,7 @@ export class StudentsController {
   @Roles(UserRole.STUDENT)
   @ApiPaginationQuery({ sortableColumns: ['balance'] })
   @ApiOkPaginatedResponse(StudentDto, { sortableColumns: ['balance'] })
-  @UseInterceptors(new TransformInterceptor(Paginated<StudentDto>))
+  @UseInterceptors(new PaginatedTransformInterceptor(StudentDto))
   async getTopMyInstituteStudents(
     @Req() req: AuthorizedRequestDto,
     @Paginate() paginateDto: PaginateDto,
