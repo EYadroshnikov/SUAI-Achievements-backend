@@ -12,7 +12,7 @@ export class UserDto {
   @Expose()
   lastName: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @Expose()
   patronymic?: string;
 
@@ -28,7 +28,7 @@ export class UserDto {
   @Expose()
   isBanned: boolean;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @Expose()
   avatar?: string;
 }

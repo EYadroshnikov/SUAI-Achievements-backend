@@ -7,7 +7,7 @@ export class AchievementDto {
   @ApiProperty()
   uuid: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   name?: string;
 
   @ApiProperty({ enum: AchievementType })
@@ -19,21 +19,21 @@ export class AchievementDto {
   @ApiProperty({ enum: AchievementRarity })
   rarity: AchievementRarity;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   reward?: number;
 
   @ApiProperty()
   hiddenIconPath: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   openedIconPath?: string;
 
-  @ApiProperty()
-  studentRequirement: string;
+  @ApiProperty({ required: false })
+  studentRequirement?: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   hint?: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   roflDescription?: string;
 }
