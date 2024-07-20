@@ -24,6 +24,7 @@ export class VkRequestProcessor {
   @Process('notification')
   async handleNotificationJob(job: Job) {
     const { vkId, text } = job.data;
+    await this.notify(vkId, text);
   }
 
   private async updateAvatar(vkId: string) {
@@ -56,7 +57,32 @@ export class VkRequestProcessor {
     }
   }
 
-  private async notify(vkId: string, text: string) {}
+  private async notify(vkId: string, text: string) {
+    const access_token = this.configService.get('vk.communityApiKey');
+
+    const data = new FormData();
+    data.append('user_id', vkId);
+    data.append('random_id', '0');
+    data.append('message', text);
+    data.append('access_token', access_token);
+    data.append('v', '5.199');
+
+    const config = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: 'https://api.vk.com/method/messages.send',
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      data: data,
+    };
+    try {
+      const res = await axios.request(config);
+    } catch (error) {
+      this.logger.error(error);
+      throw Error;
+    }
+  }
 
   @OnQueueFailed()
   async onQueueFailed(job: Job, error: any) {
