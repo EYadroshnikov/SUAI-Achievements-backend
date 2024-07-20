@@ -36,6 +36,10 @@ export class IssuedAchievementDto {
 
   @ApiProperty()
   @Expose()
+  cancellationReason?: string;
+
+  @ApiProperty()
+  @Expose()
   createdAt: Date;
 
   @ApiProperty()

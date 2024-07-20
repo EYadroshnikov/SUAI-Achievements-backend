@@ -12,7 +12,9 @@ import { UsersService } from '../users/users.service';
 import { User } from '../users/entities/user.entity';
 import { CancelAchievementDto } from './dtos/cancel-achievement.dto';
 import { TelegramService } from '../telegram/telegram.service';
-import generateMessage from '../common/notification-templates/issue-achievement-notify';
+import generateIssueMessage from '../common/notification-templates/issue-achievement-notification';
+import generateCancelMessage from '../common/notification-templates/cancel-achievement-notification';
+import { IssuedAchievementDto } from './dtos/issued-achievement.dto';
 
 @Injectable()
 export class AchievementsService {
@@ -150,10 +152,12 @@ export class AchievementsService {
         return issuedAchievement;
       },
     );
-    await this.telegramService.addToTelegramNotificationQueue(
-      student.tgId,
-      generateMessage(result),
-    );
+    if (student.tgId) {
+      await this.telegramService.addToTelegramNotificationQueue(
+        student.tgId,
+        generateIssueMessage(result),
+      );
+    }
     return result;
   }
 
@@ -198,7 +202,7 @@ export class AchievementsService {
       },
     });
 
-    return await this.issuedAchievementsRepository.manager.transaction(
+    const result = await this.issuedAchievementsRepository.manager.transaction(
       async (transactionalEntityManager) => {
         await transactionalEntityManager.update(
           IssuedAchievement,
@@ -223,5 +227,25 @@ export class AchievementsService {
           .execute();
       },
     );
+
+    if (student.tgId) {
+      const issuedAchievementDto: IssuedAchievementDto =
+        await this.issuedAchievementsRepository.findOneOrFail({
+          where: {
+            student: { uuid: student.uuid },
+            achievement: {
+              uuid: cancelAchievementDto.achievementUuid,
+            },
+            isCanceled: true,
+          },
+          relations: ['achievement', 'canceler'],
+        });
+      console.log(issuedAchievementDto);
+      await this.telegramService.addToTelegramNotificationQueue(
+        student.tgId,
+        generateCancelMessage(issuedAchievementDto),
+      );
+    }
+    return result;
   }
 }

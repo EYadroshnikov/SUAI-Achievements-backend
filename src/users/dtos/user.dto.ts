@@ -14,7 +14,7 @@ export class UserDto {
 
   @ApiProperty()
   @Expose()
-  patronymic: string;
+  patronymic?: string;
 
   @ApiProperty()
   @Expose()
@@ -30,5 +30,5 @@ export class UserDto {
 
   @ApiProperty()
   @Expose()
-  avatar: string;
+  avatar?: string;
 }
