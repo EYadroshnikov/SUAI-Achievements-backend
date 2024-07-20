@@ -15,11 +15,11 @@ export class CreateUserDto {
   @Capitalize()
   lastName: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
   @Capitalize()
-  patronymic: string;
+  patronymic?: string;
 
   @ApiProperty()
   @IsNotEmpty()
