@@ -1,7 +1,7 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthDto } from './dtos/auth.dto';
-import { ApiExcludeEndpoint, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { AuthResponseDto } from './dtos/auth-response.dto';
 import { TgAuthDto } from './dtos/tg-auth.dto';
 
@@ -18,7 +18,6 @@ export class AuthController {
 
   @Post('/tg/login')
   @ApiOkResponse({ type: AuthResponseDto })
-  @ApiExcludeEndpoint()
   async tgLogin(@Body() tgAuthDto: TgAuthDto) {
     return this.authService.validateTgUser(tgAuthDto);
   }

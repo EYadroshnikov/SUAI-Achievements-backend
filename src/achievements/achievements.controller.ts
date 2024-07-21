@@ -104,4 +104,11 @@ export class AchievementsController {
       cancelAchievementDto,
     );
   }
+
+  @Get('operations')
+  @Roles(UserRole.CURATOR, UserRole.ADMIN)
+  @ApiOperation({
+    summary: 'Can access: curator',
+  })
+  async getOperations(@Req() req: AuthorizedRequestDto) {}
 }

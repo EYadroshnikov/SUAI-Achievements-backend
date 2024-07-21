@@ -294,6 +294,8 @@ export class UsersService {
       .createQueryBuilder('user')
       .where('user.group = :groupId', { groupId: user.group.id })
       .andWhere('user.balance > :balance', { balance: user.balance })
+      .andWhere('user.isBanned = :isBanned', { isBanned: false })
+      .andWhere('user.role = :role', { role: UserRole.STUDENT })
       .getCount();
 
     return { rank: rank + 1 };
@@ -308,6 +310,8 @@ export class UsersService {
       .createQueryBuilder('user')
       .where('user.institute = :groupId', { groupId: user.institute.id })
       .andWhere('user.balance > :balance', { balance: user.balance })
+      .andWhere('user.isBanned = :isBanned', { isBanned: false })
+      .andWhere('user.role = :role', { role: UserRole.STUDENT })
       .getCount();
 
     return { rank: rank + 1 };
@@ -321,6 +325,8 @@ export class UsersService {
     const rank = await this.userRepository
       .createQueryBuilder('user')
       .where('user.balance > :balance', { balance: user.balance })
+      .andWhere('user.isBanned = :isBanned', { isBanned: false })
+      .andWhere('user.role = :role', { role: UserRole.STUDENT })
       .getCount();
 
     return { rank: rank + 1 };
