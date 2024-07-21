@@ -209,6 +209,10 @@ export class AchievementsService {
       },
     });
 
+    const achievement = await this.achievementsRepository.findOneOrFail({
+      where: { uuid: cancelAchievementDto.achievementUuid },
+    });
+
     const result = await this.issuedAchievementsRepository.manager.transaction(
       async (transactionalEntityManager) => {
         await transactionalEntityManager.delete(IssuedAchievement, {
@@ -229,18 +233,13 @@ export class AchievementsService {
         achievementOperation.type = AchievementOperationType.CANCEL;
         achievementOperation.cancellationReason =
           cancelAchievementDto.cancellationReason;
-        achievementOperation.achievement.uuid =
-          cancelAchievementDto.achievementUuid;
+        achievementOperation.achievement = achievement;
         achievementOperation.executor = canceler;
         achievementOperation.student = student;
 
         await transactionalEntityManager.save(achievementOperation);
       },
     );
-
-    const achievement = await this.achievementsRepository.findOneOrFail({
-      where: { uuid: cancelAchievementDto.achievementUuid },
-    });
 
     if (student.tgId) {
       await this.telegramService.addToTelegramNotificationQueue(
