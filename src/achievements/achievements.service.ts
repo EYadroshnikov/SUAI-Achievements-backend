@@ -12,12 +12,13 @@ import { UsersService } from '../users/users.service';
 import { User } from '../users/entities/user.entity';
 import { CancelAchievementDto } from './dtos/cancel-achievement.dto';
 import { TelegramService } from '../telegram/telegram.service';
-import { IssuedAchievementDto } from './dtos/issued-achievement.dto';
 import generateTgIssueMessage from '../common/telegram/notification-templates/tg-issue-achievement-notification';
 import generateTgCancelMessage from '../common/telegram/notification-templates/tg-cancel-achievement-notification';
 import { VkService } from '../vk/vk.service';
 import generateVkIssueMessage from '../common/vk/notification-templates/vk-issue-achievement-notification';
 import generateVkCancelMessage from '../common/vk/notification-templates/vk-cancel-achievement-notification';
+import { AchievementOperation } from './entities/achievement-operation.entity';
+import { AchievementOperationType } from './enums/achievement-operation-type.enum';
 
 @Injectable()
 export class AchievementsService {
@@ -41,7 +42,7 @@ export class AchievementsService {
     }
 
     const issuedAchievements = await this.issuedAchievementsRepository.find({
-      where: { student: user, isCanceled: false },
+      where: { student: user },
       relations: ['achievement'],
     });
 
@@ -111,11 +112,10 @@ export class AchievementsService {
   }
 
   async getUnlockedAchievements(user: AuthorizedUserDto) {
-    const issuedAchievements = await this.issuedAchievementsRepository.find({
+    return await this.issuedAchievementsRepository.find({
       where: { student: user },
-      relations: ['achievement', 'issuer', 'student', 'canceler'],
+      relations: ['achievement', 'issuer', 'student'],
     });
-    return issuedAchievements;
   }
 
   async issueAchievement(
@@ -140,10 +140,17 @@ export class AchievementsService {
         issuedAchievement.issuer = issuer;
         issuedAchievement.student = student;
         issuedAchievement.reward = achievement.reward;
-        issuedAchievement.isCanceled = false;
-        issuedAchievement.cancellationReason = null;
 
         await transactionalEntityManager.save(issuedAchievement);
+
+        const achievementOperation = new AchievementOperation();
+        achievementOperation.type = AchievementOperationType.ISSUE;
+        achievementOperation.achievement = achievement;
+        achievementOperation.executor = issuer;
+        achievementOperation.student = student;
+        achievementOperation.cancellationReason = null;
+
+        await transactionalEntityManager.save(achievementOperation);
 
         await transactionalEntityManager
           .createQueryBuilder()
@@ -187,18 +194,11 @@ export class AchievementsService {
     user: AuthorizedUserDto,
     cancelAchievementDto: CancelAchievementDto,
   ) {
-    // const achievement = await this.achievementsRepository.findOneOrFail({
-    //   where: { uuid: cancelAchievementDto.achievementUuid },
-    // });
     const canceler = await this.userService.getNotStudentUser(user.uuid);
     const student = await this.getStudent(
       canceler,
       cancelAchievementDto.studentUuid,
     );
-
-    // const issuing = await this.issuedAchievementsRepository.findOneOrFail({
-    //   where: { student, achievement },
-    // });
 
     const issuing = await this.issuedAchievementsRepository.findOneOrFail({
       where: {
@@ -206,24 +206,15 @@ export class AchievementsService {
         achievement: {
           uuid: cancelAchievementDto.achievementUuid,
         },
-        isCanceled: false,
       },
     });
 
     const result = await this.issuedAchievementsRepository.manager.transaction(
       async (transactionalEntityManager) => {
-        await transactionalEntityManager.update(
-          IssuedAchievement,
-          {
-            achievement: { uuid: cancelAchievementDto.achievementUuid },
-            student: { uuid: student.uuid },
-          },
-          {
-            isCanceled: true,
-            canceler: canceler,
-            cancellationReason: cancelAchievementDto.cancellationReason,
-          },
-        );
+        await transactionalEntityManager.delete(IssuedAchievement, {
+          achievement: { uuid: cancelAchievementDto.achievementUuid },
+          student: { uuid: student.uuid },
+        });
 
         await transactionalEntityManager
           .createQueryBuilder()
@@ -233,29 +224,41 @@ export class AchievementsService {
             studentUuid: cancelAchievementDto.studentUuid,
           })
           .execute();
+
+        const achievementOperation = new AchievementOperation();
+        achievementOperation.type = AchievementOperationType.CANCEL;
+        achievementOperation.cancellationReason =
+          cancelAchievementDto.cancellationReason;
+        achievementOperation.achievement.uuid =
+          cancelAchievementDto.achievementUuid;
+        achievementOperation.executor = canceler;
+        achievementOperation.student = student;
+
+        await transactionalEntityManager.save(achievementOperation);
       },
     );
 
-    const issuedAchievementDto: IssuedAchievementDto =
-      await this.issuedAchievementsRepository.findOneOrFail({
-        where: {
-          student: { uuid: student.uuid },
-          achievement: {
-            uuid: cancelAchievementDto.achievementUuid,
-          },
-          isCanceled: true,
-        },
-        relations: ['achievement', 'canceler'],
-      });
+    const achievement = await this.achievementsRepository.findOneOrFail({
+      where: { uuid: cancelAchievementDto.achievementUuid },
+    });
+
     if (student.tgId) {
       await this.telegramService.addToTelegramNotificationQueue(
         student.tgId,
-        generateTgCancelMessage(issuedAchievementDto),
+        generateTgCancelMessage(
+          achievement,
+          canceler,
+          cancelAchievementDto.cancellationReason,
+        ),
       );
     }
     await this.vkService.addToVkNotificationQueue(
       student.vkId,
-      generateVkCancelMessage(issuedAchievementDto),
+      generateVkCancelMessage(
+        achievement,
+        canceler,
+        cancelAchievementDto.cancellationReason,
+      ),
     );
     return result;
   }

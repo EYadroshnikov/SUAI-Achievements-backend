@@ -68,16 +68,13 @@ export class Migration1721160898719 implements MigrationInterface {
     await queryRunner.query(
       `CREATE TABLE "issued_achievements"
        (
-           "uuid"                uuid      NOT NULL DEFAULT uuid_generate_v4(),
-           "reward"              integer   NOT NULL,
-           "is_canceled"         boolean   NOT NULL,
-           "cancellation_reason" character varying,
-           "created_at"          TIMESTAMP NOT NULL DEFAULT now(),
-           "updated_at"          TIMESTAMP NOT NULL DEFAULT now(),
-           "achievement_uuid"    uuid,
-           "issuer_uuid"         uuid,
-           "student_uuid"        uuid,
-           "canceler_uuid"       uuid,
+           "uuid"             uuid      NOT NULL DEFAULT uuid_generate_v4(),
+           "reward"           integer   NOT NULL,
+           "created_at"       TIMESTAMP NOT NULL DEFAULT now(),
+           "updated_at"       TIMESTAMP NOT NULL DEFAULT now(),
+           "achievement_uuid" uuid,
+           "issuer_uuid"      uuid,
+           "student_uuid"     uuid,
            CONSTRAINT "UQ_d4514a6801b413741bc3868a809" UNIQUE ("student_uuid", "achievement_uuid"),
            CONSTRAINT "PK_1da046fab62a3d978c507961e1a" PRIMARY KEY ("uuid")
        )`,
@@ -98,6 +95,7 @@ export class Migration1721160898719 implements MigrationInterface {
            "patronymic"   character varying,
            "balance"      integer                    NOT NULL DEFAULT '0',
            "is_banned"    boolean                    NOT NULL DEFAULT false,
+           "avatar"       character varying,
            "created_at"   TIMESTAMP                  NOT NULL DEFAULT now(),
            "updated_at"   TIMESTAMP                  NOT NULL DEFAULT now(),
            "institute_id" integer,
@@ -106,6 +104,23 @@ export class Migration1721160898719 implements MigrationInterface {
            CONSTRAINT "UQ_9793d2defd72fffdb9a55c0d88f" UNIQUE ("tg_id"),
            CONSTRAINT "UQ_7f0dc4e5790dd2834fe98c38495" UNIQUE ("tg_username"),
            CONSTRAINT "PK_951b8f1dfc94ac1d0301a14b7e1" PRIMARY KEY ("uuid")
+       )`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "public"."achievement_operations_type_enum" AS ENUM('ISSUE', 'CANCEL')`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "achievement_operations"
+       (
+           "uuid"                uuid                                        NOT NULL DEFAULT uuid_generate_v4(),
+           "type"                "public"."achievement_operations_type_enum" NOT NULL,
+           "cancellation_reason" character varying,
+           "created_at"          TIMESTAMP                                   NOT NULL DEFAULT now(),
+           "updated_at"          TIMESTAMP                                   NOT NULL DEFAULT now(),
+           "achievement_uuid"    uuid,
+           "executor_uuid"       uuid,
+           "student_uuid"        uuid,
+           CONSTRAINT "PK_d1675f58b292a4f234258c329ec" PRIMARY KEY ("uuid")
        )`,
     );
     await queryRunner.query(
@@ -147,16 +162,24 @@ export class Migration1721160898719 implements MigrationInterface {
           ADD CONSTRAINT "FK_abefddf3ce88f85f7dd0e4d88eb" FOREIGN KEY ("student_uuid") REFERENCES "users" ("uuid") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
-      `ALTER TABLE "issued_achievements"
-          ADD CONSTRAINT "FK_6d136b2905e20b1f49538b3b67f" FOREIGN KEY ("canceler_uuid") REFERENCES "users" ("uuid") ON DELETE NO ACTION ON UPDATE NO ACTION`,
-    );
-    await queryRunner.query(
       `ALTER TABLE "users"
           ADD CONSTRAINT "FK_d11afe6995bfdb198cb9ee0dde2" FOREIGN KEY ("institute_id") REFERENCES "institutes" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
       `ALTER TABLE "users"
           ADD CONSTRAINT "FK_b8d62b3714f81341caa13ab0ff0" FOREIGN KEY ("group_id") REFERENCES "groups" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "achievement_operations"
+          ADD CONSTRAINT "FK_c7c46d3c50467badcf3e8756c9e" FOREIGN KEY ("achievement_uuid") REFERENCES "achievements" ("uuid") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "achievement_operations"
+          ADD CONSTRAINT "FK_a6413223da37db5e1a38282eed1" FOREIGN KEY ("executor_uuid") REFERENCES "users" ("uuid") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "achievement_operations"
+          ADD CONSTRAINT "FK_9877cc9d01828bf66fb8fa6a655" FOREIGN KEY ("student_uuid") REFERENCES "users" ("uuid") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
       `ALTER TABLE "sputnik_groups"
@@ -178,16 +201,24 @@ export class Migration1721160898719 implements MigrationInterface {
           DROP CONSTRAINT "FK_8d6f11cdfa13e0ae12337946ded"`,
     );
     await queryRunner.query(
+      `ALTER TABLE "achievement_operations"
+          DROP CONSTRAINT "FK_9877cc9d01828bf66fb8fa6a655"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "achievement_operations"
+          DROP CONSTRAINT "FK_a6413223da37db5e1a38282eed1"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "achievement_operations"
+          DROP CONSTRAINT "FK_c7c46d3c50467badcf3e8756c9e"`,
+    );
+    await queryRunner.query(
       `ALTER TABLE "users"
           DROP CONSTRAINT "FK_b8d62b3714f81341caa13ab0ff0"`,
     );
     await queryRunner.query(
       `ALTER TABLE "users"
           DROP CONSTRAINT "FK_d11afe6995bfdb198cb9ee0dde2"`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE "issued_achievements"
-          DROP CONSTRAINT "FK_6d136b2905e20b1f49538b3b67f"`,
     );
     await queryRunner.query(
       `ALTER TABLE "issued_achievements"
@@ -220,6 +251,10 @@ export class Migration1721160898719 implements MigrationInterface {
       `DROP INDEX "public"."IDX_8d6f11cdfa13e0ae12337946de"`,
     );
     await queryRunner.query(`DROP TABLE "sputnik_groups"`);
+    await queryRunner.query(`DROP TABLE "achievement_operations"`);
+    await queryRunner.query(
+      `DROP TYPE "public"."achievement_operations_type_enum"`,
+    );
     await queryRunner.query(`DROP TABLE "users"`);
     await queryRunner.query(`DROP TYPE "public"."users_role_enum"`);
     await queryRunner.query(`DROP TABLE "issued_achievements"`);
