@@ -47,7 +47,7 @@ export class UsersService {
   }
 
   async findByTgId(tgId: string): Promise<User | undefined> {
-    return this.userRepository.findOne({ where: { tgId: tgId } });
+    return this.userRepository.findOneOrFail({ where: { tgId: tgId } });
   }
 
   async findByTgUsername(username: string): Promise<User | undefined> {
