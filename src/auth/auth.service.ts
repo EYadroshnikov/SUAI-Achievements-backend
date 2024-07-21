@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { VkService } from '../vk/vk.service';
@@ -30,6 +34,10 @@ export class AuthService {
 
     const user = await this.usersService.findByVkId(vkUserID);
 
+    if (!user.isBanned) {
+      throw new ForbiddenException(`You have been banned`);
+    }
+
     const payload: JwtPayload = {
       uuid: user.uuid,
       vkId: user.vkId,
@@ -48,6 +56,11 @@ export class AuthService {
     }
 
     let user = await this.usersService.findByTgId(tgId);
+
+    if (!user.isBanned) {
+      throw new ForbiddenException(`You have been banned`);
+    }
+
     if (!user) {
       const params = new URLSearchParams(tgAuthDto.initData);
       const vals: { [key: string]: string } = {};
