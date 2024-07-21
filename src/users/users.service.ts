@@ -336,7 +336,7 @@ export class UsersService {
     return this.userRepository.update({ vkId: vkId }, { avatar: avatarUrl });
   }
 
-  @Cron(CronExpression.EVERY_DAY_AT_1AM, { name: 'update avatars' })
+  @Cron('20 01 * * *', { name: 'update avatars', timeZone: 'Europe/Moscow' })
   async updateAvatars() {
     this.logger.log('cron task: update avatars has started');
     const vkIds = await this.userRepository
