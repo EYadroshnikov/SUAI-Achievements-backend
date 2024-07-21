@@ -1,9 +1,9 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
-  Patch,
   Post,
   Req,
   UseGuards,
@@ -90,7 +90,7 @@ export class AchievementsController {
     );
   }
 
-  @Patch('cancel')
+  @Delete('cancel')
   @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
   @ApiOperation({
     summary: 'Can access: sputnik, curator',
