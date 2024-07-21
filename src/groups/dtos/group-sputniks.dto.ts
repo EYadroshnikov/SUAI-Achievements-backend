@@ -6,7 +6,7 @@ import { SpecialityDto } from '../../specialties/dtos/speciality.dto';
 
 @Exclude()
 export class GroupSputniksDto extends GroupDto {
-  @ApiProperty()
+  @ApiProperty({ type: SputnikDto, isArray: true })
   @Type(() => SputnikDto)
   @Expose()
   sputniks: SputnikDto[];
