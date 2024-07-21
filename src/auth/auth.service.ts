@@ -34,7 +34,7 @@ export class AuthService {
 
     const user = await this.usersService.findByVkId(vkUserID);
 
-    if (!user.isBanned) {
+    if (user.isBanned) {
       throw new ForbiddenException(`You have been banned`);
     }
 
@@ -57,7 +57,7 @@ export class AuthService {
 
     let user = await this.usersService.findByTgId(tgId);
 
-    if (!user.isBanned) {
+    if (user.isBanned) {
       throw new ForbiddenException(`You have been banned`);
     }
 
