@@ -264,7 +264,7 @@ export class UsersService {
 
   async getStudentsTopGroup(id: number) {
     return this.userRepository.find({
-      where: { group: { id }, role: UserRole.STUDENT },
+      where: { group: { id }, role: UserRole.STUDENT, isBanned: false },
       order: { balance: 'DESC' },
     });
   }
