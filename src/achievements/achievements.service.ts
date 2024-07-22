@@ -19,8 +19,13 @@ import generateVkIssueMessage from '../common/vk/notification-templates/vk-issue
 import generateVkCancelMessage from '../common/vk/notification-templates/vk-cancel-achievement-notification';
 import { AchievementOperation } from './entities/achievement-operation.entity';
 import { AchievementOperationType } from './enums/achievement-operation-type.enum';
-import { paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
-import OperationPaginateConfig from './operation-paginate.config';
+import {
+  FilterOperator,
+  paginate,
+  PaginateConfig,
+  Paginated,
+  PaginateQuery,
+} from 'nestjs-paginate';
 
 @Injectable()
 export class AchievementsService {
@@ -35,6 +40,18 @@ export class AchievementsService {
     private readonly telegramService: TelegramService,
     private readonly vkService: VkService,
   ) {}
+
+  static OPERATION_PAGINATION_CONFIG = {
+    sortableColumns: ['createdAt'],
+    filterableColumns: {
+      type: [FilterOperator.EQ, FilterOperator.IN],
+      'executor.(uuid)': [FilterOperator.EQ, FilterOperator.IN],
+      'student.(uuid)': [FilterOperator.EQ, FilterOperator.IN],
+      'achievement.(uuid)': [FilterOperator.EQ, FilterOperator.IN],
+    },
+    defaultSortBy: [['createdAt', 'DESC']],
+    relations: ['executor', 'achievement', 'student'],
+  } as PaginateConfig<AchievementOperation>;
 
   async getAchievementsForUser(
     user: AuthorizedUserDto,
@@ -268,46 +285,19 @@ export class AchievementsService {
 
   async getPaginatedOperation(
     query: PaginateQuery,
+    user: AuthorizedUserDto,
   ): Promise<Paginated<AchievementOperation>> {
+    const curator = await this.userService.getCurator(user.uuid);
     const queryBuilder = this.achievementOperationsRepository
       .createQueryBuilder('operation')
-      .leftJoinAndSelect('operation.achievement', 'achievement')
-      .leftJoinAndSelect('operation.executor', 'executor')
-      .leftJoinAndSelect('operation.student', 'student')
-      .leftJoinAndSelect('student.institute', 'institute')
-      .leftJoinAndSelect('student.group', 'group')
-      .leftJoinAndSelect('group.speciality', 'speciality');
-
-    if (query.filter) {
-      Object.keys(query.filter).forEach((key) => {
-        if (key.includes('.')) {
-          const [relation, column] = key.split('.');
-          queryBuilder.andWhere(`${relation}.${column} = :${column}`, {
-            [column]: query.filter[key],
-          });
-        } else {
-          queryBuilder.andWhere(`operation.${key} = :${key}`, {
-            [key]: query.filter[key],
-          });
-        }
-      });
-    }
-
-    if (query.sortBy) {
-      query.sortBy.forEach(([sortField, sortOrder]) => {
-        queryBuilder.addOrderBy(
-          `operation.${sortField}`,
-          sortOrder.toUpperCase() as 'ASC' | 'DESC',
-        );
-      });
-    } else {
-      queryBuilder.addOrderBy('operation.createdAt', 'DESC');
-    }
+      .innerJoin('operation.student', 'student')
+      .innerJoin('student.institute', 'institute')
+      .where('student.institute.id = :id', { id: curator.institute.id });
 
     return paginate<AchievementOperation>(
       query,
       queryBuilder,
-      OperationPaginateConfig,
+      AchievementsService.OPERATION_PAGINATION_CONFIG,
     );
   }
 }
