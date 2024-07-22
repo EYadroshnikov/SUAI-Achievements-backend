@@ -11,6 +11,7 @@ import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { AuthResponseDto } from './dtos/auth-response.dto';
 import { TgAuthDto } from './dtos/tg-auth.dto';
 import { TelegramService } from '../telegram/telegram.service';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -55,13 +56,10 @@ export class AuthService {
       throw new UnauthorizedException('Invalid sing');
     }
 
-    let user = await this.usersService.findByTgId(tgId);
-
-    if (user.isBanned) {
-      throw new ForbiddenException(`You have been banned`);
-    }
-
-    if (!user) {
+    let user: User;
+    try {
+      user = await this.usersService.findByTgId(tgId);
+    } catch (err) {
       const params = new URLSearchParams(tgAuthDto.initData);
       const vals: { [key: string]: string } = {};
 
@@ -72,6 +70,9 @@ export class AuthService {
 
       user = await this.usersService.findByTgUsername(tgUserObj.username);
       await this.usersService.updateUserTgId(user.uuid, tgId);
+    }
+    if (user.isBanned) {
+      throw new ForbiddenException(`You have been banned`);
     }
 
     const payload: JwtPayload = {
