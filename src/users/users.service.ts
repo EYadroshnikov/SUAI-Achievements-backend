@@ -27,6 +27,11 @@ import { UpdateStudentDto } from './dtos/update.student.dto';
 import { AuthorizedUserDto } from '../common/dtos/authorized-user.dto';
 import { VkService } from '../vk/vk.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { TelegramService } from '../telegram/telegram.service';
+import generateTgBanMessage from '../common/telegram/notification-templates/tg-ban-notification';
+import generateVkBanMessage from '../common/vk/notification-templates/vk-ban-notification';
+import generateTgUnBanMessage from '../common/telegram/notification-templates/tg-unban-notification';
+import generateVkUnBanMessage from '../common/vk/notification-templates/vk-unban-notification';
 
 @Injectable()
 export class UsersService {
@@ -39,6 +44,7 @@ export class UsersService {
     private readonly groupsService: GroupsService,
     @Inject(forwardRef(() => VkService))
     private vkService: VkService,
+    private telegramService: TelegramService,
   ) {}
   private readonly logger: Logger = new Logger(UsersService.name);
 
@@ -189,6 +195,19 @@ export class UsersService {
   }
 
   async banStudent(uuid: string): Promise<UpdateResult> {
+    const student = await this.userRepository.findOneOrFail({
+      where: { uuid },
+    });
+    if (student.tgId) {
+      await this.telegramService.addToTelegramNotificationQueue(
+        student.tgId,
+        generateTgBanMessage(),
+      );
+    }
+    await this.vkService.addToVkNotificationQueue(
+      student.vkId,
+      generateVkBanMessage(),
+    );
     return this.userRepository.update(
       { uuid, role: UserRole.STUDENT },
       { isBanned: true },
@@ -196,6 +215,19 @@ export class UsersService {
   }
 
   async unbanStudent(uuid: string): Promise<UpdateResult> {
+    const student = await this.userRepository.findOneOrFail({
+      where: { uuid },
+    });
+    if (student.tgId) {
+      await this.telegramService.addToTelegramNotificationQueue(
+        student.tgId,
+        generateTgUnBanMessage(),
+      );
+    }
+    await this.vkService.addToVkNotificationQueue(
+      student.vkId,
+      generateVkUnBanMessage(),
+    );
     return this.userRepository.update(
       { uuid, role: UserRole.STUDENT },
       { isBanned: false },
@@ -336,7 +368,10 @@ export class UsersService {
     return this.userRepository.update({ vkId: vkId }, { avatar: avatarUrl });
   }
 
-  @Cron('20 01 * * *', { name: 'update avatars', timeZone: 'Europe/Moscow' })
+  @Cron(CronExpression.EVERY_DAY_AT_1AM, {
+    name: 'update avatars',
+    timeZone: 'Europe/Moscow',
+  })
   async updateAvatars() {
     this.logger.log('cron task: update avatars has started');
     const vkIds = await this.userRepository

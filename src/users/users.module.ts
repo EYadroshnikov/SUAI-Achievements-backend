@@ -9,6 +9,7 @@ import { SputniksController } from './controllers/sputniks.controller';
 import { CuratorsController } from './controllers/curators.controller';
 import { VkModule } from '../vk/vk.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { TelegramModule } from '../telegram/telegram.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     forwardRef(() => GroupsModule),
     InstitutesModule,
     forwardRef(() => VkModule),
+    TelegramModule,
   ],
 
   controllers: [StudentsController, SputniksController, CuratorsController],

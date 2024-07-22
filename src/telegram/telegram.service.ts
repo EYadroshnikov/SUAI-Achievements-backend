@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as crypto from 'node:crypto';
 import { ConfigService } from '@nestjs/config';
-import { IssuedAchievementDto } from '../achievements/dtos/issued-achievement.dto';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 
