@@ -28,6 +28,16 @@ import { IssueAchievementDto } from './dtos/issue-achievement.dto';
 import { IssuedAchievementDto } from './dtos/issued-achievement.dto';
 import { TransformInterceptor } from '../common/interceptors/transform.interceptor';
 import { CancelAchievementDto } from './dtos/cancel-achievement.dto';
+import {
+  ApiOkPaginatedResponse,
+  ApiPaginationQuery,
+  Paginate,
+  PaginatedSwaggerDocs,
+  PaginateQuery,
+} from 'nestjs-paginate';
+import { AchievementOperationDto } from './dtos/achievement-operation.dto';
+import OperationPaginateConfig from './operation-paginate.config';
+import { PaginatedTransformInterceptor } from '../common/interceptors/paginated-transform.interceptor';
 
 @ApiTags('Achievements')
 @ApiBearerAuth()
@@ -38,6 +48,22 @@ export class AchievementsController {
     private readonly achievementsService: AchievementsService,
     private readonly userService: UsersService,
   ) {}
+
+  @Get('operations')
+  @Roles(UserRole.CURATOR, UserRole.ADMIN)
+  @ApiOperation({
+    summary: 'Can access: curator',
+  })
+  @PaginatedSwaggerDocs(AchievementOperationDto, OperationPaginateConfig)
+  @UseInterceptors(new PaginatedTransformInterceptor(AchievementOperationDto))
+  async getOperations(
+    @Req() req: AuthorizedRequestDto,
+    @Paginate() query: PaginateQuery,
+  ) {
+    const curator = await this.userService.getCurator(req.user.uuid);
+    query['student.(institute.(id))'] = curator.institute.id;
+    return this.achievementsService.getPaginatedOperation(query);
+  }
 
   @Get()
   @Roles(UserRole.STUDENT, UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
@@ -104,11 +130,4 @@ export class AchievementsController {
       cancelAchievementDto,
     );
   }
-
-  @Get('operations')
-  @Roles(UserRole.CURATOR, UserRole.ADMIN)
-  @ApiOperation({
-    summary: 'Can access: curator',
-  })
-  async getOperations(@Req() req: AuthorizedRequestDto) {}
 }

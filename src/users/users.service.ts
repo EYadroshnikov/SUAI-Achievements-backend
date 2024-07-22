@@ -270,6 +270,7 @@ export class UsersService {
     await this.instituteService.findOne(id);
     return this.userRepository.find({
       where: { institute: { id }, role: UserRole.SPUTNIK },
+      relations: ['sputnikGroups'],
     });
   }
 

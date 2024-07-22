@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import { AchievementOperationType } from '../enums/achievement-operation-type.enum';
 import { AchievementDto } from './achievement.dto';
 import { UserDto } from '../../users/dtos/user.dto';
@@ -7,19 +7,22 @@ import { StudentDto } from '../../users/dtos/student.dto';
 
 @Expose()
 export class AchievementOperationDto {
-  @ApiProperty({ type: AchievementOperationType })
+  @ApiProperty({ enum: AchievementOperationType })
   @Expose()
   type: AchievementOperationType;
 
   @ApiProperty({ type: AchievementDto })
+  @Type(() => AchievementDto)
   @Expose()
   achievement: AchievementDto;
 
   @ApiProperty({ type: UserDto })
+  @Type(() => UserDto)
   @Expose()
   executor: UserDto;
 
   @ApiProperty({ type: StudentDto })
+  @Type(() => StudentDto)
   @Expose()
   student: StudentDto;
 

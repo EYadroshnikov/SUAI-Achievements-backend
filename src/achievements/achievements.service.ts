@@ -19,6 +19,8 @@ import generateVkIssueMessage from '../common/vk/notification-templates/vk-issue
 import generateVkCancelMessage from '../common/vk/notification-templates/vk-cancel-achievement-notification';
 import { AchievementOperation } from './entities/achievement-operation.entity';
 import { AchievementOperationType } from './enums/achievement-operation-type.enum';
+import { paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
+import OperationPaginateConfig from './operation-paginate.config';
 
 @Injectable()
 export class AchievementsService {
@@ -27,6 +29,8 @@ export class AchievementsService {
     private readonly achievementsRepository: Repository<Achievement>,
     @InjectRepository(IssuedAchievement)
     private readonly issuedAchievementsRepository: Repository<IssuedAchievement>,
+    @InjectRepository(AchievementOperation)
+    private readonly achievementOperationsRepository: Repository<AchievementOperation>,
     private readonly userService: UsersService,
     private readonly telegramService: TelegramService,
     private readonly vkService: VkService,
@@ -260,5 +264,50 @@ export class AchievementsService {
       ),
     );
     return result;
+  }
+
+  async getPaginatedOperation(
+    query: PaginateQuery,
+  ): Promise<Paginated<AchievementOperation>> {
+    const queryBuilder = this.achievementOperationsRepository
+      .createQueryBuilder('operation')
+      .leftJoinAndSelect('operation.achievement', 'achievement')
+      .leftJoinAndSelect('operation.executor', 'executor')
+      .leftJoinAndSelect('operation.student', 'student')
+      .leftJoinAndSelect('student.institute', 'institute')
+      .leftJoinAndSelect('student.group', 'group')
+      .leftJoinAndSelect('group.speciality', 'speciality');
+
+    if (query.filter) {
+      Object.keys(query.filter).forEach((key) => {
+        if (key.includes('.')) {
+          const [relation, column] = key.split('.');
+          queryBuilder.andWhere(`${relation}.${column} = :${column}`, {
+            [column]: query.filter[key],
+          });
+        } else {
+          queryBuilder.andWhere(`operation.${key} = :${key}`, {
+            [key]: query.filter[key],
+          });
+        }
+      });
+    }
+
+    if (query.sortBy) {
+      query.sortBy.forEach(([sortField, sortOrder]) => {
+        queryBuilder.addOrderBy(
+          `operation.${sortField}`,
+          sortOrder.toUpperCase() as 'ASC' | 'DESC',
+        );
+      });
+    } else {
+      queryBuilder.addOrderBy('operation.createdAt', 'DESC');
+    }
+
+    return paginate<AchievementOperation>(
+      query,
+      queryBuilder,
+      OperationPaginateConfig,
+    );
   }
 }
