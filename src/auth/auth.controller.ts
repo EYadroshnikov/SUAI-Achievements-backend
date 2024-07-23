@@ -1,7 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthDto } from './dtos/auth.dto';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthResponseDto } from './dtos/auth-response.dto';
 import { TgAuthDto } from './dtos/tg-auth.dto';
 
@@ -11,9 +11,16 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('login')
+  @ApiOperation({ deprecated: true, summary: 'use /api/vk/login instead' })
   @ApiOkResponse({ type: AuthResponseDto })
   async login(@Body() authDto: AuthDto): Promise<AuthResponseDto> {
-    return await this.authService.validateUser(authDto);
+    return await this.authService.validateVkUser(authDto);
+  }
+
+  @Post('/vk/login')
+  @ApiOkResponse({ type: AuthResponseDto })
+  async vkLogin(@Body() authDto: AuthDto): Promise<AuthResponseDto> {
+    return await this.authService.validateVkUser(authDto);
   }
 
   @Post('/tg/login')

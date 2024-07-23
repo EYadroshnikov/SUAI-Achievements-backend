@@ -22,7 +22,7 @@ export class AuthService {
     private telegramService: TelegramService,
   ) {}
 
-  async validateUser(authDto: AuthDto): Promise<AuthResponseDto> {
+  async validateVkUser(authDto: AuthDto): Promise<AuthResponseDto> {
     const { launchParams, sign } = authDto;
 
     const { isSignValid, vkUserID } = await this.vkService.verifyVkToken(
