@@ -32,6 +32,7 @@ import generateTgBanMessage from '../common/telegram/notification-templates/tg-b
 import generateVkBanMessage from '../common/vk/notification-templates/vk-ban-notification';
 import generateTgUnBanMessage from '../common/telegram/notification-templates/tg-unban-notification';
 import generateVkUnBanMessage from '../common/vk/notification-templates/vk-unban-notification';
+import { AllRanksDto } from './dtos/all-ranks.dto';
 
 @Injectable()
 export class UsersService {
@@ -363,6 +364,47 @@ export class UsersService {
       .getCount();
 
     return { rank: rank + 1 };
+  }
+
+  async getAllMyRanks(AuthorizedUser: AuthorizedUserDto): Promise<AllRanksDto> {
+    return await this.userRepository.manager.transaction(
+      async (transactionalEntityManager) => {
+        const user = await transactionalEntityManager.findOneOrFail(User, {
+          where: { uuid: AuthorizedUser.uuid },
+        });
+
+        const groupRank = await transactionalEntityManager
+          .createQueryBuilder(User, 'user')
+          .where('user.group = :groupId', { groupId: user.group.id })
+          .andWhere('user.balance > :balance', { balance: user.balance })
+          .andWhere('user.isBanned = :isBanned', { isBanned: false })
+          .andWhere('user.role = :role', { role: UserRole.STUDENT })
+          .getCount();
+
+        const instituteRank = await transactionalEntityManager
+          .createQueryBuilder(User, 'user')
+          .where('user.institute = :instituteId', {
+            instituteId: user.institute.id,
+          })
+          .andWhere('user.balance > :balance', { balance: user.balance })
+          .andWhere('user.isBanned = :isBanned', { isBanned: false })
+          .andWhere('user.role = :role', { role: UserRole.STUDENT })
+          .getCount();
+
+        const universityRank = await transactionalEntityManager
+          .createQueryBuilder(User, 'user')
+          .where('user.balance > :balance', { balance: user.balance })
+          .andWhere('user.isBanned = :isBanned', { isBanned: false })
+          .andWhere('user.role = :role', { role: UserRole.STUDENT })
+          .getCount();
+
+        return {
+          groupRank: groupRank + 1,
+          instituteRank: instituteRank + 1,
+          universityRank: universityRank + 1,
+        };
+      },
+    );
   }
 
   async setAvatar(vkId: string, avatarUrl: string) {
