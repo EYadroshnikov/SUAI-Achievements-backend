@@ -64,11 +64,7 @@ export class StudentsController {
     @Param('uuid') uuid: string,
     @Body() updateStudentDto: UpdateStudentDto,
   ) {
-    return this.usersService.updateStudent(
-      uuid,
-      updateStudentDto,
-      req.user.uuid,
-    );
+    return this.usersService.updateStudent(uuid, updateStudentDto, req.user);
   }
 
   @Patch('students/:uuid/ban')

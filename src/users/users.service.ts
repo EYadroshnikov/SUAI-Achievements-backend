@@ -33,6 +33,7 @@ import generateVkBanMessage from '../common/vk/notification-templates/vk-ban-not
 import generateTgUnBanMessage from '../common/telegram/notification-templates/tg-unban-notification';
 import generateVkUnBanMessage from '../common/vk/notification-templates/vk-unban-notification';
 import { AllRanksDto } from './dtos/all-ranks.dto';
+import { UpdateSputnikDto } from './dtos/update.sputnik.dto';
 
 @Injectable()
 export class UsersService {
@@ -72,18 +73,35 @@ export class UsersService {
   async updateStudent(
     uuid: string,
     updateStudentDto: UpdateStudentDto,
-    updaterUuid: string,
+    user: AuthorizedUserDto,
+  ): Promise<UpdateResult> {
+    const criteria = {
+      uuid: uuid,
+      role: UserRole.STUDENT,
+    };
+    if (user.role == UserRole.SPUTNIK) {
+      criteria['group'] = { sputniks: ArrayContains([user.uuid]) };
+    }
+    return this.userRepository.update(criteria, {
+      firstName: updateStudentDto.firstName,
+      lastName: updateStudentDto.lastName,
+      patronymic: updateStudentDto.patronymic,
+    });
+  }
+
+  async updateSputnik(
+    uuid: string,
+    updateSputnikDto: UpdateSputnikDto,
   ): Promise<UpdateResult> {
     return this.userRepository.update(
       {
         uuid,
-        role: UserRole.STUDENT,
-        group: { sputniks: ArrayContains([updaterUuid]) },
+        role: UserRole.SPUTNIK,
       },
       {
-        firstName: updateStudentDto.firstName,
-        lastName: updateStudentDto.lastName,
-        patronymic: updateStudentDto.patronymic,
+        firstName: updateSputnikDto.firstName,
+        lastName: updateSputnikDto.lastName,
+        patronymic: updateSputnikDto.patronymic,
       },
     );
   }

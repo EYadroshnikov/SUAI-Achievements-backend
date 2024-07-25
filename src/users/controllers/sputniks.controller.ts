@@ -12,6 +12,7 @@ import {
   NotFoundException,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Req,
   UseGuards,
@@ -31,10 +32,11 @@ import {
   ApiOkPaginatedResponse,
   ApiPaginationQuery,
   Paginate,
-  Paginated,
 } from 'nestjs-paginate';
 import { PaginateDto } from '../dtos/paginate.dto';
 import { PaginatedTransformInterceptor } from '../../common/interceptors/paginated-transform.interceptor';
+import { UpdateResult } from 'typeorm';
+import { UpdateSputnikDto } from '../dtos/update.sputnik.dto';
 
 @ApiTags('Sputniks')
 @ApiBearerAuth()
@@ -52,6 +54,18 @@ export class SputniksController {
     @Body() sputnikDto: CreateSputnikDto,
   ): Promise<SputnikDto> {
     return this.usersService.createSputnik(sputnikDto);
+  }
+
+  @Patch('/sputniks/:uuid')
+  @ApiOperation({ summary: 'can access: sputnik, curator' })
+  @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
+  @ApiOkResponse({ type: UpdateResult })
+  async updateStudent(
+    @Req() req: AuthorizedRequestDto,
+    @Param('uuid') uuid: string,
+    @Body() updateSputnikDto: UpdateSputnikDto,
+  ) {
+    return this.usersService.updateSputnik(uuid, updateSputnikDto);
   }
 
   @Get('/groups/:id/sputniks')
