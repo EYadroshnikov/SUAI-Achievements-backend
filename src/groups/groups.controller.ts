@@ -104,6 +104,8 @@ export class GroupsController {
   }
 
   @Delete('groups/:groupId/sputniks/:userId/detach')
+  @ApiOperation({ summary: 'can access: curator' })
+  @Roles(UserRole.CURATOR, UserRole.ADMIN)
   async unbindSputnik(
     @Param('groupId', ParseIntPipe) groupId: number,
     @Param('userUuid', ParseUUIDPipe) userUuid: string,
