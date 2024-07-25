@@ -103,7 +103,7 @@ export class GroupsController {
     return this.groupsService.getGroupsByInstitute(id);
   }
 
-  @Delete('groups/:groupId/sputniks/:userId/unbind')
+  @Delete('groups/:groupId/sputniks/:userId/detach')
   async unbindSputnik(
     @Param('groupId', ParseIntPipe) groupId: number,
     @Param('userUuid', ParseUUIDPipe) userUuid: string,
