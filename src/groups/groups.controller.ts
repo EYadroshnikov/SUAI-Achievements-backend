@@ -2,9 +2,11 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
+  ParseUUIDPipe,
   Post,
   Req,
   UseGuards,
@@ -99,5 +101,13 @@ export class GroupsController {
   @ApiOkResponse({ type: GroupSputniksDto, isArray: true })
   async getGroupsByInstitute(@Param('id', ParseIntPipe) id: number) {
     return this.groupsService.getGroupsByInstitute(id);
+  }
+
+  @Delete('groups/:groupId/sputniks/:userId/unbind')
+  async unbindSputnik(
+    @Param('groupId', ParseIntPipe) groupId: number,
+    @Param('userUuid', ParseUUIDPipe) userUuid: string,
+  ) {
+    return this.groupsService.detachSputnik(groupId, userUuid);
   }
 }

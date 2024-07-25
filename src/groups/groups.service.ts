@@ -14,10 +14,12 @@ import { UsersService } from '../users/users.service';
 import { AddSputnikDto } from './dtos/add-sputnik.dto';
 import { SpecialtiesService } from '../specialties/specialties.service';
 import { UserRole } from '../users/enums/user-role.enum';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class GroupsService {
   constructor(
+    private readonly dataSource: DataSource,
     @InjectRepository(Group)
     private readonly groupRepository: Repository<Group>,
     private instituteService: InstitutesService,
@@ -92,5 +94,27 @@ export class GroupsService {
     await this.groupRepository.save(group);
 
     return group;
+  }
+
+  async detachSputnik(groupId: number, sputnikUuid: string) {
+    return this.dataSource.manager.transaction(async (manager) => {
+      const userRepository = manager.getRepository(User);
+      const groupRepository = manager.getRepository(Group);
+      const sputnik = await userRepository.findOneOrFail({
+        where: {
+          role: UserRole.SPUTNIK,
+          uuid: sputnikUuid,
+        },
+      });
+      const group = await groupRepository.findOne({
+        where: { id: groupId },
+        relations: ['sputniks'],
+      });
+
+      group.sputniks = group.sputniks.filter(
+        (sputnik) => sputnik.uuid !== sputnikUuid,
+      );
+      return this.groupRepository.save(group);
+    });
   }
 }
