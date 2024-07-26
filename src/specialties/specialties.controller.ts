@@ -31,7 +31,7 @@ export class SpecialtiesController {
   @ApiOperation({ summary: 'can access: curator' })
   @Roles(UserRole.CURATOR, UserRole.ADMIN)
   @UseInterceptors(new TransformInterceptor(SpecialityDto))
-  @ApiOkResponse({ type: SpecialityDto })
+  @ApiOkResponse({ type: SpecialityDto, isArray: true })
   async getByInstituteId(@Param('id', ParseIntPipe) id: number) {
     return this.specialtiesService.getSpecialitiesByInstituteId(id);
   }

@@ -446,7 +446,9 @@ export class UsersService {
     this.logger.log(`${vkIds.length} avatar updates were added in queue`);
   }
 
-  async deleteSputnik(uuid: string) {
-    return this.userRepository.delete({ uuid });
-  }
+  // async deleteSputnik(uuid: string) {
+  //   const sputnik = this.getSputnik(uuid);
+  //
+  //   return this.userRepository.delete({ uuid });
+  // }
 }

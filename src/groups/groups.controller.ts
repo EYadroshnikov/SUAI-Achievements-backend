@@ -103,7 +103,7 @@ export class GroupsController {
     return this.groupsService.getGroupsByInstitute(id);
   }
 
-  @Delete('groups/:groupId/sputniks/:userId/detach')
+  @Delete('groups/:groupId/sputniks/:userUuid/detach')
   @ApiOperation({ summary: 'can access: curator' })
   @Roles(UserRole.CURATOR, UserRole.ADMIN)
   async unbindSputnik(

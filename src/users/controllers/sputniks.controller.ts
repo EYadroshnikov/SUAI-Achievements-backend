@@ -69,12 +69,12 @@ export class SputniksController {
     return this.usersService.updateSputnik(uuid, updateSputnikDto);
   }
 
-  @Delete('/sputniks/:uuid')
-  @ApiOperation({ summary: 'can access: curator' })
-  @Roles(UserRole.CURATOR, UserRole.ADMIN)
-  async deleteSputnik(@Param('uuid') uuid: string) {
-    return this.usersService.deleteSputnik(uuid);
-  }
+  // @Delete('/sputniks/:uuid')
+  // @ApiOperation({ summary: 'can access: curator' })
+  // @Roles(UserRole.CURATOR, UserRole.ADMIN)
+  // async deleteSputnik(@Param('uuid') uuid: string) {
+  //   return this.usersService.deleteSputnik(uuid);
+  // }
 
   @Get('/groups/:id/sputniks')
   @ApiOperation({ summary: 'can access: curator' })
