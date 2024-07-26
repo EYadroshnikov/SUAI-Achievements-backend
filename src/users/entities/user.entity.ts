@@ -55,7 +55,7 @@ export class User {
   @Column({ name: 'is_banned', default: false })
   isBanned: boolean;
 
-  @ManyToMany(() => Group, (group) => group.sputniks)
+  @ManyToMany(() => Group, (group) => group.sputniks, { cascade: true })
   sputnikGroups: Group[];
 
   @ManyToOne(() => Group, { nullable: true, eager: true })
