@@ -84,10 +84,10 @@ export class StudentsController {
   }
 
   @Get('/groups/:id/students')
-  @ApiOperation({ summary: 'can access: curator' })
+  @ApiOperation({ summary: 'can access: sputnik, curator' })
   @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
-  @ApiOkResponse({ type: GroupStudentsDto, isArray: true })
-  @UseInterceptors(new TransformInterceptor(GroupStudentsDto))
+  @ApiOkResponse({ type: StudentDto, isArray: true })
+  @UseInterceptors(new TransformInterceptor(StudentDto))
   async getStudentsByGroup(
     @Param('id', ParseIntPipe) id: number,
     @Req() req: AuthorizedRequestDto, //TODO: check if the group belongs to the user

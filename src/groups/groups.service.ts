@@ -28,7 +28,7 @@ export class GroupsService {
     private userService: UsersService,
   ) {}
 
-  findOne(id: number) {
+  async findOne(id: number) {
     return this.groupRepository.findOneOrFail({ where: { id } });
   }
 

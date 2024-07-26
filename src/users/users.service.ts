@@ -254,11 +254,9 @@ export class UsersService {
   }
 
   async getStudentsByGroup(id: number) {
-    const group = await this.groupsService.findOne(id);
-    const students = await this.userRepository.find({
+    return this.userRepository.find({
       where: { group: { id }, role: UserRole.STUDENT },
     });
-    return { id: group.id, name: group.name, students: students };
   }
 
   async getStudentsByInstitute(
