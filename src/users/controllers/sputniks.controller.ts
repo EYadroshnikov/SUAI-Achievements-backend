@@ -8,6 +8,7 @@ import {
 import {
   Body,
   Controller,
+  Delete,
   Get,
   NotFoundException,
   Param,
@@ -60,12 +61,19 @@ export class SputniksController {
   @ApiOperation({ summary: 'can access: sputnik, curator' })
   @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
   @ApiOkResponse({ type: UpdateResult })
-  async updateStudent(
+  async updateSputnik(
     @Req() req: AuthorizedRequestDto,
     @Param('uuid') uuid: string,
     @Body() updateSputnikDto: UpdateSputnikDto,
   ) {
     return this.usersService.updateSputnik(uuid, updateSputnikDto);
+  }
+
+  @Delete('/sputniks/:uuid')
+  @ApiOperation({ summary: 'can access: curator' })
+  @Roles(UserRole.CURATOR, UserRole.ADMIN)
+  async deleteSputnik(@Param('uuid') uuid: string) {
+    return this.usersService.deleteSputnik(uuid);
   }
 
   @Get('/groups/:id/sputniks')

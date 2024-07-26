@@ -445,4 +445,8 @@ export class UsersService {
     }
     this.logger.log(`${vkIds.length} avatar updates were added in queue`);
   }
+
+  async deleteSputnik(uuid: string) {
+    return this.userRepository.delete({ uuid });
+  }
 }
