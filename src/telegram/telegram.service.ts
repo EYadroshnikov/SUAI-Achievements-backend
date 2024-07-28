@@ -20,6 +20,10 @@ export class TelegramService {
       vals[key] = decodeURIComponent(value);
     });
 
+    if (Math.floor(Date.now() / 1000) - +vals['auth_date'] > 5 * 60) {
+      return { isSignValid: false };
+    }
+
     // Create data check string excluding 'hash'
     const dataCheckArray = Object.entries(vals)
       .filter(([key]) => key !== 'hash')
