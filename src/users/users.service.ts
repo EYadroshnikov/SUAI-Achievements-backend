@@ -214,6 +214,11 @@ export class UsersService {
   }
 
   async banStudent(uuid: string): Promise<UpdateResult> {
+    const result = await this.userRepository.update(
+      { uuid, role: UserRole.STUDENT },
+      { isBanned: true },
+    );
+
     const student = await this.userRepository.findOneOrFail({
       where: { uuid },
     });
@@ -227,13 +232,15 @@ export class UsersService {
       student.vkId,
       generateVkBanMessage(),
     );
-    return this.userRepository.update(
-      { uuid, role: UserRole.STUDENT },
-      { isBanned: true },
-    );
+    return result;
   }
 
   async unbanStudent(uuid: string): Promise<UpdateResult> {
+    const result = await this.userRepository.update(
+      { uuid, role: UserRole.STUDENT },
+      { isBanned: false },
+    );
+
     const student = await this.userRepository.findOneOrFail({
       where: { uuid },
     });
@@ -247,10 +254,51 @@ export class UsersService {
       student.vkId,
       generateVkUnBanMessage(),
     );
-    return this.userRepository.update(
-      { uuid, role: UserRole.STUDENT },
+    return result;
+  }
+
+  async banSputnik(uuid: string): Promise<UpdateResult> {
+    const result = await this.userRepository.update(
+      { uuid, role: UserRole.SPUTNIK },
+      { isBanned: true },
+    );
+
+    const sputnik = await this.userRepository.findOneOrFail({
+      where: { uuid },
+    });
+    if (sputnik.tgId) {
+      await this.telegramService.addToTelegramNotificationQueue(
+        sputnik.tgId,
+        generateTgBanMessage(),
+      );
+    }
+    await this.vkService.addToVkNotificationQueue(
+      sputnik.vkId,
+      generateVkBanMessage(),
+    );
+    return result;
+  }
+
+  async unbanSputnik(uuid: string): Promise<UpdateResult> {
+    const result = await this.userRepository.update(
+      { uuid, role: UserRole.SPUTNIK },
       { isBanned: false },
     );
+
+    const sputnik = await this.userRepository.findOneOrFail({
+      where: { uuid },
+    });
+    if (sputnik.tgId) {
+      await this.telegramService.addToTelegramNotificationQueue(
+        sputnik.tgId,
+        generateTgUnBanMessage(),
+      );
+    }
+    await this.vkService.addToVkNotificationQueue(
+      sputnik.vkId,
+      generateVkUnBanMessage(),
+    );
+    return result;
   }
 
   async getStudentsByGroup(id: number) {
