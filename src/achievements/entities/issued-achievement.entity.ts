@@ -32,16 +32,6 @@ export class IssuedAchievement {
   @Column({ name: 'reward', type: 'integer' })
   reward: number;
 
-  // @Column({ name: 'is_canceled', type: 'boolean', default: false })
-  // isCanceled: boolean;
-
-  // @ManyToOne(() => User, { nullable: true })
-  // @JoinColumn({ name: 'canceler_uuid' })
-  // canceler?: User;
-
-  // @Column({ name: 'cancellation_reason', type: 'varchar', nullable: true })
-  // cancellationReason?: string;
-
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;
 

@@ -12,7 +12,11 @@ export class TelegramNotificationProcessor {
   @Process()
   async handleJob(job: Job) {
     const { tgUserId, text } = job.data;
-    await this.notify(tgUserId, text);
+    try {
+      await this.notify(tgUserId, text);
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   private async notify(tgUserId: number, text: string) {
@@ -25,7 +29,7 @@ export class TelegramNotificationProcessor {
       parse_mode: 'html', // html | markdown
     };
     try {
-      const res = axios.post(url, payload);
+      const res = await axios.post(url, payload);
     } catch (error) {
       this.logger.error(error);
       throw Error;

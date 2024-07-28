@@ -13,6 +13,7 @@ import { UserRole } from '../enums/user-role.enum';
 import { Group } from '../../groups/entities/group.entity';
 import { Institute } from '../../institues/entities/institute.entity';
 import { IssuedAchievement } from '../../achievements/entities/issued-achievement.entity';
+import { AchievementOperation } from '../../achievements/entities/achievement-operation.entity';
 
 @Entity('users')
 export class User {
@@ -74,8 +75,16 @@ export class User {
   @OneToMany(
     () => IssuedAchievement,
     (issuedAchievement) => issuedAchievement.student,
+    { cascade: ['remove'] },
   )
   receivedAchievements: IssuedAchievement[];
+
+  @OneToMany(
+    () => AchievementOperation,
+    (achievementOperation) => achievementOperation.student,
+    { cascade: ['remove'] },
+  )
+  operations: AchievementOperation[];
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;
