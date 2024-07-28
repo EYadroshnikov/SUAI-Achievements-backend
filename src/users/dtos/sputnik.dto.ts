@@ -6,11 +6,6 @@ import { GroupDto } from '../../groups/dtos/group.dto';
 
 @Exclude()
 export class SputnikDto extends UserDto {
-  @ApiProperty({ type: InstituteDto })
-  @Type(() => InstituteDto)
-  @Expose()
-  institute?: InstituteDto;
-
   @ApiProperty({ isArray: true, type: GroupDto })
   @Type(() => GroupDto)
   @Expose()
