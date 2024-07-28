@@ -8,9 +8,11 @@ import {
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
+  ParseUUIDPipe,
   Patch,
   Post,
   Req,
@@ -81,6 +83,13 @@ export class StudentsController {
   @ApiOkResponse({ type: UpdateResult })
   async unbanStudent(@Param('uuid') uuid: string) {
     return this.usersService.unbanStudent(uuid);
+  }
+
+  @Delete('/students/:uuid')
+  @ApiOperation({ summary: 'can access: sputnik, curator' })
+  @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
+  async deleteStudent(@Param('uuid', new ParseUUIDPipe()) uuid: string) {
+    return this.usersService.deleteStudent(uuid);
   }
 
   @Get('/groups/:id/students')
