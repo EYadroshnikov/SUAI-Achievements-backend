@@ -1,13 +1,10 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RefreshSession } from './entities/refresh-session.entity';
 import { LessThanOrEqual, Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
 import { CookieOptions, Request } from 'express';
-import { JwtService } from '@nestjs/jwt';
-import { FullAuthResponseDto } from './dtos/full-auth-response.dto';
-import { AuthService } from './auth.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
@@ -22,7 +19,7 @@ export class RefreshSessionsService {
     httpOnly: true,
     secure: false,
     sameSite: 'none',
-    path: '/api/auth',
+    path: '/',
     maxAge: this.configService.get('app.refreshTokenExpiration') * 1000,
   };
 
