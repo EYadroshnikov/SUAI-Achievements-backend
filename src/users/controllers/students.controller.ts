@@ -206,15 +206,6 @@ export class StudentsController {
     return this.usersService.getGroupRank(req.user.uuid);
   }
 
-  @Get('/students/:uuid/rank/all')
-  @ApiOperation({ summary: 'can access: sputnik, curator, admin' })
-  @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
-  @ApiOkResponse({ type: AllRanksDto })
-  @UseInterceptors(new TransformInterceptor(AllRanksDto))
-  async getAllStudentRank(@Param('uuid') uuid: string) {
-    return this.usersService.getAllRanks(uuid);
-  }
-
   @Get('/students/me/institutes/rank')
   @ApiOperation({ summary: 'can access: student' })
   @Roles(UserRole.STUDENT)
@@ -240,5 +231,14 @@ export class StudentsController {
   @UseInterceptors(new TransformInterceptor(AllRanksDto))
   async getAllMyRanks(@Req() req: AuthorizedRequestDto) {
     return this.usersService.getAllRanks(req.user.uuid);
+  }
+
+  @Get('/students/:uuid/rank/all')
+  @ApiOperation({ summary: 'can access: sputnik, curator, admin' })
+  @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
+  @ApiOkResponse({ type: AllRanksDto })
+  @UseInterceptors(new TransformInterceptor(AllRanksDto))
+  async getAllStudentRank(@Param('uuid') uuid: string) {
+    return this.usersService.getAllRanks(uuid);
   }
 }
