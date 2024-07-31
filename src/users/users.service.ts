@@ -383,9 +383,9 @@ export class UsersService {
     });
   }
 
-  async getMyGroupRank(AuthorizedUser: AuthorizedUserDto) {
+  async getGroupRank(uuid: string) {
     const user = await this.userRepository.findOneOrFail({
-      where: { uuid: AuthorizedUser.uuid },
+      where: { uuid },
     });
 
     const rank = await this.userRepository
@@ -399,9 +399,9 @@ export class UsersService {
     return { rank: rank + 1 };
   }
 
-  async getMyInstituteRank(AuthorizedUser: AuthorizedUserDto) {
+  async getInstituteRank(uuid: string) {
     const user = await this.userRepository.findOneOrFail({
-      where: { uuid: AuthorizedUser.uuid },
+      where: { uuid },
     });
 
     const rank = await this.userRepository
@@ -415,9 +415,9 @@ export class UsersService {
     return { rank: rank + 1 };
   }
 
-  async getMyRank(AuthorizedUser: AuthorizedUserDto) {
+  async getRank(uuid: string) {
     const user = await this.userRepository.findOneOrFail({
-      where: { uuid: AuthorizedUser.uuid },
+      where: { uuid },
     });
 
     const rank = await this.userRepository
@@ -430,11 +430,11 @@ export class UsersService {
     return { rank: rank + 1 };
   }
 
-  async getAllMyRanks(AuthorizedUser: AuthorizedUserDto): Promise<AllRanksDto> {
+  async getAllRanks(uuid: string): Promise<AllRanksDto> {
     return await this.userRepository.manager.transaction(
       async (transactionalEntityManager) => {
         const user = await transactionalEntityManager.findOneOrFail(User, {
-          where: { uuid: AuthorizedUser.uuid },
+          where: { uuid },
         });
 
         const groupRank = await transactionalEntityManager

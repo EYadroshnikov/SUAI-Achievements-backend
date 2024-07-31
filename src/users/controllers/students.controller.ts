@@ -36,7 +36,6 @@ import {
 } from 'nestjs-paginate';
 import { PaginateDto } from '../dtos/paginate.dto';
 import { UpdateStudentDto } from '../dtos/update.student.dto';
-import { GroupStudentsDto } from '../../groups/dtos/group-students.dto';
 import { RankDto } from '../dtos/rank.dto';
 import { PaginatedTransformInterceptor } from '../../common/interceptors/paginated-transform.interceptor';
 import { AllRanksDto } from '../dtos/all-ranks.dto';
@@ -204,7 +203,16 @@ export class StudentsController {
   @ApiOkResponse({ type: RankDto })
   @UseInterceptors(new TransformInterceptor(RankDto))
   async getMyGroupRank(@Req() req: AuthorizedRequestDto) {
-    return this.usersService.getMyGroupRank(req.user);
+    return this.usersService.getGroupRank(req.user.uuid);
+  }
+
+  @Get('/students/:uuid/rank/all')
+  @ApiOperation({ summary: 'can access: sputnik, curator, admin' })
+  @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
+  @ApiOkResponse({ type: AllRanksDto })
+  @UseInterceptors(new TransformInterceptor(AllRanksDto))
+  async getAllStudentRank(@Param('uuid') uuid: string) {
+    return this.usersService.getAllRanks(uuid);
   }
 
   @Get('/students/me/institutes/rank')
@@ -213,7 +221,7 @@ export class StudentsController {
   @ApiOkResponse({ type: RankDto })
   @UseInterceptors(new TransformInterceptor(RankDto))
   async getMyInstituteRank(@Req() req: AuthorizedRequestDto) {
-    return this.usersService.getMyInstituteRank(req.user);
+    return this.usersService.getInstituteRank(req.user.uuid);
   }
 
   @Get('/students/me/rank')
@@ -222,7 +230,7 @@ export class StudentsController {
   @ApiOkResponse({ type: RankDto })
   @UseInterceptors(new TransformInterceptor(RankDto))
   async getMyRank(@Req() req: AuthorizedRequestDto) {
-    return this.usersService.getMyRank(req.user);
+    return this.usersService.getRank(req.user.uuid);
   }
 
   @Get('/students/me/rank/all')
@@ -231,6 +239,6 @@ export class StudentsController {
   @ApiOkResponse({ type: AllRanksDto })
   @UseInterceptors(new TransformInterceptor(AllRanksDto))
   async getAllMyRanks(@Req() req: AuthorizedRequestDto) {
-    return this.usersService.getAllMyRanks(req.user);
+    return this.usersService.getAllRanks(req.user.uuid);
   }
 }
