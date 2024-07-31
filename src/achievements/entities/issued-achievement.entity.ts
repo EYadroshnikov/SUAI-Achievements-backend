@@ -32,6 +32,9 @@ export class IssuedAchievement {
   @Column({ name: 'reward', type: 'integer' })
   reward: number;
 
+  @Column({ name: 'seen', type: 'boolean', default: false })
+  seen: boolean;
+
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;
 

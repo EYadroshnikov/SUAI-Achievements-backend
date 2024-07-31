@@ -17,9 +17,9 @@ export class RefreshSessionsService {
 
   COOKIE_OPTIONS: CookieOptions = {
     httpOnly: true,
-    secure: false,
-    sameSite: 'lax',
-    path: '/',
+    secure: true,
+    sameSite: 'none',
+    path: '/api/auth',
     maxAge: this.configService.get('app.refreshTokenExpiration') * 1000,
   };
 

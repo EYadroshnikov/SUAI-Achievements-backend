@@ -300,4 +300,6 @@ export class AchievementsService {
       AchievementsService.OPERATION_PAGINATION_CONFIG,
     );
   }
+
+  async getUnseenIssuedAchievements(user: AuthorizedUserDto) {}
 }

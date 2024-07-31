@@ -31,6 +31,8 @@ import { CancelAchievementDto } from './dtos/cancel-achievement.dto';
 import { Paginate, PaginatedSwaggerDocs, PaginateQuery } from 'nestjs-paginate';
 import { AchievementOperationDto } from './dtos/achievement-operation.dto';
 import { PaginatedTransformInterceptor } from '../common/interceptors/paginated-transform.interceptor';
+import { Achievement } from './entities/achievement.entity';
+import { Request } from 'express';
 
 @ApiTags('Achievements')
 @ApiBearerAuth()
@@ -124,4 +126,11 @@ export class AchievementsController {
       cancelAchievementDto,
     );
   }
+
+  @Get('/me/issued-achievements/unseen')
+  @Roles(UserRole.STUDENT)
+  @ApiOperation({ summary: 'Can access student' })
+  @ApiOkResponse({ type: AchievementDto, isArray: true })
+  @UseInterceptors(new TransformInterceptor(AchievementDto))
+  async getUnseenAchievements(@Req() req: Request) {}
 }
