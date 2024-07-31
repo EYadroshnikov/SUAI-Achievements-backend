@@ -28,7 +28,6 @@ export class RefreshSessionsService {
 
   async generateRefreshToken(req: Request, user: User) {
     await this.refreshSessionRepository.delete({
-      refreshToken: req.cookies.refreshToken,
       userAgent: req.headers['user-agent'] || '',
       fingerprint: req.body.fingerprint || '',
       user: { uuid: user.uuid },
