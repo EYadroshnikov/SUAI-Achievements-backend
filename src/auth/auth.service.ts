@@ -6,38 +6,33 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { VkService } from '../vk/vk.service';
-import { AuthDto } from './dtos/auth.dto';
+import { VkAuthDto } from './dtos/vk-auth.dto';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { AuthResponseDto } from './dtos/auth-response.dto';
 import { TgAuthDto } from './dtos/tg-auth.dto';
 import { TelegramService } from '../telegram/telegram.service';
 import { User } from '../users/entities/user.entity';
+import { RefreshSessionsService } from './refresh-sessions.service';
+import { FullAuthResponseDto } from './dtos/full-auth-response.dto';
+import { Request } from 'express';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private usersService: UsersService,
-    private jwtService: JwtService,
-    private vkService: VkService,
-    private telegramService: TelegramService,
+    private readonly usersService: UsersService,
+    private readonly jwtService: JwtService,
+    private readonly vkService: VkService,
+    private readonly telegramService: TelegramService,
+    private readonly refreshSessionsService: RefreshSessionsService,
   ) {}
 
-  async validateVkUser(authDto: AuthDto): Promise<AuthResponseDto> {
-    const { launchParams, sign } = authDto;
-
-    const { isSignValid, vkUserID } = await this.vkService.verifyVkToken(
-      launchParams,
-      sign,
-    );
-    if (!isSignValid) {
-      throw new UnauthorizedException('Invalid sing');
-    }
-
-    const user = await this.usersService.findByVkId(vkUserID);
-
+  async validateUser(user: User, req: Request): Promise<FullAuthResponseDto> {
     if (user.isBanned) {
-      throw new ForbiddenException(`You have been banned`);
+      throw new ForbiddenException('You have been banned');
     }
+
+    const refreshSession =
+      await this.refreshSessionsService.generateRefreshToken(req, user);
 
     const payload: JwtPayload = {
       uuid: user.uuid,
@@ -45,15 +40,41 @@ export class AuthService {
       role: user.role,
     };
     const accessToken = this.jwtService.sign(payload);
-    return { accessToken, role: user.role };
+    return {
+      accessToken,
+      role: user.role,
+      refreshToken: refreshSession.refreshToken,
+    };
   }
 
-  async validateTgUser(tgAuthDto: TgAuthDto) {
+  async validateVkUser(
+    vkAuthDto: VkAuthDto,
+    req: Request,
+  ): Promise<FullAuthResponseDto> {
+    const { launchParams, sign } = vkAuthDto;
+
+    const { isSignValid, vkUserID } = await this.vkService.verifyVkToken(
+      launchParams,
+      sign,
+    );
+    if (!isSignValid) {
+      throw new UnauthorizedException('Invalid signature');
+    }
+
+    const user = await this.usersService.findByVkId(vkUserID);
+
+    return this.validateUser(user, req);
+  }
+
+  async validateTgUser(
+    tgAuthDto: TgAuthDto,
+    req: Request,
+  ): Promise<FullAuthResponseDto> {
     const { isSignValid, tgId } = await this.telegramService.verifyInitData(
       tgAuthDto.initData,
     );
     if (!isSignValid) {
-      throw new UnauthorizedException('Invalid sing');
+      throw new UnauthorizedException('Invalid signature');
     }
 
     let user: User;
@@ -71,16 +92,23 @@ export class AuthService {
       user = await this.usersService.findByTgUsername(tgUserObj.username);
       await this.usersService.updateUserTgId(user.uuid, tgId);
     }
-    if (user.isBanned) {
-      throw new ForbiddenException(`You have been banned`);
+
+    return this.validateUser(user, req);
+  }
+
+  async refresh(req: Request): Promise<FullAuthResponseDto> {
+    const refreshSession = await this.refreshSessionsService.findRefreshSession(
+      req.cookies['refreshToken'],
+    );
+    if (
+      !refreshSession ||
+      refreshSession.expiresAt.getTime() < Date.now() ||
+      refreshSession.fingerprint != (req.body['fingerprint'] || '') ||
+      refreshSession.userAgent != (req.headers['user-agent'] || '')
+    ) {
+      throw new UnauthorizedException('Invalid refresh token');
     }
 
-    const payload: JwtPayload = {
-      uuid: user.uuid,
-      vkId: user.vkId,
-      role: user.role,
-    };
-    const accessToken = this.jwtService.sign(payload);
-    return { accessToken, role: user.role };
+    return this.validateUser(refreshSession.user, req);
   }
 }
