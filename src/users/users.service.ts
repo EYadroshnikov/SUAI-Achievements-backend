@@ -4,6 +4,7 @@ import { User } from './entities/user.entity';
 import {
   ArrayContains,
   DataSource,
+  EntityManager,
   In,
   Not,
   Repository,
@@ -430,37 +431,42 @@ export class UsersService {
     return { rank: rank + 1 };
   }
 
+  async getRankTransaction(
+    user: User,
+    transactionEntityManager: EntityManager,
+    scope: 'group' | 'institute' | 'university',
+  ) {
+    const queryBuilder = transactionEntityManager
+      .createQueryBuilder(User, 'user')
+      .where('user.balance > :balance', { balance: user.balance })
+      .andWhere('user.isBanned = :isBanned', { isBanned: false })
+      .andWhere('user.role = :role', { role: UserRole.STUDENT });
+
+    if (scope === 'institute') {
+      queryBuilder.andWhere('user.institute = :instituteId', {
+        instituteId: user.institute.id,
+      });
+    } else if (scope === 'group') {
+      queryBuilder.andWhere('user.group = :groupId', {
+        groupId: user.group.id,
+      });
+    }
+
+    return queryBuilder.getCount();
+  }
+
   async getAllRanks(uuid: string): Promise<AllRanksDto> {
-    return await this.userRepository.manager.transaction(
-      async (transactionalEntityManager) => {
-        const user = await transactionalEntityManager.findOneOrFail(User, {
+    return this.userRepository.manager.transaction(
+      async (transactionEntityManager) => {
+        const user = await transactionEntityManager.findOneOrFail(User, {
           where: { uuid },
         });
 
-        const groupRank = await transactionalEntityManager
-          .createQueryBuilder(User, 'user')
-          .where('user.group = :groupId', { groupId: user.group.id })
-          .andWhere('user.balance > :balance', { balance: user.balance })
-          .andWhere('user.isBanned = :isBanned', { isBanned: false })
-          .andWhere('user.role = :role', { role: UserRole.STUDENT })
-          .getCount();
-
-        const instituteRank = await transactionalEntityManager
-          .createQueryBuilder(User, 'user')
-          .where('user.institute = :instituteId', {
-            instituteId: user.institute.id,
-          })
-          .andWhere('user.balance > :balance', { balance: user.balance })
-          .andWhere('user.isBanned = :isBanned', { isBanned: false })
-          .andWhere('user.role = :role', { role: UserRole.STUDENT })
-          .getCount();
-
-        const universityRank = await transactionalEntityManager
-          .createQueryBuilder(User, 'user')
-          .where('user.balance > :balance', { balance: user.balance })
-          .andWhere('user.isBanned = :isBanned', { isBanned: false })
-          .andWhere('user.role = :role', { role: UserRole.STUDENT })
-          .getCount();
+        const [groupRank, instituteRank, universityRank] = await Promise.all([
+          this.getRankTransaction(user, transactionEntityManager, 'group'),
+          this.getRankTransaction(user, transactionEntityManager, 'institute'),
+          this.getRankTransaction(user, transactionEntityManager, 'university'),
+        ]);
 
         return {
           groupRank: groupRank + 1,
