@@ -127,7 +127,7 @@ export class AchievementsController {
 
   @Get('/me/issued-achievements/unseen')
   @Roles(UserRole.STUDENT)
-  @ApiOperation({ summary: 'Can access student' })
+  @ApiOperation({ summary: 'Can access student, temporarily does not update ' })
   @ApiOkResponse({ type: IssuedAchievementDto, isArray: true })
   @UseInterceptors(new TransformInterceptor(IssuedAchievementDto))
   async getUnseenAchievements(@Req() req: AuthorizedRequestDto) {

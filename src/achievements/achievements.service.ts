@@ -26,6 +26,7 @@ import {
   Paginated,
   PaginateQuery,
 } from 'nestjs-paginate';
+import { IssuedAchievementDto } from './dtos/issued-achievement.dto';
 
 @Injectable()
 export class AchievementsService {
@@ -133,7 +134,7 @@ export class AchievementsService {
   }
 
   async getUnlockedAchievements(user: AuthorizedUserDto) {
-    return await this.issuedAchievementsRepository.find({
+    return this.issuedAchievementsRepository.find({
       where: { student: user },
       relations: ['achievement', 'issuer', 'student'],
     });
@@ -196,6 +197,11 @@ export class AchievementsService {
     );
     return result;
   }
+
+  // async achievementNotify(
+  //   student: User,
+  //   issuedAchievement: IssuedAchievementDto,
+  // );
 
   private async getStudent(issuer: User, studentUuid: string) {
     if (issuer.role === UserRole.CURATOR) {
@@ -309,11 +315,11 @@ export class AchievementsService {
           relations: ['achievement', 'issuer', 'student'],
         });
 
-        await manager.update(
-          IssuedAchievement,
-          { student: { uuid: user.uuid }, seen: false },
-          { seen: true },
-        );
+        // await manager.update(
+        //   IssuedAchievement,
+        //   { student: { uuid: user.uuid }, seen: false },
+        //   { seen: true },
+        // );
         return unseenAchievements;
       },
     );
