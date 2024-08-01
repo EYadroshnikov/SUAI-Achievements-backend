@@ -25,19 +25,6 @@ export class IssuedAchievementDto {
   @Expose()
   reward: number;
 
-  // @ApiProperty()
-  // @Expose()
-  // isCanceled: boolean;
-  //
-  // @ApiProperty({ type: UserDto })
-  // @Expose()
-  // @Type(() => UserDto)
-  // canceler?: UserDto;
-  //
-  // @ApiProperty()
-  // @Expose()
-  // cancellationReason?: string;
-
   @ApiProperty()
   @Expose()
   createdAt: Date;

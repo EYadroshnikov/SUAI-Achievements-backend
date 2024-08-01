@@ -301,5 +301,21 @@ export class AchievementsService {
     );
   }
 
-  async getUnseenIssuedAchievements(user: AuthorizedUserDto) {}
+  async getUnseenIssuedAchievements(user: AuthorizedUserDto) {
+    return this.issuedAchievementsRepository.manager.transaction(
+      async (manager) => {
+        const unseenAchievements = await manager.find(IssuedAchievement, {
+          where: { student: { uuid: user.uuid }, seen: false },
+          relations: ['achievement', 'issuer', 'student'],
+        });
+
+        await manager.update(
+          IssuedAchievement,
+          { student: { uuid: user.uuid }, seen: false },
+          { seen: true },
+        );
+        return unseenAchievements;
+      },
+    );
+  }
 }
