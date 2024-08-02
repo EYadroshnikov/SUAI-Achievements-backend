@@ -6,6 +6,10 @@ import { Exclude, Expose, Type } from 'class-transformer';
 
 @Exclude()
 export class IssuedAchievementDto {
+  @ApiProperty()
+  @Expose()
+  uuid: string;
+
   @ApiProperty({ type: AchievementDto })
   @Expose()
   @Type(() => AchievementDto)
