@@ -87,7 +87,7 @@ export class StudentsController {
   @Delete('/students/:uuid')
   @ApiOperation({ summary: 'can access: sputnik, curator' })
   @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
-  async deleteStudent(@Param('uuid', new ParseUUIDPipe()) uuid: string) {
+  async deleteStudent(@Param('uuid', ParseUUIDPipe) uuid: string) {
     return this.usersService.deleteStudent(uuid);
   }
 
@@ -238,7 +238,7 @@ export class StudentsController {
   @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
   @ApiOkResponse({ type: AllRanksDto })
   @UseInterceptors(new TransformInterceptor(AllRanksDto))
-  async getAllStudentRank(@Param('uuid') uuid: string) {
+  async getAllStudentRank(@Param('uuid', ParseUUIDPipe) uuid: string) {
     return this.usersService.getAllRanks(uuid);
   }
 }

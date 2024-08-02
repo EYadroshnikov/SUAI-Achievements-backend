@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Req,
   UseGuards,
@@ -31,6 +32,7 @@ import { CancelAchievementDto } from './dtos/cancel-achievement.dto';
 import { Paginate, PaginatedSwaggerDocs, PaginateQuery } from 'nestjs-paginate';
 import { AchievementOperationDto } from './dtos/achievement-operation.dto';
 import { PaginatedTransformInterceptor } from '../common/interceptors/paginated-transform.interceptor';
+import { MarkAsSeenDto } from './dtos/mark-as-seen.dto';
 
 @ApiTags('Achievements')
 @ApiBearerAuth()
@@ -127,10 +129,23 @@ export class AchievementsController {
 
   @Get('/me/issued-achievements/unseen')
   @Roles(UserRole.STUDENT)
-  @ApiOperation({ summary: 'Can access student, temporarily does not update ' })
+  @ApiOperation({ summary: 'Can access student' })
   @ApiOkResponse({ type: IssuedAchievementDto, isArray: true })
   @UseInterceptors(new TransformInterceptor(IssuedAchievementDto))
   async getUnseenAchievements(@Req() req: AuthorizedRequestDto) {
     return this.achievementsService.getUnseenIssuedAchievements(req.user);
+  }
+
+  @Patch('/me/issued/unseen/mark-as-seen')
+  @Roles(UserRole.STUDENT)
+  @ApiOperation({ summary: 'Can access student' })
+  async markAsSeen(
+    @Req() req: AuthorizedRequestDto,
+    @Body() markAsSeenDto: MarkAsSeenDto,
+  ) {
+    return this.achievementsService.markAsSeen(
+      req.user,
+      markAsSeenDto.issuedAchievementUuids,
+    );
   }
 }

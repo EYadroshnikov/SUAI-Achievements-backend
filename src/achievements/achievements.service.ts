@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Achievement } from './entities/achievement.entity';
 import { IssuedAchievement } from './entities/issued-achievement.entity';
 import { UserRole } from '../users/enums/user-role.enum';
@@ -322,6 +322,17 @@ export class AchievementsService {
         // );
         return unseenAchievements;
       },
+    );
+  }
+
+  async markAsSeen(user: AuthorizedUserDto, uuids: string[]) {
+    return this.issuedAchievementsRepository.update(
+      {
+        student: { uuid: user.uuid },
+        uuid: In(uuids),
+        seen: false,
+      },
+      { seen: true },
     );
   }
 }
