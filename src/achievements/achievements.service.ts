@@ -26,7 +26,6 @@ import {
   Paginated,
   PaginateQuery,
 } from 'nestjs-paginate';
-import { IssuedAchievementDto } from './dtos/issued-achievement.dto';
 
 @Injectable()
 export class AchievementsService {
@@ -308,21 +307,10 @@ export class AchievementsService {
   }
 
   async getUnseenIssuedAchievements(user: AuthorizedUserDto) {
-    return this.issuedAchievementsRepository.manager.transaction(
-      async (manager) => {
-        const unseenAchievements = await manager.find(IssuedAchievement, {
-          where: { student: { uuid: user.uuid }, seen: false },
-          relations: ['achievement', 'issuer', 'student'],
-        });
-
-        // await manager.update(
-        //   IssuedAchievement,
-        //   { student: { uuid: user.uuid }, seen: false },
-        //   { seen: true },
-        // );
-        return unseenAchievements;
-      },
-    );
+    return this.issuedAchievementsRepository.find({
+      where: { student: { uuid: user.uuid }, seen: false },
+      relations: ['achievement', 'issuer', 'student'],
+    });
   }
 
   async markAsSeen(user: AuthorizedUserDto, uuids: string[]) {
