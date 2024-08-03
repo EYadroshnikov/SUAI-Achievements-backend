@@ -7,6 +7,10 @@ import { GroupDto } from '../../groups/dtos/group.dto';
 export class StudentDto extends UserDto {
   @ApiProperty()
   @Expose()
+  tgUserName: string;
+
+  @ApiProperty()
+  @Expose()
   group: GroupDto;
 
   @ApiProperty()
