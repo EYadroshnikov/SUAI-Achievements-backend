@@ -5,7 +5,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Achievement } from './entities/achievement.entity';
 import { IssuedAchievement } from './entities/issued-achievement.entity';
 import { UsersModule } from '../users/users.module';
-import { User } from '../users/entities/user.entity';
 import { TelegramModule } from '../telegram/telegram.module';
 import { VkModule } from '../vk/vk.module';
 import { AchievementOperation } from './entities/achievement-operation.entity';
@@ -15,7 +14,6 @@ import { AchievementOperation } from './entities/achievement-operation.entity';
     TypeOrmModule.forFeature([
       Achievement,
       IssuedAchievement,
-      User, //TODO: check if I can remove User Entity from here
       AchievementOperation,
     ]),
     UsersModule,

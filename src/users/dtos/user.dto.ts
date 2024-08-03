@@ -31,6 +31,10 @@ export class UserDto {
 
   @ApiProperty()
   @Expose()
+  tgUserName: string;
+
+  @ApiProperty()
+  @Expose()
   role: UserRole;
 
   @ApiProperty()

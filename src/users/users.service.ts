@@ -35,6 +35,7 @@ import generateTgUnBanMessage from '../common/telegram/notification-templates/tg
 import generateVkUnBanMessage from '../common/vk/notification-templates/vk-unban-notification';
 import { AllRanksDto } from './dtos/all-ranks.dto';
 import { UpdateSputnikDto } from './dtos/update.sputnik.dto';
+import { RankDto } from './dtos/rank.dto';
 
 @Injectable()
 export class UsersService {
@@ -384,75 +385,108 @@ export class UsersService {
     });
   }
 
-  async getGroupRank(uuid: string) {
-    const user = await this.userRepository.findOneOrFail({
-      where: { uuid },
-    });
-
-    const rank = await this.userRepository
-      .createQueryBuilder('user')
-      .where('user.group = :groupId', { groupId: user.group.id })
-      .andWhere('user.balance > :balance', { balance: user.balance })
-      .andWhere('user.isBanned = :isBanned', { isBanned: false })
-      .andWhere('user.role = :role', { role: UserRole.STUDENT })
-      .getCount();
-
-    return { rank: rank + 1 };
-  }
-
-  async getInstituteRank(uuid: string) {
-    const user = await this.userRepository.findOneOrFail({
-      where: { uuid },
-    });
-
-    const rank = await this.userRepository
-      .createQueryBuilder('user')
-      .where('user.institute = :groupId', { groupId: user.institute.id })
-      .andWhere('user.balance > :balance', { balance: user.balance })
-      .andWhere('user.isBanned = :isBanned', { isBanned: false })
-      .andWhere('user.role = :role', { role: UserRole.STUDENT })
-      .getCount();
-
-    return { rank: rank + 1 };
-  }
-
-  async getRank(uuid: string) {
-    const user = await this.userRepository.findOneOrFail({
-      where: { uuid },
-    });
-
-    const rank = await this.userRepository
-      .createQueryBuilder('user')
-      .where('user.balance > :balance', { balance: user.balance })
-      .andWhere('user.isBanned = :isBanned', { isBanned: false })
-      .andWhere('user.role = :role', { role: UserRole.STUDENT })
-      .getCount();
-
-    return { rank: rank + 1 };
-  }
+  // async getGroupRank(uuid: string) {
+  //   const user = await this.userRepository.findOneOrFail({
+  //     where: { uuid },
+  //   });
+  //
+  //   const rank = await this.userRepository
+  //     .createQueryBuilder('user')
+  //     .where('user.group = :groupId', { groupId: user.group.id })
+  //     .andWhere('user.balance > :balance', { balance: user.balance })
+  //     .andWhere('user.isBanned = :isBanned', { isBanned: false })
+  //     .andWhere('user.role = :role', { role: UserRole.STUDENT })
+  //     .getCount();
+  //
+  //   return { rank: rank + 1 };
+  // }
+  //
+  // async getInstituteRank(uuid: string) {
+  //   const user = await this.userRepository.findOneOrFail({
+  //     where: { uuid },
+  //   });
+  //
+  //   const rank = await this.userRepository
+  //     .createQueryBuilder('user')
+  //     .where('user.institute = :groupId', { groupId: user.institute.id })
+  //     .andWhere('user.balance > :balance', { balance: user.balance })
+  //     .andWhere('user.isBanned = :isBanned', { isBanned: false })
+  //     .andWhere('user.role = :role', { role: UserRole.STUDENT })
+  //     .getCount();
+  //
+  //   return { rank: rank + 1 };
+  // }
+  //
+  // // async getRank(uuid: string) {
+  // //   const user = await this.userRepository.findOneOrFail({
+  // //     where: { uuid },
+  // //   });
+  // //
+  // //   const rank = await this.userRepository
+  // //     .createQueryBuilder('user')
+  // //     .where('user.balance > :balance', { balance: user.balance })
+  // //     .andWhere('user.isBanned = :isBanned', { isBanned: false })
+  // //     .andWhere('user.role = :role', { role: UserRole.STUDENT })
+  // //     .getCount();
+  // //
+  // //   return { rank: rank + 1 };
+  // // }
 
   async getRankTransaction(
     user: User,
-    transactionEntityManager: EntityManager,
     scope: 'group' | 'institute' | 'university',
-  ) {
-    const queryBuilder = transactionEntityManager
+    transactionEntityManager: EntityManager,
+  ): Promise<[number, number]> {
+    const rankQueryBuilder = transactionEntityManager
       .createQueryBuilder(User, 'user')
       .where('user.balance > :balance', { balance: user.balance })
       .andWhere('user.isBanned = :isBanned', { isBanned: false })
       .andWhere('user.role = :role', { role: UserRole.STUDENT });
 
+    const totalQueryBuilder = transactionEntityManager
+      .createQueryBuilder(User, 'user')
+      .where('user.isBanned = :isBanned', { isBanned: false })
+      .andWhere('user.role = :role', { role: UserRole.STUDENT });
+
     if (scope === 'institute') {
-      queryBuilder.andWhere('user.institute = :instituteId', {
+      rankQueryBuilder.andWhere('user.institute = :instituteId', {
+        instituteId: user.institute.id,
+      });
+      totalQueryBuilder.andWhere('user.institute = :instituteId', {
         instituteId: user.institute.id,
       });
     } else if (scope === 'group') {
-      queryBuilder.andWhere('user.group = :groupId', {
+      rankQueryBuilder.andWhere('user.group = :groupId', {
+        groupId: user.group.id,
+      });
+      totalQueryBuilder.andWhere('user.group = :groupId', {
         groupId: user.group.id,
       });
     }
 
-    return queryBuilder.getCount();
+    return Promise.all([
+      rankQueryBuilder.getCount(),
+      totalQueryBuilder.getCount(),
+    ]);
+  }
+
+  async getRank(
+    uuid: string,
+    scope: 'group' | 'institute' | 'university',
+  ): Promise<RankDto> {
+    return this.userRepository.manager.transaction(
+      async (transactionEntityManager) => {
+        const user = await transactionEntityManager.findOneOrFail(User, {
+          where: { uuid },
+        });
+        const [rank, total] = await this.getRankTransaction(
+          user,
+          scope,
+          transactionEntityManager,
+        );
+        return { rank: rank + 1, total: total };
+      },
+    );
   }
 
   async getAllRanks(uuid: string): Promise<AllRanksDto> {
@@ -463,15 +497,21 @@ export class UsersService {
         });
 
         const [groupRank, instituteRank, universityRank] = await Promise.all([
-          this.getRankTransaction(user, transactionEntityManager, 'group'),
-          this.getRankTransaction(user, transactionEntityManager, 'institute'),
-          this.getRankTransaction(user, transactionEntityManager, 'university'),
+          this.getRankTransaction(user, 'group', transactionEntityManager),
+          this.getRankTransaction(user, 'institute', transactionEntityManager),
+          this.getRankTransaction(user, 'university', transactionEntityManager),
         ]);
 
         return {
-          groupRank: groupRank + 1,
-          instituteRank: instituteRank + 1,
-          universityRank: universityRank + 1,
+          groupRank: { rank: groupRank[0] + 1, total: groupRank[1] },
+          instituteRank: {
+            rank: instituteRank[0] + 1,
+            total: instituteRank[1],
+          },
+          universityRank: {
+            rank: universityRank[0] + 1,
+            total: universityRank[1],
+          },
         };
       },
     );

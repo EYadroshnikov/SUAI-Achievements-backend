@@ -203,7 +203,7 @@ export class StudentsController {
   @ApiOkResponse({ type: RankDto })
   @UseInterceptors(new TransformInterceptor(RankDto))
   async getMyGroupRank(@Req() req: AuthorizedRequestDto) {
-    return this.usersService.getGroupRank(req.user.uuid);
+    return this.usersService.getRank(req.user.uuid, 'group');
   }
 
   @Get('/students/me/institutes/rank')
@@ -212,7 +212,7 @@ export class StudentsController {
   @ApiOkResponse({ type: RankDto })
   @UseInterceptors(new TransformInterceptor(RankDto))
   async getMyInstituteRank(@Req() req: AuthorizedRequestDto) {
-    return this.usersService.getInstituteRank(req.user.uuid);
+    return this.usersService.getRank(req.user.uuid, 'institute');
   }
 
   @Get('/students/me/rank')
@@ -221,7 +221,7 @@ export class StudentsController {
   @ApiOkResponse({ type: RankDto })
   @UseInterceptors(new TransformInterceptor(RankDto))
   async getMyRank(@Req() req: AuthorizedRequestDto) {
-    return this.usersService.getRank(req.user.uuid);
+    return this.usersService.getRank(req.user.uuid, 'university');
   }
 
   @Get('/students/me/rank/all')

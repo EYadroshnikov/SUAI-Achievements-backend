@@ -1,17 +1,21 @@
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude, Expose, Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import { RankDto } from './rank.dto';
 
 @Exclude()
 export class AllRanksDto {
-  @ApiProperty()
+  @ApiProperty({ type: RankDto })
   @Expose()
-  groupRank: number;
+  @Type(() => RankDto)
+  groupRank: RankDto;
 
-  @ApiProperty()
+  @ApiProperty({ type: RankDto })
   @Expose()
-  instituteRank: number;
+  @Type(() => RankDto)
+  instituteRank: RankDto;
 
-  @ApiProperty()
+  @ApiProperty({ type: RankDto })
   @Expose()
-  universityRank: number;
+  @Type(() => RankDto)
+  universityRank: RankDto;
 }

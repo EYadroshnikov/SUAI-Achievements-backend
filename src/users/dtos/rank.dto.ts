@@ -6,4 +6,8 @@ export class RankDto {
   @ApiProperty()
   @Expose()
   rank: number;
+
+  @ApiProperty()
+  @Expose()
+  total: number;
 }
