@@ -29,6 +29,9 @@ export class AchievementDto {
   openedIconPath?: string;
 
   @ApiProperty({ required: false })
+  sputnikRequirement: string;
+
+  @ApiProperty({ required: false })
   studentRequirement?: string;
 
   @ApiProperty({ required: false })

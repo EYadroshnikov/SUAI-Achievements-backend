@@ -92,6 +92,7 @@ export class AchievementsService {
       reward: null,
       hiddenIconPath: achievement.hiddenIconPath,
       openedIconPath: null,
+      sputnikRequirement: null,
       studentRequirement: null,
       hint: null,
       roflDescription: null,
