@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseUUIDPipe,
   Patch,
   Post,
   Req,
@@ -37,14 +38,14 @@ import { MarkAsSeenDto } from './dtos/mark-as-seen.dto';
 @ApiTags('Achievements')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Controller('achievements')
+@Controller()
 export class AchievementsController {
   constructor(
     private readonly achievementsService: AchievementsService,
     private readonly userService: UsersService,
   ) {}
 
-  @Get('operations')
+  @Get('/achievements/operations')
   @Roles(UserRole.CURATOR, UserRole.ADMIN)
   @ApiOperation({
     summary: 'Can access: curator',
@@ -61,7 +62,7 @@ export class AchievementsController {
     return this.achievementsService.getPaginatedOperation(query, req.user);
   }
 
-  @Get()
+  @Get('/achievements')
   @Roles(UserRole.STUDENT, UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
   @ApiOperation({ summary: 'Get achievements for the authenticated user' })
   @ApiOkResponse({ type: AchievementDto, isArray: true })
@@ -72,7 +73,7 @@ export class AchievementsController {
     return this.achievementsService.getAchievementsForUser(user);
   }
 
-  @Get('/:uuid')
+  @Get('/students/:uuid/achievements')
   @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
   @ApiOperation({
     summary:
@@ -86,16 +87,27 @@ export class AchievementsController {
     return this.achievementsService.getAchievementsForUser(user);
   }
 
-  @Get('/me/unlocked')
-  @Roles(UserRole.STUDENT)
-  @ApiOperation({ summary: 'Can access: student' })
-  @ApiOkResponse({ type: IssuedAchievementDto, isArray: true })
-  @UseInterceptors(new TransformInterceptor(IssuedAchievementDto))
-  async getUnlockedAchievements(@Req() req: AuthorizedRequestDto) {
-    return this.achievementsService.getUnlockedAchievements(req.user);
+  @Get('/students/:uuid/achievements/unlocked')
+  @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
+  @ApiOperation({ summary: 'Can access: sputnik, curator' })
+  @ApiOkResponse({ type: AchievementDto, isArray: true })
+  @UseInterceptors(new TransformInterceptor(AchievementDto))
+  async getUnlockedAchievementsForUser(
+    @Param('uuid', ParseUUIDPipe) uuid: string,
+  ) {
+    return this.achievementsService.getUnlockedAchievements(uuid);
   }
 
-  @Post('/issue')
+  @Get('/achievements/me/unlocked')
+  @Roles(UserRole.STUDENT)
+  @ApiOperation({ summary: 'Can access: student' })
+  @ApiOkResponse({ type: AchievementDto, isArray: true })
+  @UseInterceptors(new TransformInterceptor(AchievementDto))
+  async getUnlockedAchievements(@Req() req: AuthorizedRequestDto) {
+    return this.achievementsService.getUnlockedAchievements(req.user.uuid);
+  }
+
+  @Post('/achievements/issue')
   @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
   @ApiOperation({
     summary: 'Can access: sputnik, curator',
@@ -112,7 +124,7 @@ export class AchievementsController {
     );
   }
 
-  @Delete('cancel')
+  @Delete('/achievements/cancel')
   @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
   @ApiOperation({
     summary: 'Can access: sputnik, curator',
@@ -127,7 +139,7 @@ export class AchievementsController {
     );
   }
 
-  @Get('/me/issued-achievements/unseen')
+  @Get('/achievements/me/issued-achievements/unseen')
   @Roles(UserRole.STUDENT)
   @ApiOperation({ summary: 'Can access student' })
   @ApiOkResponse({ type: IssuedAchievementDto, isArray: true })
@@ -136,7 +148,7 @@ export class AchievementsController {
     return this.achievementsService.getUnseenIssuedAchievements(req.user);
   }
 
-  @Patch('/me/issued/unseen/mark-as-seen')
+  @Patch('/achievements/me/issued/unseen/mark-as-seen')
   @Roles(UserRole.STUDENT)
   @ApiOperation({ summary: 'Can access student' })
   async markAsSeen(

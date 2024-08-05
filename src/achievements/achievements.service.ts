@@ -133,11 +133,16 @@ export class AchievementsService {
     return dto;
   }
 
-  async getUnlockedAchievements(user: AuthorizedUserDto) {
-    return this.issuedAchievementsRepository.find({
-      where: { student: user },
-      relations: ['achievement', 'issuer', 'student'],
-    });
+  async getUnlockedAchievements(studentUuid: string) {
+    return this.achievementsRepository
+      .createQueryBuilder('achievement')
+      .innerJoin(
+        'issued_achievements',
+        'issuedAchievement',
+        'issuedAchievement.achievement_uuid = achievement.uuid',
+      )
+      .where('issuedAchievement.student_uuid = :studentUuid', { studentUuid })
+      .getMany();
   }
 
   async issueAchievement(
