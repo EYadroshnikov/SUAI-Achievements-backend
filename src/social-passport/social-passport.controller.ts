@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   ParseUUIDPipe,
+  Patch,
   Post,
   Query,
   Req,
@@ -28,6 +29,7 @@ import { TransformInterceptor } from '../common/interceptors/transform.intercept
 import { CreateSocialPassportDto } from './dtos/create-social-passport.dto';
 import { ParseGroupRolePipe } from '../common/validation-pipes/parse-group-role.pipe';
 import { GroupRole } from './enums/group-role.enum';
+import { UpdateResult } from 'typeorm';
 
 @ApiTags('Social Passport')
 @ApiBearerAuth()
@@ -36,7 +38,7 @@ import { GroupRole } from './enums/group-role.enum';
 export class SocialPassportController {
   constructor(private readonly socialPassportService: SocialPassportService) {}
 
-  @Get('me/social-password')
+  @Get('me/social-passport')
   @ApiOperation({ summary: 'can access: student' })
   @Roles(UserRole.STUDENT)
   @ApiOkResponse({ type: SocialPassportDto })
@@ -45,7 +47,7 @@ export class SocialPassportController {
     return this.socialPassportService.findOne(req.user.uuid);
   }
 
-  @Get('students/:uuid/social-password')
+  @Get('students/:uuid/social-passport')
   @ApiOperation({ summary: 'can access: sputnik, curator' })
   @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
   @ApiOkResponse({ type: SocialPassportDto })
@@ -54,7 +56,7 @@ export class SocialPassportController {
     return this.socialPassportService.findOne(uuid);
   }
 
-  @Post('me/social-password')
+  @Post('me/social-passport')
   @ApiOperation({ summary: 'can access: student' })
   @Roles(UserRole.STUDENT)
   @ApiOkResponse({ type: SocialPassportDto })
@@ -66,12 +68,11 @@ export class SocialPassportController {
     return this.socialPassportService.create(req.user, createSocialPassportDto);
   }
 
-  @Post('students/:uuid/group-role')
+  @Patch('students/:uuid/social-passport/group-role')
   @ApiOperation({ summary: 'can access: sputnik, curator' })
   @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
   @ApiQuery({ name: 'role', enum: GroupRole, required: true })
-  @ApiOkResponse({ type: SocialPassportDto })
-  @UseInterceptors(new TransformInterceptor(SocialPassportDto))
+  @ApiOkResponse({ type: UpdateResult })
   async setGroupRole(
     @Param('uuid', ParseUUIDPipe) uuid: string,
     @Query('role', new ParseGroupRolePipe()) role: GroupRole,
