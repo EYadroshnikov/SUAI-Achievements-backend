@@ -385,53 +385,6 @@ export class UsersService {
     });
   }
 
-  // async getGroupRank(uuid: string) {
-  //   const user = await this.userRepository.findOneOrFail({
-  //     where: { uuid },
-  //   });
-  //
-  //   const rank = await this.userRepository
-  //     .createQueryBuilder('user')
-  //     .where('user.group = :groupId', { groupId: user.group.id })
-  //     .andWhere('user.balance > :balance', { balance: user.balance })
-  //     .andWhere('user.isBanned = :isBanned', { isBanned: false })
-  //     .andWhere('user.role = :role', { role: UserRole.STUDENT })
-  //     .getCount();
-  //
-  //   return { rank: rank + 1 };
-  // }
-  //
-  // async getInstituteRank(uuid: string) {
-  //   const user = await this.userRepository.findOneOrFail({
-  //     where: { uuid },
-  //   });
-  //
-  //   const rank = await this.userRepository
-  //     .createQueryBuilder('user')
-  //     .where('user.institute = :groupId', { groupId: user.institute.id })
-  //     .andWhere('user.balance > :balance', { balance: user.balance })
-  //     .andWhere('user.isBanned = :isBanned', { isBanned: false })
-  //     .andWhere('user.role = :role', { role: UserRole.STUDENT })
-  //     .getCount();
-  //
-  //   return { rank: rank + 1 };
-  // }
-  //
-  // // async getRank(uuid: string) {
-  // //   const user = await this.userRepository.findOneOrFail({
-  // //     where: { uuid },
-  // //   });
-  // //
-  // //   const rank = await this.userRepository
-  // //     .createQueryBuilder('user')
-  // //     .where('user.balance > :balance', { balance: user.balance })
-  // //     .andWhere('user.isBanned = :isBanned', { isBanned: false })
-  // //     .andWhere('user.role = :role', { role: UserRole.STUDENT })
-  // //     .getCount();
-  // //
-  // //   return { rank: rank + 1 };
-  // // }
-
   async getRankTransaction(
     user: User,
     scope: 'group' | 'institute' | 'university',

@@ -1,0 +1,6 @@
+export enum GroupRole {
+  LEADER = 'LEADER',
+  DEPUTY_LEADER = 'DEPUTY_LEADER',
+  PROF_ORG = 'PROF_ORG',
+  STUDENT = 'STUDENT',
+}

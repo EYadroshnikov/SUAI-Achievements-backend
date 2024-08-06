@@ -6,6 +6,7 @@ import {
   ManyToMany,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -14,6 +15,7 @@ import { Group } from '../../groups/entities/group.entity';
 import { Institute } from '../../institues/entities/institute.entity';
 import { IssuedAchievement } from '../../achievements/entities/issued-achievement.entity';
 import { AchievementOperation } from '../../achievements/entities/achievement-operation.entity';
+import { SocialPassport } from '../../social-passport/entities/social-passport.entity';
 
 @Entity('users')
 export class User {
@@ -85,6 +87,12 @@ export class User {
     { cascade: ['remove'] },
   )
   operations: AchievementOperation[];
+
+  @OneToOne(() => SocialPassport, (socialPassport) => socialPassport.student, {
+    cascade: true,
+    nullable: true,
+  })
+  socialPassport?: SocialPassport;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;

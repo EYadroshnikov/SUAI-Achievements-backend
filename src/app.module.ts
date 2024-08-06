@@ -18,6 +18,7 @@ import { SpecialtiesModule } from './specialties/specialties.module';
 import { TelegramModule } from './telegram/telegram.module';
 import redisConfig from './config/redis/redis.config';
 import { BullModule } from '@nestjs/bull';
+import { SocialPassportModule } from './social-passport/social-passport.module';
 import vkConfig from './config/vk/vk.config';
 import telegramConfig from './config/telegram/telegram.config';
 
@@ -70,6 +71,7 @@ import telegramConfig from './config/telegram/telegram.config';
     }),
     SpecialtiesModule,
     TelegramModule,
+    SocialPassportModule,
   ],
   controllers: [AppController],
   providers: [AppService],
