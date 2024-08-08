@@ -90,8 +90,8 @@ export class AchievementsController {
   @Get('/students/:uuid/achievements/unlocked')
   @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
   @ApiOperation({ summary: 'Can access: sputnik, curator' })
-  @ApiOkResponse({ type: AchievementDto, isArray: true })
-  @UseInterceptors(new TransformInterceptor(AchievementDto))
+  @ApiOkResponse({ type: IssuedAchievementDto, isArray: true })
+  @UseInterceptors(new TransformInterceptor(IssuedAchievementDto))
   async getUnlockedAchievementsForUser(
     @Param('uuid', ParseUUIDPipe) uuid: string,
   ) {
@@ -101,8 +101,8 @@ export class AchievementsController {
   @Get('/achievements/me/unlocked')
   @Roles(UserRole.STUDENT)
   @ApiOperation({ summary: 'Can access: student' })
-  @ApiOkResponse({ type: AchievementDto, isArray: true })
-  @UseInterceptors(new TransformInterceptor(AchievementDto))
+  @ApiOkResponse({ type: IssuedAchievementDto, isArray: true })
+  @UseInterceptors(new TransformInterceptor(IssuedAchievementDto))
   async getUnlockedAchievements(@Req() req: AuthorizedRequestDto) {
     return this.achievementsService.getUnlockedAchievements(req.user.uuid);
   }

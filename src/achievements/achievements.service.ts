@@ -134,15 +134,19 @@ export class AchievementsService {
   }
 
   async getUnlockedAchievements(studentUuid: string) {
-    return this.achievementsRepository
-      .createQueryBuilder('achievement')
-      .innerJoin(
-        'issued_achievements',
-        'issuedAchievement',
-        'issuedAchievement.achievement_uuid = achievement.uuid',
-      )
-      .where('issuedAchievement.student_uuid = :studentUuid', { studentUuid })
-      .getMany();
+    // return this.achievementsRepository
+    //   .createQueryBuilder('achievement')
+    //   .innerJoin(
+    //     'issued_achievements',
+    //     'issuedAchievement',
+    //     'issuedAchievement.achievement_uuid = achievement.uuid',
+    //   )
+    //   .where('issuedAchievement.student_uuid = :studentUuid', { studentUuid })
+    //   .getMany();
+    return this.issuedAchievementsRepository.find({
+      where: { student: { uuid: studentUuid } },
+      relations: ['achievement', 'issuer', 'student'],
+    });
   }
 
   async issueAchievement(
