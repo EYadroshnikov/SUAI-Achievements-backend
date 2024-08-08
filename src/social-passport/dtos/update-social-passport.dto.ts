@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsEnum, IsOptional } from 'class-validator';
 import { EducationType } from '../enums/education-type.enum';
 import { BskStatus } from '../enums/bsk-status.enum';
 import { CardStatus } from '../enums/card-status.enum';
-import { IsEnum, IsOptional } from 'class-validator';
 
-export class CreateSocialPassportDto {
+export class UpdateSocialPassportDto {
   @ApiProperty({ required: false })
   @IsOptional()
   phone?: string;

@@ -16,6 +16,7 @@ import { Institute } from '../../institues/entities/institute.entity';
 import { IssuedAchievement } from '../../achievements/entities/issued-achievement.entity';
 import { AchievementOperation } from '../../achievements/entities/achievement-operation.entity';
 import { SocialPassport } from '../../social-passport/entities/social-passport.entity';
+import { RefreshSession } from '../../auth/entities/refresh-session.entity';
 
 @Entity('users')
 export class User {
@@ -93,6 +94,13 @@ export class User {
     nullable: true,
   })
   socialPassport?: SocialPassport;
+
+  // @OneToMany(() => RefreshSession, (refreshSession) => refreshSession.user, {
+  //   cascade: ['remove'],
+  //   nullable: true,
+  // })
+  // refreshSessions: RefreshSession[];
+  //TODO: refresh session cascade delete!!!
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;

@@ -16,6 +16,9 @@ export class Institute {
   @Column({ name: 'number', type: 'integer', nullable: true })
   number: number;
 
+  @Column({ name: 'spread_sheet_id', type: 'varchar', nullable: true })
+  spreadSheetId: string;
+
   @OneToMany(() => Group, (group) => group.institute)
   groups: Group[];
 

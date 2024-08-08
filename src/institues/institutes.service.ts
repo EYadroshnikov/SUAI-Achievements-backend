@@ -17,4 +17,8 @@ export class InstitutesService {
   async getAll(): Promise<Institute[]> {
     return this.instituteRepository.find();
   }
+
+  async getAllWithGroups(): Promise<Institute[]> {
+    return this.instituteRepository.find({ relations: ['groups'] });
+  }
 }

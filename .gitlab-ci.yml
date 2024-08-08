@@ -28,7 +28,6 @@ deploy:
   tags:
     - suai
   script:
-    - pwd
     - docker pull $DOCKERHUB_REPO:${IMAGE_TAG}_${CI_PIPELINE_ID}
     - docker rm -f suai-achievements-backend
     - docker run --restart on-failure -d -p3000:3000 --env-file /home/gitlab-runner/suai-achievements-backend/.env --network=host --name suai-achievements-backend $DOCKERHUB_REPO:${IMAGE_TAG}_${CI_PIPELINE_ID}

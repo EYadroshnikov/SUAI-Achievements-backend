@@ -30,6 +30,7 @@ import { CreateSocialPassportDto } from './dtos/create-social-passport.dto';
 import { ParseGroupRolePipe } from '../common/validation-pipes/parse-group-role.pipe';
 import { GroupRole } from './enums/group-role.enum';
 import { UpdateResult } from 'typeorm';
+import { UpdateSocialPassportDto } from './dtos/update-social-passport.dto';
 
 @ApiTags('Social Passport')
 @ApiBearerAuth()
@@ -45,6 +46,16 @@ export class SocialPassportController {
   @UseInterceptors(new TransformInterceptor(SocialPassportDto))
   async getMySocialPassport(@Req() req: AuthorizedRequestDto) {
     return this.socialPassportService.findOne(req.user.uuid);
+  }
+
+  @Patch('me/social-passport')
+  @ApiOperation({ summary: 'can access: student' })
+  @Roles(UserRole.STUDENT)
+  async updateMySocialPassport(
+    @Req() req: AuthorizedRequestDto,
+    @Body() updateSocialPassportDto: UpdateSocialPassportDto,
+  ) {
+    return this.socialPassportService.update(req.user, updateSocialPassportDto);
   }
 
   @Get('students/:uuid/social-passport')
