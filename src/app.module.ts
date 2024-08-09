@@ -19,7 +19,7 @@ import { TelegramModule } from './telegram/telegram.module';
 import redisConfig from './config/redis/redis.config';
 import { BullModule } from '@nestjs/bull';
 import { SocialPassportModule } from './social-passport/social-passport.module';
-import { GoogleModule } from './google/google.module';
+// import { GoogleModule } from './google/google.module';
 import vkConfig from './config/vk/vk.config';
 import telegramConfig from './config/telegram/telegram.config';
 import googleConfig from './config/google/google.config';
@@ -81,7 +81,7 @@ import googleConfig from './config/google/google.config';
     SpecialtiesModule,
     TelegramModule,
     SocialPassportModule,
-    GoogleModule,
+    // GoogleModule,
   ],
   controllers: [AppController],
   providers: [AppService],
