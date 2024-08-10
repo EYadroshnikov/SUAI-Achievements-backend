@@ -365,13 +365,13 @@ export class UsersService {
     });
     const topStudents = paginatedUsers.data.map((user) => {
       const dto = new TopStudentDto();
+      dto.firstName = user.firstName;
+      dto.lastName = user.lastName;
+      dto.avatar = user.avatar;
       dto.balance = user.balance;
       dto.userSettings = user.userSettings;
-      if (user.userSettings && user.userSettings.isVisibleInTop) {
-        dto.firstName = user.firstName;
-        dto.lastName = user.lastName;
-        dto.avatar = user.avatar;
-      } else {
+
+      if (user.userSettings && !user.userSettings.isVisibleInTop) {
         dto.firstName = null;
         dto.lastName = null;
         dto.avatar = null;
