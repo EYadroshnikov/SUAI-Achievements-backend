@@ -155,7 +155,7 @@ export class SputniksController {
     @Paginate() paginateDto: PaginateDto,
   ) {
     const sputnik = await this.usersService.getSputnik(req.user.uuid);
-    return this.usersService.getTopStudents({
+    return this.usersService.getTopStudents(req.user, {
       ...paginateDto,
       filter: { 'institute.id': '$eq:' + sputnik.institute.id },
     });

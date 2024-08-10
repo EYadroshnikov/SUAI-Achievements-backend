@@ -142,8 +142,11 @@ export class StudentsController {
   @ApiPaginationQuery({ sortableColumns: ['balance'] })
   @ApiOkPaginatedResponse(StudentDto, { sortableColumns: ['balance'] })
   @UseInterceptors(new PaginatedTransformInterceptor(StudentDto))
-  async getTopStudents(@Paginate() query: PaginateDto) {
-    return this.usersService.getTopStudents(query);
+  async getTopStudents(
+    @Req() req: AuthorizedRequestDto,
+    @Paginate() query: PaginateDto,
+  ) {
+    return this.usersService.getTopStudents(req.user, query);
   }
 
   @Get('/groups/:id/students/top')
@@ -164,8 +167,9 @@ export class StudentsController {
   async getInstitutesTopById(
     @Param('id', ParseIntPipe) id: number,
     @Paginate() paginateDto: PaginateDto,
+    @Req() req: AuthorizedRequestDto,
   ) {
-    return this.usersService.getTopStudents({
+    return this.usersService.getTopStudents(req.user, {
       ...paginateDto,
       filter: { 'institute.id': '$eq:' + id },
     });
@@ -174,11 +178,10 @@ export class StudentsController {
   @Get('/students/top/me/groups')
   @ApiOperation({ summary: 'can access: student' })
   @Roles(UserRole.STUDENT)
-  @ApiOkResponse({ type: StudentDto, isArray: true })
-  @UseInterceptors(new TransformInterceptor(StudentDto))
+  @ApiOkResponse({ type: TopStudentDto, isArray: true })
+  @UseInterceptors(new TransformInterceptor(TopStudentDto))
   async getTopMyGroupsStudents(@Req() req: AuthorizedRequestDto) {
-    const student = await this.usersService.getStudent(req.user.uuid);
-    return this.usersService.getStudentsTopGroup(student.group.id);
+    return this.usersService.getStudentsTopMyGroup(req.user);
   }
 
   @Get('/students/top/me/institutes')
@@ -192,7 +195,7 @@ export class StudentsController {
     @Paginate() paginateDto: PaginateDto,
   ) {
     const student = await this.usersService.getStudent(req.user.uuid);
-    return this.usersService.getTopStudents({
+    return this.usersService.getTopStudents(req.user, {
       ...paginateDto,
       filter: { 'institute.id': '$eq:' + student.institute.id },
     });

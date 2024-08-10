@@ -350,6 +350,7 @@ export class UsersService {
   }
 
   async getTopStudents(
+    authorizedUser: AuthorizedUserDto,
     query: PaginateQuery,
   ): Promise<Paginated<TopStudentDto>> {
     const paginatedUsers = await paginate<User>(query, this.userRepository, {
@@ -365,19 +366,29 @@ export class UsersService {
     });
     const topStudents = paginatedUsers.data.map((user) => {
       const dto = new TopStudentDto();
+      dto.uuid = user.uuid;
       dto.firstName = user.firstName;
       dto.lastName = user.lastName;
       dto.avatar = user.avatar;
       dto.balance = user.balance;
       dto.userSettings = user.userSettings;
 
-      if (user.userSettings && !user.userSettings.isVisibleInTop) {
+      if (authorizedUser.role !== UserRole.STUDENT) {
+        return dto;
+      }
+
+      if (
+        user.userSettings &&
+        !user.userSettings.isVisibleInTop &&
+        authorizedUser.uuid != user.uuid
+      ) {
+        dto.uuid = null;
         dto.firstName = null;
         dto.lastName = null;
         dto.avatar = null;
       }
 
-      return dto; //TODO: себя не убирать из топа, сказать славе переделать подсветку пользователя в топе
+      return dto;
     });
     return {
       ...paginatedUsers,
@@ -394,6 +405,50 @@ export class UsersService {
     return this.userRepository.find({
       where: { group: { id }, role: UserRole.STUDENT, isBanned: false },
       order: { balance: 'DESC' },
+    });
+  }
+
+  async getStudentsTopMyGroup(authorizedUser: AuthorizedUserDto) {
+    return this.userRepository.manager.transaction(async (entityManager) => {
+      const student = await entityManager.findOneOrFail(User, {
+        where: { uuid: authorizedUser.uuid },
+      });
+
+      const users = await entityManager.find(User, {
+        where: {
+          group: { id: student.group.id },
+          role: UserRole.STUDENT,
+          isBanned: false,
+        },
+        order: { balance: 'DESC' },
+        relations: ['userSettings'],
+      });
+      return users.map((user) => {
+        const dto = new TopStudentDto();
+        dto.uuid = user.uuid;
+        dto.firstName = user.firstName;
+        dto.lastName = user.lastName;
+        dto.avatar = user.avatar;
+        dto.balance = user.balance;
+        dto.userSettings = user.userSettings;
+
+        if (authorizedUser.role !== UserRole.STUDENT) {
+          return dto;
+        }
+
+        if (
+          user.userSettings &&
+          !user.userSettings.isVisibleInTop &&
+          authorizedUser.uuid != user.uuid
+        ) {
+          dto.uuid = null;
+          dto.firstName = null;
+          dto.lastName = null;
+          dto.avatar = null;
+        }
+
+        return dto;
+      });
     });
   }
 
