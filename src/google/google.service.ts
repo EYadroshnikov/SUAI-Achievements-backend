@@ -58,7 +58,7 @@ export class GoogleService {
     });
   }
 
-  async updateSheet(
+  async updateSocialPassportSheet(
     sheets: sheets_v4.Sheets,
     spreadsheetId: string,
     sheetName: string,

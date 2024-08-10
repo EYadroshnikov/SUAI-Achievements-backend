@@ -9,8 +9,11 @@ import { UsersModule } from '../users/users.module';
     BullModule.registerQueue({
       name: 'vk-request-queue',
       limiter: {
-        max: 1,
-        duration: 500,
+        max: 3,
+        duration: 1000,
+      },
+      defaultJobOptions: {
+        removeOnComplete: true,
       },
     }),
     forwardRef(() => UsersModule),

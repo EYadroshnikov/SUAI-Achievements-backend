@@ -39,6 +39,7 @@ import { UpdateStudentDto } from '../dtos/update.student.dto';
 import { RankDto } from '../dtos/rank.dto';
 import { PaginatedTransformInterceptor } from '../../common/interceptors/paginated-transform.interceptor';
 import { AllRanksDto } from '../dtos/all-ranks.dto';
+import { TopStudentDto } from '../dtos/top-student.dto';
 
 @ApiTags('Students')
 @ApiBearerAuth()
@@ -158,8 +159,8 @@ export class StudentsController {
   @ApiOperation({ summary: 'can access: all' })
   @Roles(UserRole.STUDENT, UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
   @ApiPaginationQuery({ sortableColumns: ['balance'] })
-  @ApiOkPaginatedResponse(StudentDto, { sortableColumns: ['balance'] })
-  @UseInterceptors(new PaginatedTransformInterceptor(StudentDto))
+  @ApiOkPaginatedResponse(TopStudentDto, { sortableColumns: ['balance'] })
+  @UseInterceptors(new PaginatedTransformInterceptor(TopStudentDto))
   async getInstitutesTopById(
     @Param('id', ParseIntPipe) id: number,
     @Paginate() paginateDto: PaginateDto,
@@ -184,8 +185,8 @@ export class StudentsController {
   @ApiOperation({ summary: 'can access: student' })
   @Roles(UserRole.STUDENT)
   @ApiPaginationQuery({ sortableColumns: ['balance'] })
-  @ApiOkPaginatedResponse(StudentDto, { sortableColumns: ['balance'] })
-  @UseInterceptors(new PaginatedTransformInterceptor(StudentDto))
+  @ApiOkPaginatedResponse(TopStudentDto, { sortableColumns: ['balance'] })
+  @UseInterceptors(new PaginatedTransformInterceptor(TopStudentDto))
   async getTopMyInstituteStudents(
     @Req() req: AuthorizedRequestDto,
     @Paginate() paginateDto: PaginateDto,

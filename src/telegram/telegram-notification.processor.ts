@@ -1,4 +1,4 @@
-import { Process, Processor } from '@nestjs/bull';
+import { OnQueueError, OnQueueFailed, Process, Processor } from '@nestjs/bull';
 import { Logger } from '@nestjs/common';
 import { Job } from 'bull';
 import axios from 'axios';
@@ -34,5 +34,15 @@ export class TelegramNotificationProcessor {
       this.logger.error(error);
       throw Error;
     }
+  }
+
+  @OnQueueFailed()
+  async onQueueFailed(job: Job, error: any) {
+    this.logger.error(`Task ${job.id} failed: ${error.message}`, error.stack);
+  }
+
+  @OnQueueError()
+  async onQueueError(error: any) {
+    this.logger.error(error);
   }
 }

@@ -173,7 +173,7 @@ export class SocialPassportService {
           institute.spreadSheetId,
           sheetName,
         );
-        await this.googleService.updateSheet(
+        await this.googleService.updateSocialPassportSheet(
           sheets,
           institute.spreadSheetId,
           sheetName,

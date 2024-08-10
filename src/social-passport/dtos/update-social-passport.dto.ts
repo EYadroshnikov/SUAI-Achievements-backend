@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsOptional } from 'class-validator';
+import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
 import { EducationType } from '../enums/education-type.enum';
 import { BskStatus } from '../enums/bsk-status.enum';
 import { CardStatus } from '../enums/card-status.enum';
@@ -7,6 +7,7 @@ import { CardStatus } from '../enums/card-status.enum';
 export class UpdateSocialPassportDto {
   @ApiProperty({ required: false })
   @IsOptional()
+  @IsString()
   phone?: string;
 
   @ApiProperty({ enum: EducationType, required: false })
@@ -16,10 +17,12 @@ export class UpdateSocialPassportDto {
 
   @ApiProperty({ required: false })
   @IsOptional()
+  @IsString()
   region?: string;
 
   @ApiProperty({ required: false })
   @IsOptional()
+  @IsString()
   socialCategory?: string;
 
   @ApiProperty({ enum: BskStatus, required: false })
@@ -29,14 +32,17 @@ export class UpdateSocialPassportDto {
 
   @ApiProperty({ required: false })
   @IsOptional()
+  @IsBoolean()
   medicalRegistration?: boolean;
 
   @ApiProperty({ required: false })
   @IsOptional()
+  @IsBoolean()
   militaryRegistration?: boolean;
 
   @ApiProperty({ required: false })
   @IsOptional()
+  @IsBoolean()
   passStatus?: boolean;
 
   @ApiProperty({ enum: CardStatus, required: false })
@@ -46,10 +52,12 @@ export class UpdateSocialPassportDto {
 
   @ApiProperty({ required: false })
   @IsOptional()
+  @IsBoolean()
   preferentialTravelCard?: boolean;
 
   @ApiProperty({ required: false })
   @IsOptional()
+  @IsBoolean()
   profcomApplication?: boolean;
 
   @ApiProperty({ enum: CardStatus, required: false })
@@ -64,10 +72,12 @@ export class UpdateSocialPassportDto {
 
   @ApiProperty({ required: false })
   @IsOptional()
+  @IsBoolean()
   certificateOrContract?: boolean;
 
   @ApiProperty({ required: false })
   @IsOptional()
+  @IsBoolean()
   competenceCenterTest?: boolean;
 
   @ApiProperty({ required: false })

@@ -36,6 +36,7 @@ import generateVkUnBanMessage from '../common/vk/notification-templates/vk-unban
 import { AllRanksDto } from './dtos/all-ranks.dto';
 import { UpdateSputnikDto } from './dtos/update.sputnik.dto';
 import { RankDto } from './dtos/rank.dto';
+import { TopStudentDto } from './dtos/top-student.dto';
 
 @Injectable()
 export class UsersService {
@@ -348,8 +349,10 @@ export class UsersService {
     });
   }
 
-  async getTopStudents(query: PaginateQuery): Promise<Paginated<User>> {
-    return paginate<User>(query, this.userRepository, {
+  async getTopStudents(
+    query: PaginateQuery,
+  ): Promise<Paginated<TopStudentDto>> {
+    const paginatedUsers = await paginate<User>(query, this.userRepository, {
       where: { role: UserRole.STUDENT, isBanned: false },
       sortableColumns: ['balance'],
       filterableColumns: {
@@ -358,8 +361,33 @@ export class UsersService {
       },
       defaultSortBy: [['balance', 'DESC']],
       // loadEagerRelations: true,
-      relations: ['group', 'institute'],
+      relations: ['group', 'institute', 'userSettings'],
     });
+    const topStudents = paginatedUsers.data.map((user) => {
+      const dto = new TopStudentDto();
+      dto.balance = user.balance;
+      dto.userSettings = user.userSettings;
+      if (user.userSettings && user.userSettings.isVisibleInTop) {
+        dto.firstName = user.firstName;
+        dto.lastName = user.lastName;
+        dto.avatar = user.avatar;
+      } else {
+        dto.firstName = null;
+        dto.lastName = null;
+        dto.avatar = null;
+      }
+
+      return dto;
+    });
+    return {
+      ...paginatedUsers,
+      data: topStudents,
+      meta: {
+        ...paginatedUsers.meta,
+        sortBy: [['balance', 'DESC']],
+        searchBy: [],
+      },
+    };
   }
 
   async getStudentsTopGroup(id: number) {
