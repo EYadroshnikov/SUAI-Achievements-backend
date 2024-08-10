@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -14,6 +15,7 @@ export class UserSettings {
   uuid: string;
 
   @OneToOne(() => User, (user) => user.userSettings)
+  @JoinColumn({ name: 'user_uuid' })
   user: User;
 
   @Column({ name: 'is_visible_in_top', type: 'boolean', default: true })
