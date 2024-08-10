@@ -1,6 +1,7 @@
 import { Exclude, Expose, Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { UserSettings } from '../../user-settings/entities/user-settings.entity';
+import { UserSettingsDto } from '../../user-settings/dtos/user-settings.dto';
 
 @Exclude()
 export class TopStudentDto {
@@ -20,8 +21,8 @@ export class TopStudentDto {
   @Expose()
   balance: number;
 
-  @ApiProperty({ type: UserSettings })
-  @Type(() => UserSettings)
+  @ApiProperty({ type: UserSettingsDto })
+  @Type(() => UserSettingsDto)
   @Expose()
-  userSettings: UserSettings;
+  userSettings: UserSettingsDto;
 }

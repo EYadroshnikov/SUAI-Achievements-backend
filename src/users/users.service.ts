@@ -377,7 +377,7 @@ export class UsersService {
         dto.avatar = null;
       }
 
-      return dto;
+      return dto; //TODO: себя не убирать из топа, сказать славе переделать подсветку пользователя в топе
     });
     return {
       ...paginatedUsers,
