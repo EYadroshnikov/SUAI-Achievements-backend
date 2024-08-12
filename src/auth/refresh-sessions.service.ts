@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RefreshSession } from './entities/refresh-session.entity';
@@ -14,6 +14,7 @@ export class RefreshSessionsService {
     @InjectRepository(RefreshSession)
     private readonly refreshSessionRepository: Repository<RefreshSession>,
   ) {}
+  private readonly logger: Logger = new Logger(RefreshSessionsService.name);
 
   COOKIE_OPTIONS: CookieOptions = {
     httpOnly: true,
@@ -60,12 +61,17 @@ export class RefreshSessionsService {
     });
   }
 
-  @Cron(CronExpression.EVERY_DAY_AT_1PM)
+  @Cron(CronExpression.EVERY_DAY_AT_1PM, {
+    name: 'delete expired refresh session',
+    timeZone: 'Europe/Moscow',
+  })
   async deleteExpiredSession() {
-    this.refreshSessionRepository
+    this.logger.log('Cron task: delete expired refresh session - has started');
+    await this.refreshSessionRepository
       .delete({
         expiresAt: LessThanOrEqual(new Date()),
       })
       .catch((err) => console.error(err));
+    this.logger.log('Cron task: delete expired refresh session - has finished');
   }
 }

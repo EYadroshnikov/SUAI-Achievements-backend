@@ -1,5 +1,5 @@
 function generateVkUnBanMessage(): string {
-  return `Ты был разблокирован!`;
+  return `Вы были разблокированы!`;
 }
 
 export default generateVkUnBanMessage;
