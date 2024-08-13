@@ -12,8 +12,6 @@ import { InstitutesModule } from './institues/institutes.module';
 import { VkModule } from './vk/vk.module';
 import appConfig from './config/app/app.config';
 import { LoggingMiddleware } from './common/middlewares/logging.middleware';
-import { join } from 'path';
-import { ServeStaticModule } from '@nestjs/serve-static';
 import { SpecialtiesModule } from './specialties/specialties.module';
 import { TelegramModule } from './telegram/telegram.module';
 import redisConfig from './config/redis/redis.config';
@@ -72,13 +70,13 @@ import googleConfig from './config/google/google.config';
     GroupsModule,
     InstitutesModule,
     VkModule,
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'achievement-icons'),
-      serveRoot: '/achievement-icons',
-      serveStaticOptions: {
-        dotfiles: 'deny',
-      },
-    }),
+    // ServeStaticModule.forRoot({
+    //   rootPath: join(__dirname, '..', 'achievement-icons'),
+    //   serveRoot: '/achievement-icons',
+    //   serveStaticOptions: {
+    //     dotfiles: 'deny',
+    //   },
+    // }),
     SpecialtiesModule,
     TelegramModule,
     SocialPassportModule,

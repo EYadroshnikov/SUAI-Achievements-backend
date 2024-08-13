@@ -56,6 +56,7 @@ export class GoogleService {
         ],
       },
     });
+    await this.formatCells(sheets, spreadsheetId, sheetName);
   }
 
   async updateSocialPassportSheet(
@@ -72,6 +73,35 @@ export class GoogleService {
         values,
       },
     });
+  }
+
+  async getSheetId(
+    sheets: sheets_v4.Sheets,
+    spreadsheetId: string,
+    sheetName: string,
+  ): Promise<number> {
+    const sheet = await sheets.spreadsheets.get({
+      spreadsheetId,
+      ranges: [],
+      includeGridData: false,
+    });
+
+    const foundSheet = sheet.data.sheets?.find(
+      (s) => s.properties?.title === sheetName,
+    );
+
+    if (!foundSheet || !foundSheet.properties?.sheetId) {
+      throw new Error(`Sheet with name "${sheetName}" not found`);
+    }
+
+    return foundSheet.properties.sheetId;
+  }
+
+  async formatCells(
+    sheets: sheets_v4.Sheets,
+    spreadsheetId: string,
+    sheetName: string,
+  ) {
     const sheetId = await this.getSheetId(sheets, spreadsheetId, sheetName);
     const columnWidths: number[] = [
       250, // ФИО
@@ -162,27 +192,5 @@ export class GoogleService {
         requests,
       },
     });
-  }
-
-  async getSheetId(
-    sheets: sheets_v4.Sheets,
-    spreadsheetId: string,
-    sheetName: string,
-  ): Promise<number> {
-    const sheet = await sheets.spreadsheets.get({
-      spreadsheetId,
-      ranges: [],
-      includeGridData: false,
-    });
-
-    const foundSheet = sheet.data.sheets?.find(
-      (s) => s.properties?.title === sheetName,
-    );
-
-    if (!foundSheet || !foundSheet.properties?.sheetId) {
-      throw new Error(`Sheet with name "${sheetName}" not found`);
-    }
-
-    return foundSheet.properties.sheetId;
   }
 }

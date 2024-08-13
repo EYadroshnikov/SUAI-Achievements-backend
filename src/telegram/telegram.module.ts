@@ -8,7 +8,7 @@ import { TelegramNotificationProcessor } from './telegram-notification.processor
     BullModule.registerQueue({
       name: 'telegram-notification-queue',
       limiter: {
-        max: 10,
+        max: 5,
         duration: 1000,
       },
       defaultJobOptions: {

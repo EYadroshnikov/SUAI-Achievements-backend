@@ -41,7 +41,7 @@ export class RefreshSessionsService {
     } else if (typeof ipHeader === 'string') {
       refreshSession.ip = ipHeader;
     } else {
-      refreshSession.ip = '';
+      refreshSession.ip = 'error';
     }
 
     const expiresAt = new Date();
