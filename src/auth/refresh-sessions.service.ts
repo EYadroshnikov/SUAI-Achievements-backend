@@ -35,13 +35,13 @@ export class RefreshSessionsService {
     refreshSession.fingerprint = req.body['fingerprint'] || '';
     refreshSession.user = user;
     refreshSession.userAgent = req.headers['user-agent'] || '';
-    const ipHeader = req.headers['X-real-IP'];
+    const ipHeader = req.headers['x-real-ip'];
     if (Array.isArray(ipHeader)) {
       refreshSession.ip = ipHeader.join(', ');
     } else if (typeof ipHeader === 'string') {
       refreshSession.ip = ipHeader;
     } else {
-      refreshSession.ip = 'error';
+      refreshSession.ip = '';
     }
 
     const expiresAt = new Date();
