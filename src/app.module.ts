@@ -19,6 +19,7 @@ import { BullModule } from '@nestjs/bull';
 import { SocialPassportModule } from './social-passport/social-passport.module';
 import { GoogleModule } from './google/google.module';
 import { UserSettingsModule } from './user-settings/user-settings.module';
+import { FilesModule } from './files/files.module';
 import vkConfig from './config/vk/vk.config';
 import telegramConfig from './config/telegram/telegram.config';
 import googleConfig from './config/google/google.config';
@@ -82,6 +83,7 @@ import googleConfig from './config/google/google.config';
     SocialPassportModule,
     GoogleModule,
     UserSettingsModule,
+    FilesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
