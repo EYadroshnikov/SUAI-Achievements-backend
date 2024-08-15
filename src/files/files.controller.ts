@@ -25,13 +25,14 @@ import { Roles } from '../auth/roles.decorator';
 import { UserRole } from '../users/enums/user-role.enum';
 
 @ApiTags('Files')
-@ApiBearerAuth()
-@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('files')
 export class FilesController {
   constructor(private readonly filesService: FilesService) {}
 
+  //TODO: check file type and size
   @Post('upload')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.STUDENT)
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -65,7 +66,6 @@ export class FilesController {
   }
 
   @Get(':filename')
-  @Roles(UserRole.STUDENT)
   @ApiOkResponse({
     content: { 'image/png': {} },
   })
