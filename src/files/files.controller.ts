@@ -7,6 +7,7 @@ import {
   UploadedFile,
   UseInterceptors,
   UseGuards,
+  BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
@@ -59,7 +60,20 @@ export class FilesController {
       },
     },
   })
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(
+    FileInterceptor('file', {
+      limits: { fileSize: 256 * 1024 }, // 256 kB
+      fileFilter: (req, file, callback) => {
+        if (file.mimetype !== 'image/png') {
+          return callback(
+            new BadRequestException('Only .png files are allowed!'),
+            false,
+          );
+        }
+        callback(null, true);
+      },
+    }),
+  )
   uploadFile(@UploadedFile() file: Express.Multer.File) {
     const filename = this.filesService.saveFile(file);
     return { filename };
