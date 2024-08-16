@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { CreateGroupDto } from './dtos/create-group.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, In, Repository } from 'typeorm';
+import { DataSource, EntityManager, In, Repository } from 'typeorm';
 import { Group } from './entities/group.entity';
 import { Institute } from '../institues/entities/institute.entity';
 import { InstitutesService } from '../institues/institutes.service';
@@ -28,16 +28,23 @@ export class GroupsService {
     private userService: UsersService,
   ) {}
 
-  async findOne(id: number) {
-    return this.groupRepository.findOneOrFail({ where: { id } });
+  async findOne(id: number, transactionEntityManager?: EntityManager) {
+    const repo =
+      transactionEntityManager.getRepository(Group) || this.groupRepository;
+    return repo.findOneOrFail({ where: { id } });
   }
 
-  async findAndCountBy(ids: number[], institute: Institute) {
-    const [sputnikGroups, groupsCount] =
-      await this.groupRepository.findAndCountBy({
-        id: In(ids),
-        institute: institute,
-      });
+  async findAndCountBy(
+    ids: number[],
+    institute: Institute,
+    transactionEntityManager?: EntityManager,
+  ) {
+    const repo =
+      transactionEntityManager.getRepository(Group) || this.groupRepository;
+    const [sputnikGroups, groupsCount] = await repo.findAndCountBy({
+      id: In(ids),
+      institute: institute,
+    });
 
     if (groupsCount != ids.length) {
       throw new BadRequestException(

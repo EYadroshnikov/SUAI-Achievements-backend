@@ -55,9 +55,16 @@ export class UsersService {
   ) {}
   private readonly logger: Logger = new Logger(UsersService.name);
 
-  async find(options: FindOneOptions<User>) {
-    return this.userRepository.findOneOrFail(options);
+  async find(
+    options: FindOneOptions<User>,
+    transactionEntityManager?: EntityManager,
+  ) {
+    const repo =
+      transactionEntityManager.getRepository(User) || this.userRepository;
+    return repo.findOneOrFail(options);
   }
+
+  // async updateAndReturn(options: FindOneOptions<User>) {}
 
   async findByVkId(vkId: string): Promise<User | undefined> {
     return this.userRepository.findOneOrFail({ where: { vkId: vkId } });
@@ -168,61 +175,80 @@ export class UsersService {
   }
 
   async createCurator(curatorDto: CreateCuratorDto): Promise<User> {
-    const institute = await this.instituteService.findOne(
-      curatorDto.instituteId,
+    const curator = await this.userRepository.manager.transaction(
+      async (manager) => {
+        const institute = await this.instituteService.findOne(
+          curatorDto.instituteId,
+          manager,
+        );
+
+        const curatorEntity = manager.create(User, {
+          ...curatorDto,
+          institute,
+          role: UserRole.CURATOR,
+        });
+
+        return await manager.save(User, curatorEntity);
+      },
     );
-
-    const curatorEntity = this.userRepository.create({
-      ...curatorDto,
-      institute,
-      role: UserRole.CURATOR,
-    });
-
-    const curator = await this.userRepository.save(curatorEntity);
-    await this.vkService.addToVkAvatarQueue(curatorDto.vkId);
+    await this.vkService.addToVkAvatarQueue(curator.vkId);
     return curator;
   }
 
   async createSputnik(sputnikDto: CreateSputnikDto): Promise<User> {
-    const institute = await this.instituteService.findOne(
-      sputnikDto.instituteId,
-    );
+    const sputnik = await this.userRepository.manager.transaction(
+      async (manager) => {
+        const institute = await this.instituteService.findOne(
+          sputnikDto.instituteId,
+          manager,
+        );
 
-    const sputnikGroups = await this.groupsService.findAndCountBy(
-      sputnikDto.groupIds,
-      institute,
-    );
+        const sputnikGroups = await this.groupsService.findAndCountBy(
+          sputnikDto.groupIds,
+          institute,
+          manager,
+        );
 
-    const sputnikEntity = this.userRepository.create({
-      ...sputnikDto,
-      institute,
-      sputnikGroups,
-      role: UserRole.SPUTNIK,
-    });
-    const sputnik = await this.userRepository.save(sputnikEntity);
-    await this.vkService.addToVkAvatarQueue(sputnikDto.vkId);
+        const sputnikEntity = manager.create(User, {
+          ...sputnikDto,
+          institute,
+          sputnikGroups,
+          role: UserRole.SPUTNIK,
+        });
+        return await manager.save(User, sputnikEntity);
+      },
+    );
+    await this.vkService.addToVkAvatarQueue(sputnik.vkId);
     return sputnik;
   }
 
   async createStudent(studentDto: CreateStudentDto): Promise<User> {
-    const institute = await this.instituteService.findOne(
-      studentDto.instituteId,
+    const student = await this.userRepository.manager.transaction(
+      async (manager) => {
+        const institute = await this.instituteService.findOne(
+          studentDto.instituteId,
+          manager,
+        );
+        const group = await this.groupsService.findOne(
+          studentDto.groupId,
+          manager,
+        );
+
+        const studentEntity = manager.create(User, {
+          ...studentDto,
+          institute,
+          group,
+          role: UserRole.STUDENT,
+        });
+
+        const userSettings = new UserSettings();
+        userSettings.user = studentEntity;
+        studentEntity.userSettings = userSettings;
+
+        return await manager.save(User, studentEntity);
+      },
     );
-    const group = await this.groupsService.findOne(studentDto.groupId);
-
-    const studentEntity = this.userRepository.create({
-      ...studentDto,
-      institute,
-      group,
-      role: UserRole.STUDENT,
-    });
-
-    const userSettings = new UserSettings();
-    userSettings.user = studentEntity;
-    studentEntity.userSettings = userSettings;
-
-    const student = await this.userRepository.save(studentEntity);
-    await this.vkService.addToVkAvatarQueue(studentDto.vkId);
+    await this.vkService.addToVkAvatarQueue(student.vkId);
     return student;
   }
 

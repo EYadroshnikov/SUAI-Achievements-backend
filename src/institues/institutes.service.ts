@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Institute } from './entities/institute.entity';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 
 @Injectable()
 export class InstitutesService {
@@ -10,8 +10,11 @@ export class InstitutesService {
     private readonly instituteRepository: Repository<Institute>,
   ) {}
 
-  async findOne(id: number) {
-    return this.instituteRepository.findOneOrFail({ where: { id } });
+  async findOne(id: number, transactionEntityManager?: EntityManager) {
+    const repo =
+      transactionEntityManager.getRepository(Institute) ||
+      this.instituteRepository;
+    return repo.findOneOrFail({ where: { id } });
   }
 
   async getAll(): Promise<Institute[]> {
