@@ -12,7 +12,7 @@ export class InstitutesService {
 
   async findOne(id: number, transactionEntityManager?: EntityManager) {
     const repo =
-      transactionEntityManager.getRepository(Institute) ||
+      transactionEntityManager?.getRepository(Institute) ||
       this.instituteRepository;
     return repo.findOneOrFail({ where: { id } });
   }

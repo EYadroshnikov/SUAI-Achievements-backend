@@ -30,7 +30,7 @@ export class GroupsService {
 
   async findOne(id: number, transactionEntityManager?: EntityManager) {
     const repo =
-      transactionEntityManager.getRepository(Group) || this.groupRepository;
+      transactionEntityManager?.getRepository(Group) || this.groupRepository;
     return repo.findOneOrFail({ where: { id } });
   }
 
@@ -40,7 +40,7 @@ export class GroupsService {
     transactionEntityManager?: EntityManager,
   ) {
     const repo =
-      transactionEntityManager.getRepository(Group) || this.groupRepository;
+      transactionEntityManager?.getRepository(Group) || this.groupRepository;
     const [sputnikGroups, groupsCount] = await repo.findAndCountBy({
       id: In(ids),
       institute: institute,
