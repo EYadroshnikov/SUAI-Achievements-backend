@@ -16,11 +16,7 @@ export class TelegramNotificationProcessor {
   @Process()
   async handleJob(job: Job) {
     const { tgUserId, text } = job.data;
-    try {
-      await this.notify(tgUserId, text);
-    } catch (e) {
-      console.log(e);
-    }
+    await this.notify(tgUserId, text);
   }
 
   private async notify(tgUserId: string, text: string) {
