@@ -1,7 +1,8 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TelegramService } from './telegram.service';
 import { BullModule } from '@nestjs/bull';
 import { TelegramNotificationProcessor } from './telegram-notification.processor';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { TelegramNotificationProcessor } from './telegram-notification.processor
         removeOnComplete: true,
       },
     }),
+    forwardRef(() => UsersModule),
   ],
   providers: [TelegramService, TelegramNotificationProcessor],
   exports: [TelegramService],

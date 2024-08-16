@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserSettings } from './entities/user-settings.entity';
 import { Repository } from 'typeorm';
-import { AuthorizedUserDto } from '../common/dtos/authorized-user.dto';
 import { UpdateUserSettingsDto } from './dtos/update-user-settings.dto';
 
 @Injectable()
@@ -12,18 +11,15 @@ export class UserSettingsService {
     private readonly userSettingsRepository: Repository<UserSettings>,
   ) {}
 
-  async get(user: AuthorizedUserDto) {
+  async get(uuid: string) {
     return this.userSettingsRepository.findOneOrFail({
-      where: { user: { uuid: user.uuid } },
+      where: { user: { uuid } },
     });
   }
 
-  async update(
-    user: AuthorizedUserDto,
-    updateUserSettingsDto: UpdateUserSettingsDto,
-  ) {
+  async update(uuid: string, updateUserSettingsDto: UpdateUserSettingsDto) {
     return this.userSettingsRepository.update(
-      { user: { uuid: user.uuid } },
+      { user: { uuid } },
       updateUserSettingsDto,
     );
   }

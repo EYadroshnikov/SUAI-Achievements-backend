@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import * as fs from 'fs';
 import * as path from 'path';
 import { v4 as uuidv4 } from 'uuid';
@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 @Injectable()
 export class FilesService {
   private readonly uploadPath = './uploads/';
+  private readonly logger: Logger = new Logger(FilesService.name);
 
   constructor() {
     if (!fs.existsSync(this.uploadPath)) {
@@ -43,7 +44,7 @@ export class FilesService {
     const filePath = path.join(this.uploadPath, filename);
     if (fs.existsSync(filePath)) {
       fs.unlinkSync(filePath);
-      console.log(`File ${filename} deleted.`);
+      this.logger.log(`File ${filename} deleted.`);
     }
   }
 }

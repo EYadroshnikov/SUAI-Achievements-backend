@@ -12,7 +12,6 @@ import {
   ApiBearerAuth,
   ApiOkResponse,
   ApiOperation,
-  ApiProperty,
   ApiTags,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -38,7 +37,7 @@ export class UserSettingsController {
   @ApiOkResponse({ type: UserSettingsDto })
   @UseInterceptors(new TransformInterceptor(UserSettingsDto))
   async get(@Req() req: AuthorizedRequestDto) {
-    return this.userSettingsService.get(req.user);
+    return this.userSettingsService.get(req.user.uuid);
   }
 
   @Patch('me/user-settings')
@@ -49,6 +48,9 @@ export class UserSettingsController {
     @Req() req: AuthorizedRequestDto,
     @Body() updateUserSettingsDto: UpdateUserSettingsDto,
   ) {
-    return this.userSettingsService.update(req.user, updateUserSettingsDto);
+    return this.userSettingsService.update(
+      req.user.uuid,
+      updateUserSettingsDto,
+    );
   }
 }

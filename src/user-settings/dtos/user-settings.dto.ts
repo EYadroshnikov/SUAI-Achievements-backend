@@ -9,6 +9,14 @@ export class UserSettingsDto {
 
   @ApiProperty()
   @Expose()
+  receiveTgAchievementNotifications: boolean;
+
+  @ApiProperty()
+  @Expose()
+  receiveVkAchievementNotifications: boolean;
+
+  @ApiProperty()
+  @Expose()
   createdAt: Date;
 
   @ApiProperty()

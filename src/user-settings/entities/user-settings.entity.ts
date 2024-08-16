@@ -21,6 +21,20 @@ export class UserSettings {
   @Column({ name: 'is_visible_in_top', type: 'boolean', default: true })
   isVisibleInTop: boolean;
 
+  @Column({
+    name: 'receive_tg_achievement_notification',
+    type: 'boolean',
+    default: true,
+  })
+  receiveTgAchievementNotifications: boolean;
+
+  @Column({
+    name: 'receive_vk_achievement_notification',
+    type: 'boolean',
+    default: true,
+  })
+  receiveVkAchievementNotifications: boolean;
+
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;
 

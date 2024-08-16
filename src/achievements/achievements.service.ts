@@ -207,11 +207,6 @@ export class AchievementsService {
     return result;
   }
 
-  // async achievementNotify(
-  //   student: User,
-  //   issuedAchievement: IssuedAchievementDto,
-  // );
-
   private async getStudent(issuer: User, studentUuid: string) {
     if (issuer.role === UserRole.CURATOR) {
       return await this.userService.getInstitutesStudent(

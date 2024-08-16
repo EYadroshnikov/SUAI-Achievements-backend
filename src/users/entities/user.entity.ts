@@ -1,5 +1,4 @@
 import {
-  BeforeInsert,
   Column,
   CreateDateColumn,
   Entity,
@@ -17,7 +16,6 @@ import { Institute } from '../../institues/entities/institute.entity';
 import { IssuedAchievement } from '../../achievements/entities/issued-achievement.entity';
 import { AchievementOperation } from '../../achievements/entities/achievement-operation.entity';
 import { SocialPassport } from '../../social-passport/entities/social-passport.entity';
-import { RefreshSession } from '../../auth/entities/refresh-session.entity';
 import { UserSettings } from '../../user-settings/entities/user-settings.entity';
 
 @Entity('users')
@@ -102,7 +100,7 @@ export class User {
   //   nullable: true,
   // })
   // refreshSessions: RefreshSession[];
-  //TODO: refresh session cascade delete!!!
+  // TODO: refresh session cascade delete!!!
 
   @OneToOne(() => UserSettings, (userSettings) => userSettings.user, {
     cascade: true,
@@ -115,9 +113,4 @@ export class User {
 
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
   updatedAt: Date;
-
-  @BeforeInsert()
-  async createUserSettings() {
-    this.userSettings = new UserSettings();
-  }
 }

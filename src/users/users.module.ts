@@ -17,7 +17,8 @@ import { TelegramModule } from '../telegram/telegram.module';
     TypeOrmModule.forFeature([User]),
     forwardRef(() => GroupsModule),
     InstitutesModule,
-    forwardRef(() => VkModule),
+    // forwardRef(() => VkModule),
+    VkModule,
     TelegramModule,
   ],
 

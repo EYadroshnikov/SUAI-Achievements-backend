@@ -3,10 +3,14 @@ import { Logger } from '@nestjs/common';
 import { Job } from 'bull';
 import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
+import { UsersService } from '../users/users.service';
 
 @Processor('telegram-notification-queue')
 export class TelegramNotificationProcessor {
-  constructor(private configService: ConfigService) {}
+  constructor(
+    private configService: ConfigService,
+    private readonly usersService: UsersService,
+  ) {}
   private readonly logger = new Logger(TelegramNotificationProcessor.name);
 
   @Process()
@@ -19,7 +23,19 @@ export class TelegramNotificationProcessor {
     }
   }
 
-  private async notify(tgUserId: number, text: string) {
+  private async notify(tgUserId: string, text: string) {
+    const user = await this.usersService.find({
+      where: { tgId: tgUserId },
+      loadEagerRelations: false,
+      relations: ['userSettings'],
+    });
+    if (
+      user.userSettings &&
+      !user.userSettings.receiveTgAchievementNotifications
+    ) {
+      return;
+    }
+
     const url = `https://api.telegram.org/bot${this.configService.get('tg.botSecret', { infer: true })}/sendMessage`;
 
     const payload = {

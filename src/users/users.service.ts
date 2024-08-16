@@ -5,6 +5,7 @@ import {
   ArrayContains,
   DataSource,
   EntityManager,
+  FindOneOptions,
   In,
   Not,
   Repository,
@@ -37,6 +38,7 @@ import { AllRanksDto } from './dtos/all-ranks.dto';
 import { UpdateSputnikDto } from './dtos/update.sputnik.dto';
 import { RankDto } from './dtos/rank.dto';
 import { TopStudentDto } from './dtos/top-student.dto';
+import { UserSettings } from '../user-settings/entities/user-settings.entity';
 
 @Injectable()
 export class UsersService {
@@ -52,6 +54,10 @@ export class UsersService {
     private telegramService: TelegramService,
   ) {}
   private readonly logger: Logger = new Logger(UsersService.name);
+
+  async find(options: FindOneOptions<User>) {
+    return this.userRepository.findOneOrFail(options);
+  }
 
   async findByVkId(vkId: string): Promise<User | undefined> {
     return this.userRepository.findOneOrFail({ where: { vkId: vkId } });
@@ -210,6 +216,10 @@ export class UsersService {
       group,
       role: UserRole.STUDENT,
     });
+
+    const userSettings = new UserSettings();
+    userSettings.user = studentEntity;
+    studentEntity.userSettings = userSettings;
 
     const student = await this.userRepository.save(studentEntity);
     await this.vkService.addToVkAvatarQueue(studentDto.vkId);

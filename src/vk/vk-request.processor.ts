@@ -10,7 +10,7 @@ export class VkRequestProcessor {
   constructor(
     private configService: ConfigService,
     @Inject(forwardRef(() => UsersService))
-    private userService: UsersService,
+    private usersService: UsersService,
   ) {}
 
   private readonly logger = new Logger(VkRequestProcessor.name);
@@ -47,7 +47,7 @@ export class VkRequestProcessor {
     };
     try {
       const res = await axios.request(config);
-      await this.userService.setAvatar(
+      await this.usersService.setAvatar(
         vkId,
         res?.data?.response?.[0]?.photo_200,
       );
@@ -58,6 +58,18 @@ export class VkRequestProcessor {
   }
 
   private async notify(vkId: string, text: string) {
+    const user = await this.usersService.find({
+      where: { vkId: vkId },
+      loadEagerRelations: false,
+      relations: ['userSettings'],
+    });
+    if (
+      user.userSettings &&
+      !user.userSettings.receiveVkAchievementNotifications
+    ) {
+      return;
+    }
+
     const access_token = this.configService.get('vk.communityApiKey');
 
     const data = new FormData();
