@@ -26,8 +26,8 @@ export class FilesService {
       () => {
         this.deleteFile(uniqueFilename);
       },
-      5 * 60 * 1000,
-    ); // 5 минут в миллисекундах
+      1 * 60 * 1000,
+    ); // 1 минута в миллисекундах
 
     return uniqueFilename;
   }

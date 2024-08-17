@@ -8,6 +8,10 @@ export class UpdateUserSettingsDto {
 
   @ApiProperty()
   @IsBoolean()
+  showUnseenAchievements: boolean;
+
+  @ApiProperty()
+  @IsBoolean()
   receiveTgAchievementNotifications: boolean;
 
   @ApiProperty()

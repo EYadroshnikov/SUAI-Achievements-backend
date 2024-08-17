@@ -21,6 +21,9 @@ export class UserSettings {
   @Column({ name: 'is_visible_in_top', type: 'boolean', default: true })
   isVisibleInTop: boolean;
 
+  @Column({ name: 'show_unseen_achievements', type: 'boolean', default: true })
+  showUnseenAchievements: boolean;
+
   @Column({
     name: 'receive_tg_achievement_notification',
     type: 'boolean',
