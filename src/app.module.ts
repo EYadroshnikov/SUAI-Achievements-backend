@@ -20,6 +20,7 @@ import { SocialPassportModule } from './social-passport/social-passport.module';
 import { GoogleModule } from './google/google.module';
 import { UserSettingsModule } from './user-settings/user-settings.module';
 import { FilesModule } from './files/files.module';
+import { HealthModule } from './health/health.module';
 import vkConfig from './config/vk/vk.config';
 import telegramConfig from './config/telegram/telegram.config';
 import googleConfig from './config/google/google.config';
@@ -84,6 +85,7 @@ import googleConfig from './config/google/google.config';
     GoogleModule,
     UserSettingsModule,
     FilesModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
