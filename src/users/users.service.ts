@@ -60,7 +60,7 @@ export class UsersService {
     transactionEntityManager?: EntityManager,
   ) {
     const repo =
-      transactionEntityManager.getRepository(User) || this.userRepository;
+      transactionEntityManager?.getRepository(User) || this.userRepository;
     return repo.findOneOrFail(options);
   }
 
