@@ -402,10 +402,10 @@ export class UsersService {
         'group.id': [FilterOperator.EQ],
         'institute.id': [FilterOperator.EQ],
       },
-      loadEagerRelations: false,
       defaultSortBy: [['balance', 'DESC']],
-      relations: ['userSettings'],
+      relations: ['group', 'institute', 'userSettings'],
     });
+    console.log(paginatedUsers);
     const topStudents = paginatedUsers.data.map((user) => {
       const dto = new TopStudentDto();
       dto.uuid = user.uuid;
