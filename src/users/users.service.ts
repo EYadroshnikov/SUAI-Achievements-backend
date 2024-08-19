@@ -67,11 +67,17 @@ export class UsersService {
   // async updateAndReturn(options: FindOneOptions<User>) {}
 
   async findByVkId(vkId: string): Promise<User | undefined> {
-    return this.userRepository.findOneOrFail({ where: { vkId: vkId } });
+    return this.userRepository.findOneOrFail({
+      where: { vkId: vkId },
+      loadEagerRelations: false,
+    });
   }
 
   async findByTgId(tgId: string): Promise<User | undefined> {
-    return this.userRepository.findOneOrFail({ where: { tgId: tgId } });
+    return this.userRepository.findOneOrFail({
+      where: { tgId: tgId },
+      loadEagerRelations: false,
+    });
   }
 
   async findByTgUsername(username: string): Promise<User | undefined> {
