@@ -6,6 +6,7 @@ const translations: {
 } = {
   [EducationType.BUDGET]: RuEducationType.BUDGET,
   [EducationType.CONTRACT]: RuEducationType.BUDGET,
+  [EducationType.SLAVISH]: RuEducationType.SLAVISH,
 };
 
 export function translateEducationType(value: EducationType): RuEducationType {

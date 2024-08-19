@@ -72,7 +72,7 @@ export class SocialPassport {
   @Column({
     name: 'preferential travel card',
     type: 'boolean',
-    nullable: null,
+    nullable: true,
     default: null,
   })
   preferentialTravelCard: boolean;
