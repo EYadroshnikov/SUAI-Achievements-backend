@@ -402,9 +402,9 @@ export class UsersService {
         'group.id': [FilterOperator.EQ],
         'institute.id': [FilterOperator.EQ],
       },
+      loadEagerRelations: false,
       defaultSortBy: [['balance', 'DESC']],
-      // loadEagerRelations: true,
-      relations: ['group', 'institute', 'userSettings'],
+      relations: ['userSettings'],
     });
     const topStudents = paginatedUsers.data.map((user) => {
       const dto = new TopStudentDto();
@@ -413,7 +413,6 @@ export class UsersService {
       dto.lastName = user.lastName;
       dto.avatar = user.avatar;
       dto.balance = user.balance;
-      dto.userSettings = user.userSettings;
 
       if (authorizedUser.role !== UserRole.STUDENT) {
         return dto;
@@ -447,6 +446,7 @@ export class UsersService {
     return this.userRepository.find({
       where: { group: { id }, role: UserRole.STUDENT, isBanned: false },
       order: { balance: 'DESC' },
+      loadEagerRelations: false,
     });
   }
 
@@ -462,6 +462,7 @@ export class UsersService {
           role: UserRole.STUDENT,
           isBanned: false,
         },
+        loadEagerRelations: false,
         order: { balance: 'DESC' },
         relations: ['userSettings'],
       });
@@ -472,7 +473,6 @@ export class UsersService {
         dto.lastName = user.lastName;
         dto.avatar = user.avatar;
         dto.balance = user.balance;
-        dto.userSettings = user.userSettings;
 
         if (authorizedUser.role !== UserRole.STUDENT) {
           return dto;
