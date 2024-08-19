@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { EntityManager, In, Not, Repository } from 'typeorm';
 import { Achievement } from './entities/achievement.entity';
 import { IssuedAchievement } from './entities/issued-achievement.entity';
 import { UserRole } from '../users/enums/user-role.enum';
@@ -56,16 +56,21 @@ export class AchievementsService {
   async getAchievementsForUser(
     user: AuthorizedUserDto,
   ): Promise<AchievementDto[]> {
-    const achievements = await this.achievementsRepository.find();
-
     if (user.role !== UserRole.STUDENT) {
-      return achievements;
+      return this.achievementsRepository.find();
     }
+    const { achievements, issuedAchievements } =
+      await this.achievementsRepository.manager.transaction(async (manager) => {
+        const [achievements, issuedAchievements] = await Promise.all([
+          manager.find(Achievement),
+          manager.find(IssuedAchievement, {
+            where: { student: { uuid: user.uuid } },
+            relations: ['achievement'],
+          }),
+        ]);
 
-    const issuedAchievements = await this.issuedAchievementsRepository.find({
-      where: { student: user },
-      relations: ['achievement'],
-    });
+        return { achievements, issuedAchievements };
+      });
 
     const issuedAchievementMap = new Map<string, IssuedAchievement>();
     issuedAchievements.forEach((ia) => {
@@ -74,13 +79,12 @@ export class AchievementsService {
 
     return achievements.map((achievement) => {
       const issuedAchievement = issuedAchievementMap.get(achievement.uuid);
-      return this.formatAchievementDto(achievement, user, !!issuedAchievement);
+      return this.formatAchievementDto(achievement, !!issuedAchievement);
     });
   }
 
   private formatAchievementDto(
     achievement: Achievement,
-    user: AuthorizedUserDto,
     isReceived: boolean,
   ): AchievementDto {
     const dto: AchievementDto = {
@@ -97,10 +101,6 @@ export class AchievementsService {
       hint: null,
       roflDescription: null,
     };
-
-    if (user.role !== UserRole.STUDENT) {
-      return { ...dto, ...achievement };
-    }
 
     if (isReceived) {
       return {
@@ -134,15 +134,6 @@ export class AchievementsService {
   }
 
   async getUnlockedAchievements(studentUuid: string) {
-    // return this.achievementsRepository
-    //   .createQueryBuilder('achievement')
-    //   .innerJoin(
-    //     'issued_achievements',
-    //     'issuedAchievement',
-    //     'issuedAchievement.achievement_uuid = achievement.uuid',
-    //   )
-    //   .where('issuedAchievement.student_uuid = :studentUuid', { studentUuid })
-    //   .getMany();
     return this.issuedAchievementsRepository.find({
       where: { student: { uuid: studentUuid } },
       relations: ['achievement', 'issuer', 'student'],
@@ -153,19 +144,30 @@ export class AchievementsService {
     user: AuthorizedUserDto,
     issueAchievementDto: IssueAchievementDto,
   ) {
-    const achievement = await this.achievementsRepository.findOneOrFail({
-      where: { uuid: issueAchievementDto.achievementUuid },
-    });
-
-    const issuer = await this.userService.getNotStudentUser(user.uuid);
-
-    const student = await this.getStudent(
-      issuer,
-      issueAchievementDto.studentUuid,
-    );
-
     const result = await this.issuedAchievementsRepository.manager.transaction(
       async (transactionalEntityManager) => {
+        const achievement = await transactionalEntityManager.findOneOrFail(
+          Achievement,
+          {
+            where: { uuid: issueAchievementDto.achievementUuid },
+          },
+        );
+
+        const issuer = await this.userService.find(
+          {
+            where: { uuid: user.uuid, role: Not(UserRole.STUDENT) },
+            loadEagerRelations: false,
+            relations: ['institute', 'sputnikGroups'],
+          },
+          transactionalEntityManager,
+        );
+
+        const student = await this.getStudent(
+          issuer,
+          issueAchievementDto.studentUuid,
+          transactionalEntityManager,
+        );
+
         const issuedAchievement = new IssuedAchievement();
         issuedAchievement.achievement = achievement;
         issuedAchievement.issuer = issuer;
@@ -191,32 +193,50 @@ export class AchievementsService {
             studentUuid: issueAchievementDto.studentUuid,
           })
           .execute();
-        return issuedAchievement;
+        return { issuedAchievement, student, issuer };
       },
     );
-    if (student.tgId) {
+    if (result.student.tgId) {
       await this.telegramService.addToTelegramNotificationQueue(
-        student.tgId,
-        generateTgIssueMessage(result),
+        result.student.tgId,
+        generateTgIssueMessage(result.issuedAchievement),
       );
     }
     await this.vkService.addToVkNotificationQueue(
-      student.vkId,
-      generateVkIssueMessage(result),
+      result.student.vkId,
+      generateVkIssueMessage(result.issuedAchievement),
     );
     return result;
   }
 
-  private async getStudent(issuer: User, studentUuid: string) {
+  private async getStudent(
+    issuer: User,
+    studentUuid: string,
+    manager: EntityManager,
+  ) {
     if (issuer.role === UserRole.CURATOR) {
-      return await this.userService.getInstitutesStudent(
-        studentUuid,
-        issuer.institute,
+      return this.userService.find(
+        {
+          where: {
+            uuid: studentUuid,
+            institute: { id: issuer.institute.id },
+            role: UserRole.STUDENT,
+          },
+          loadEagerRelations: false,
+        },
+        manager,
       );
     } else {
-      return await this.userService.getGroupsStudent(
-        studentUuid,
-        issuer.sputnikGroups,
+      return this.userService.find(
+        {
+          where: {
+            uuid: studentUuid,
+            role: UserRole.STUDENT,
+            group: In(issuer.sputnikGroups.map((group) => group.id)),
+          },
+          loadEagerRelations: false,
+        },
+        manager,
       );
     }
   }
@@ -225,27 +245,41 @@ export class AchievementsService {
     user: AuthorizedUserDto,
     cancelAchievementDto: CancelAchievementDto,
   ) {
-    const canceler = await this.userService.getNotStudentUser(user.uuid);
-    const student = await this.getStudent(
-      canceler,
-      cancelAchievementDto.studentUuid,
-    );
-
-    const issuing = await this.issuedAchievementsRepository.findOneOrFail({
-      where: {
-        student: { uuid: student.uuid },
-        achievement: {
-          uuid: cancelAchievementDto.achievementUuid,
-        },
-      },
-    });
-
-    const achievement = await this.achievementsRepository.findOneOrFail({
-      where: { uuid: cancelAchievementDto.achievementUuid },
-    });
-
     const result = await this.issuedAchievementsRepository.manager.transaction(
       async (transactionalEntityManager) => {
+        const canceler = await this.userService.find(
+          {
+            where: { uuid: user.uuid, role: Not(UserRole.STUDENT) },
+            loadEagerRelations: false,
+            relations: ['institute', 'sputnikGroups'],
+          },
+          transactionalEntityManager,
+        );
+        const student = await this.getStudent(
+          canceler,
+          cancelAchievementDto.studentUuid,
+          transactionalEntityManager,
+        );
+
+        const issuing = await transactionalEntityManager.findOneOrFail(
+          IssuedAchievement,
+          {
+            where: {
+              student: { uuid: student.uuid },
+              achievement: {
+                uuid: cancelAchievementDto.achievementUuid,
+              },
+            },
+          },
+        );
+
+        const achievement = await transactionalEntityManager.findOneOrFail(
+          Achievement,
+          {
+            where: { uuid: cancelAchievementDto.achievementUuid },
+          },
+        );
+
         await transactionalEntityManager.delete(IssuedAchievement, {
           achievement: { uuid: cancelAchievementDto.achievementUuid },
           student: { uuid: student.uuid },
@@ -269,24 +303,25 @@ export class AchievementsService {
         achievementOperation.student = student;
 
         await transactionalEntityManager.save(achievementOperation);
+        return { student, canceler, achievement };
       },
     );
 
-    if (student.tgId) {
+    if (result.student.tgId) {
       await this.telegramService.addToTelegramNotificationQueue(
-        student.tgId,
+        result.student.tgId,
         generateTgCancelMessage(
-          achievement,
-          canceler,
+          result.achievement,
+          result.canceler,
           cancelAchievementDto.cancellationReason,
         ),
       );
     }
     await this.vkService.addToVkNotificationQueue(
-      student.vkId,
+      result.student.vkId,
       generateVkCancelMessage(
-        achievement,
-        canceler,
+        result.achievement,
+        result.canceler,
         cancelAchievementDto.cancellationReason,
       ),
     );

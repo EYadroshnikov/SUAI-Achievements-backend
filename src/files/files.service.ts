@@ -22,12 +22,9 @@ export class FilesService {
     fs.writeFileSync(filePath, file.buffer);
 
     // Запускаем таймер на удаление через 5 минут
-    setTimeout(
-      () => {
-        this.deleteFile(uniqueFilename);
-      },
-      1 * 60 * 1000,
-    ); // 1 минута в миллисекундах
+    setTimeout(() => {
+      this.deleteFile(uniqueFilename);
+    }, 30 * 1000); // 30 секунд в миллисекундах
 
     return uniqueFilename;
   }
