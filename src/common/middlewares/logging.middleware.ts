@@ -12,7 +12,7 @@ export class LoggingMiddleware implements NestMiddleware {
     const userAgent = request.get('user-agent') || '';
 
     response.on('close', () => {
-      const vkId = request?.user['vkId'];
+      const vkId = request?.user?.['vkId'];
 
       const { statusCode, statusMessage } = response;
       const contentLength = response.get('content-length');
