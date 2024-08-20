@@ -12,9 +12,11 @@ export class LoggingMiddleware implements NestMiddleware {
     const userAgent = request.get('user-agent') || '';
 
     response.on('close', () => {
+      const vkId = request?.user['vkId'];
+
       const { statusCode, statusMessage } = response;
       const contentLength = response.get('content-length');
-      const message = `${method} ${baseUrl} [${statusCode}] ${statusMessage} ${contentLength} - ${userAgent} ${ip}`;
+      const message = `${method} ${baseUrl} [${statusCode}] ${statusMessage} ${contentLength} - ${userAgent} ${ip} vkId=${vkId}`;
 
       if (
         statusCode === HttpStatus.FORBIDDEN ||
