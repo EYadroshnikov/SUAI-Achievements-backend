@@ -2,20 +2,56 @@ import { ApiProperty } from '@nestjs/swagger';
 import { EducationType } from '../enums/education-type.enum';
 import { BskStatus } from '../enums/bsk-status.enum';
 import { CardStatus } from '../enums/card-status.enum';
-import { IsEnum, IsOptional } from 'class-validator';
+import {
+  IsBoolean,
+  IsDate,
+  IsEmail,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+} from 'class-validator';
+import { Sex } from '../enums/sex.enum';
+import { PreviousEducation } from '../enums/previous-education.enum';
+import { RegistrationStage } from '../enums/registration-stage.enum';
 
 export class CreateSocialPassportDto {
+  @ApiProperty()
+  phone: string;
+
+  @ApiProperty()
+  @IsEmail()
+  email: string;
+
+  @ApiProperty({ enum: Sex })
+  @IsEnum(Sex)
+  sex: Sex;
+
+  @ApiProperty()
+  @IsDate()
+  birthday: Date;
+
+  @ApiProperty()
+  @IsBoolean()
+  isForeign: boolean;
+
+  @ApiProperty({ enum: PreviousEducation })
+  @IsEnum(PreviousEducation)
+  previousEducation: PreviousEducation;
+
   @ApiProperty({ required: false })
   @IsOptional()
-  phone?: string;
+  @IsBoolean()
+  ssoAccess?: boolean;
 
-  @ApiProperty({ enum: EducationType, required: false })
-  @IsOptional()
+  @ApiProperty()
+  @IsNumber()
+  competitiveScore: number;
+
+  @ApiProperty({ enum: EducationType })
   @IsEnum(EducationType)
   educationType?: EducationType;
 
-  @ApiProperty({ required: false })
-  @IsOptional()
+  @ApiProperty()
   region?: string;
 
   @ApiProperty({ required: false })
@@ -27,13 +63,13 @@ export class CreateSocialPassportDto {
   @IsEnum(BskStatus)
   bskStatus?: BskStatus;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ enum: RegistrationStage, required: false })
   @IsOptional()
-  medicalRegistration?: boolean;
+  medicalRegistration?: RegistrationStage;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ enum: RegistrationStage, required: false })
   @IsOptional()
-  militaryRegistration?: boolean;
+  militaryRegistration?: RegistrationStage;
 
   @ApiProperty({ required: false })
   @IsOptional()
@@ -57,14 +93,15 @@ export class CreateSocialPassportDto {
   @IsEnum(CardStatus)
   profcomCardStatus?: CardStatus;
 
-  @ApiProperty({ enum: CardStatus, required: false })
+  @ApiProperty({ required: false })
   @IsOptional()
-  @IsEnum(CardStatus)
-  scholarshipCardStatus?: CardStatus;
+  @IsBoolean()
+  scholarshipCardStatus?: boolean;
 
   @ApiProperty({ required: false })
   @IsOptional()
-  certificateOrContract?: boolean;
+  @IsBoolean()
+  dormitory?: boolean;
 
   @ApiProperty({ required: false })
   @IsOptional()
@@ -76,7 +113,7 @@ export class CreateSocialPassportDto {
 
   @ApiProperty({ required: false })
   @IsOptional()
-  studentGovernment?: string;
+  studios?: string;
 
   @ApiProperty({ required: false })
   @IsOptional()

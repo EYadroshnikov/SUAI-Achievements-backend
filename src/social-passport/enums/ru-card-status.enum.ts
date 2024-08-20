@@ -1,5 +1,5 @@
 export enum RuCardStatus {
   NO = 'Нет',
-  MANUFACTURED = 'Изготавливается',
+  PHOTO_PROVIDED = 'Предоставил фото',
   RECEIVED = 'Получена',
 }

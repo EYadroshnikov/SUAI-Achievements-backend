@@ -5,7 +5,7 @@ const translations: {
   [key in CardStatus]: RuCardStatus;
 } = {
   [CardStatus.NO]: RuCardStatus.NO,
-  [CardStatus.MANUFACTURED]: RuCardStatus.MANUFACTURED,
+  [CardStatus.PHOTO_PROVIDED]: RuCardStatus.PHOTO_PROVIDED,
   [CardStatus.RECEIVED]: RuCardStatus.RECEIVED,
 };
 

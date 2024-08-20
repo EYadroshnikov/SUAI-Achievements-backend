@@ -5,6 +5,7 @@ import { translateEducationType } from './translate-education-type';
 import { translateGroupRole } from './translate-group-role';
 import { translateMilitaryRegistration } from './translate-military-registration';
 import { translatePreferentialTravelCard } from './translate-preferential-travel-card';
+import { translateRegistrationStage } from './translate-registration-stage';
 
 export const translate = {
   booleanStatement: translateBooleanStatement,
@@ -14,4 +15,5 @@ export const translate = {
   groupRole: translateGroupRole,
   militaryRegistration: translateMilitaryRegistration,
   preferentialTravelCard: translatePreferentialTravelCard,
+  RegistrationStage: translateRegistrationStage,
 };

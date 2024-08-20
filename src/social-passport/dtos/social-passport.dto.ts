@@ -8,6 +8,12 @@ import { RuEducationType } from '../enums/ru-education-type.enum';
 import { RuBskStatus } from '../enums/ru-bsk-status.enum';
 import { RuCardStatus } from '../enums/ru-card-status.enum';
 import { RuGroupRole } from '../enums/ru-group-role.enum';
+import { Sex } from '../enums/sex.enum';
+import { PreviousEducation } from '../enums/previous-education.enum';
+import { RuPreviousEducation } from '../enums/ru-previous-education.enum';
+import { RuSex } from '../enums/ru-sex.enum';
+import { RegistrationStage } from '../enums/registration-stage.enum';
+import { RuRegistrationStage } from '../enums/ru-registration-stage.enum';
 
 @Exclude()
 export class SocialPassportDto {
@@ -19,9 +25,13 @@ export class SocialPassportDto {
   @Expose()
   groupName: string; // Номер группы
 
-  @ApiProperty({ required: false })
+  @ApiProperty()
   @Expose()
-  phone?: string; // Телефон
+  phone: string; // Телефон
+
+  @ApiProperty()
+  @Expose()
+  email: string;
 
   @ApiProperty()
   @Expose()
@@ -31,29 +41,53 @@ export class SocialPassportDto {
   @Expose()
   tgUserName: string; //Telegram
 
-  @ApiProperty({ enum: EducationType, required: false })
+  @ApiProperty({ enum: Sex })
   @Expose()
-  educationType?: EducationType | RuEducationType; // Бюджет/контракт
+  sex: Sex | RuSex;
 
-  @ApiProperty({ required: false })
+  @ApiProperty()
   @Expose()
-  region?: string; // Регион
+  birthday: Date;
 
-  @ApiProperty({ required: false })
+  @ApiProperty()
   @Expose()
-  socialCategory?: string; //Социальная категория
+  isForeign: boolean;
+
+  @ApiProperty({ enum: PreviousEducation })
+  @Expose()
+  previousEducation: PreviousEducation | RuPreviousEducation;
+
+  @ApiProperty()
+  @Expose()
+  ssoAccess: boolean;
+
+  @ApiProperty()
+  @Expose()
+  competitiveScore: number;
+
+  @ApiProperty({ enum: EducationType })
+  @Expose()
+  educationType: EducationType | RuEducationType; // Бюджет/контракт
+
+  @ApiProperty()
+  @Expose()
+  region: string; // Регион
+
+  @ApiProperty()
+  @Expose()
+  socialCategory: string; //Социальная категория
 
   @ApiProperty({ enum: BskStatus })
   @Expose()
   bskStatus: BskStatus | RuBskStatus; // Статус БСК
 
-  @ApiProperty({ type: 'boolean' })
+  @ApiProperty({ enum: RegistrationStage })
   @Expose()
-  medicalRegistration: boolean | string; // Постановка на мед. учёт
+  medicalRegistration: RegistrationStage | RuRegistrationStage; // Постановка на мед. учёт
 
-  @ApiProperty({ required: false, type: 'boolean' })
+  @ApiProperty({ enum: RegistrationStage })
   @Expose()
-  militaryRegistration?: boolean | string; // Постановка на воинский учёт
+  militaryRegistration: RegistrationStage | RuRegistrationStage; // Постановка на воинский учёт
 
   @ApiProperty({ type: 'boolean' })
   @Expose()
@@ -75,13 +109,9 @@ export class SocialPassportDto {
   @Expose()
   profcomCardStatus: CardStatus | RuCardStatus; // Получение профсоюзного билета
 
-  @ApiProperty({ enum: CardStatus })
+  @ApiProperty()
   @Expose()
-  scholarshipCardStatus: CardStatus | RuCardStatus; // Получение стипендиальной карты
-
-  @ApiProperty({ type: 'boolean' })
-  @Expose()
-  certificateOrContract: boolean | string; // Сдача оригинала аттестата/подписание договора
+  scholarshipCardStatus: boolean | string; // Получение стипендиальной карты
 
   @ApiProperty({ type: 'boolean' })
   @Expose()
@@ -91,13 +121,13 @@ export class SocialPassportDto {
   @Expose()
   groupRole: GroupRole | RuGroupRole; // Роль в группе
 
-  @ApiProperty({ required: false })
+  @ApiProperty()
   @Expose()
-  hobby?: string; // Хобби
+  hobby: string; // Хобби
 
-  @ApiProperty({ required: false })
+  @ApiProperty()
   @Expose()
-  studentGovernment?: string; // Принадлежность к органам студенческого самоуправления
+  studios: string; // Принадлежность к органам студенческого самоуправления
 
   @ApiProperty({ required: false })
   @Expose()

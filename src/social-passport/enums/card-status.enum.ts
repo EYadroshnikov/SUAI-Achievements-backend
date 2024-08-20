@@ -1,5 +1,5 @@
 export enum CardStatus {
   NO = 'NO',
-  MANUFACTURED = 'MANUFACTURED',
+  PHOTO_PROVIDED = 'PHOTO_PROVIDED',
   RECEIVED = 'RECEIVED',
 }

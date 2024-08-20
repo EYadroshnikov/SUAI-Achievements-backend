@@ -12,6 +12,9 @@ import { EducationType } from '../enums/education-type.enum';
 import { BskStatus } from '../enums/bsk-status.enum';
 import { GroupRole } from '../enums/group-role.enum';
 import { CardStatus } from '../enums/card-status.enum';
+import { Sex } from '../enums/sex.enum';
+import { PreviousEducation } from '../enums/previous-education.enum';
+import { RegistrationStage } from '../enums/registration-stage.enum';
 
 @Entity('social_passport')
 export class SocialPassport {
@@ -22,22 +25,42 @@ export class SocialPassport {
   @JoinColumn({ name: 'user_uuid' })
   student: User;
 
-  @Column({ name: 'phone', type: 'varchar', nullable: true })
-  phone?: string;
+  @Column({ name: 'sex', type: 'enum', enum: Sex })
+  sex: Sex;
+
+  @Column({ name: 'birthday', type: 'date' })
+  birthday: Date;
+
+  @Column({ name: 'phone', type: 'varchar' })
+  phone: string;
+
+  @Column({ name: 'email', type: 'varchar' })
+  email: string;
+
+  @Column({ name: 'is_foreign', type: 'boolean' })
+  isForeign: boolean;
+
+  @Column({ name: 'previous_education', type: 'enum', enum: PreviousEducation })
+  previousEducation: PreviousEducation;
+
+  @Column({ name: 'sso_access', type: 'boolean', default: false })
+  ssoAccess: boolean;
+
+  @Column({ name: 'competitive_score', type: 'integer' })
+  competitiveScore: number;
 
   @Column({
     name: 'education_type',
     type: 'enum',
     enum: EducationType,
-    nullable: true,
   })
-  educationType?: EducationType;
+  educationType: EducationType;
 
-  @Column({ name: 'region', type: 'varchar', nullable: true })
-  region?: string;
+  @Column({ name: 'region', type: 'varchar' })
+  region: string;
 
   @Column({ name: 'social_category', type: 'varchar', nullable: true })
-  socialCategory?: string;
+  socialCategory: string;
 
   @Column({
     name: 'bsk_status',
@@ -47,16 +70,29 @@ export class SocialPassport {
   })
   bskStatus: BskStatus;
 
-  @Column({ name: 'medical_registration', type: 'boolean', default: false })
-  medicalRegistration: boolean;
+  @Column({
+    name: 'medical_registration',
+    type: 'enum',
+    enum: RegistrationStage,
+    default: RegistrationStage.NOT_STARTED,
+  })
+  medicalRegistration: RegistrationStage;
 
   @Column({
     name: 'military_registration',
+    type: 'enum',
+    enum: RegistrationStage,
+    default: RegistrationStage.NOT_REQUIRED,
+  })
+  militaryRegistration: RegistrationStage;
+
+  @Column({
+    name: 'dormitory',
     type: 'boolean',
     nullable: true,
-    default: null,
+    default: false,
   })
-  militaryRegistration?: boolean;
+  dormitory: boolean;
 
   @Column({ name: 'pass_status', type: 'boolean', default: false })
   passStatus: boolean;
@@ -77,7 +113,12 @@ export class SocialPassport {
   })
   preferentialTravelCard: boolean;
 
-  @Column({ name: 'profcom_application', type: 'boolean', default: false })
+  @Column({
+    name: 'profcom_application',
+    type: 'boolean',
+    default: false,
+    nullable: true,
+  })
   profcomApplication: boolean;
 
   @Column({
@@ -90,18 +131,11 @@ export class SocialPassport {
 
   @Column({
     name: 'scholarship_card_status',
-    type: 'enum',
-    enum: CardStatus,
-    default: CardStatus.NO,
-  })
-  scholarshipCardStatus: CardStatus;
-
-  @Column({
-    name: 'certificate_or_contract',
     type: 'boolean',
+    nullable: true,
     default: false,
   })
-  certificateOrContract: boolean;
+  scholarshipCardStatus: boolean;
 
   @Column({
     name: 'competence_center_test',
@@ -119,13 +153,13 @@ export class SocialPassport {
   groupRole: GroupRole;
 
   @Column({ name: 'hobby', type: 'varchar', nullable: true })
-  hobby?: string;
+  hobby: string;
 
-  @Column({ name: 'student_government', type: 'varchar', nullable: true })
-  studentGovernment?: string;
+  @Column({ name: 'studios', type: 'varchar', nullable: true })
+  studios: string;
 
   @Column({ name: 'hard_skills', type: 'varchar', nullable: true })
-  hardSkills?: string;
+  hardSkills: string;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;
