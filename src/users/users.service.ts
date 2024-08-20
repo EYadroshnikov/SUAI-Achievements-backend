@@ -405,7 +405,7 @@ export class UsersService {
       defaultSortBy: [['balance', 'DESC']],
       relations: ['group', 'institute', 'userSettings'],
     });
-    console.log(paginatedUsers);
+
     const topStudents = paginatedUsers.data.map((user) => {
       const dto = new TopStudentDto();
       dto.uuid = user.uuid;
