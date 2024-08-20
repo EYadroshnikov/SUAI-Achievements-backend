@@ -70,7 +70,7 @@ export class SocialPassport {
   studentIdStatus: CardStatus;
 
   @Column({
-    name: 'preferential travel card',
+    name: 'preferential_travel_card',
     type: 'boolean',
     nullable: true,
     default: null,
