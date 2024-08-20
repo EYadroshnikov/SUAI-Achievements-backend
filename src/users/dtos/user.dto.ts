@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude, Expose, Type } from 'class-transformer';
 import { UserRole } from '../enums/user-role.enum';
 import { InstituteDto } from '../../institues/dtos/institute.dto';
 
@@ -22,6 +22,7 @@ export class UserDto {
   patronymic?: string;
 
   @ApiProperty({ type: InstituteDto })
+  @Type(() => InstituteDto)
   @Expose()
   institute: InstituteDto;
 

@@ -86,6 +86,13 @@ export class UsersService {
     });
   }
 
+  async getStudentMe(uuid: string): Promise<User> {
+    return this.userRepository.findOneOrFail({
+      where: { uuid, role: UserRole.STUDENT },
+      relations: ['userSettings'],
+    });
+  }
+
   async getStudent(uuid: string): Promise<User> {
     return this.userRepository.findOneOrFail({
       where: { uuid, role: UserRole.STUDENT },

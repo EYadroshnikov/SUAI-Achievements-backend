@@ -40,6 +40,7 @@ import { RankDto } from '../dtos/rank.dto';
 import { PaginatedTransformInterceptor } from '../../common/interceptors/paginated-transform.interceptor';
 import { AllRanksDto } from '../dtos/all-ranks.dto';
 import { TopStudentDto } from '../dtos/top-student.dto';
+import { StudentWithSettingsDto } from '../dtos/student-with-settings.dto';
 
 @ApiTags('Students')
 @ApiBearerAuth()
@@ -120,10 +121,10 @@ export class StudentsController {
   @Get('/students/me')
   @ApiOperation({ summary: 'can access: student' })
   @Roles(UserRole.STUDENT)
-  @ApiOkResponse({ type: StudentDto })
-  @UseInterceptors(new TransformInterceptor(StudentDto))
+  @ApiOkResponse({ type: StudentWithSettingsDto })
+  @UseInterceptors(new TransformInterceptor(StudentWithSettingsDto))
   async getMe(@Req() req: AuthorizedRequestDto) {
-    return this.usersService.getStudent(req.user.uuid);
+    return this.usersService.getStudentMe(req.user.uuid);
   }
 
   @Get('/students/me/groups/students')
