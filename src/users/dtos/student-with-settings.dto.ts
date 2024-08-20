@@ -5,7 +5,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 @Exclude()
 export class StudentWithSettingsDto extends StudentDto {
-  @ApiProperty()
+  @ApiProperty({ type: UserSettingsDto })
   @Type(() => UserSettingsDto)
   @Expose()
   userSettings: UserSettingsDto;

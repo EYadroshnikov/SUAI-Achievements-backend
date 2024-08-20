@@ -9,7 +9,7 @@ export class StudentDto extends UserDto {
   @Expose()
   tgUserName: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: GroupDto })
   @Type(() => GroupDto)
   @Expose()
   group: GroupDto;
