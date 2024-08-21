@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { forwardRef, Inject, Logger } from '@nestjs/common';
 import axios from 'axios';
 import { UsersService } from '../users/users.service';
+import { VkProcess } from './enums/vk.process.enum';
 
 @Processor('vk-request-queue')
 export class VkRequestProcessor {
@@ -15,13 +16,13 @@ export class VkRequestProcessor {
 
   private readonly logger = new Logger(VkRequestProcessor.name);
 
-  @Process('avatar')
+  @Process(VkProcess.UPDATE_AVATAR)
   async handleJob(job: Job) {
     const { vkId } = job.data;
     await this.updateAvatar(vkId);
   }
 
-  @Process('notification')
+  @Process(VkProcess.NOTIFICATION)
   async handleNotificationJob(job: Job) {
     const { vkId, text } = job.data;
     await this.notify(vkId, text);

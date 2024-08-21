@@ -4,6 +4,7 @@ import { Job } from 'bull';
 import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../users/users.service';
+import { TelegramProcess } from './enums/telegram.process.enum';
 
 @Processor('telegram-notification-queue')
 export class TelegramNotificationProcessor {
@@ -13,7 +14,7 @@ export class TelegramNotificationProcessor {
   ) {}
   private readonly logger = new Logger(TelegramNotificationProcessor.name);
 
-  @Process()
+  @Process(TelegramProcess.NOTIFICATION)
   async handleJob(job: Job) {
     const { tgUserId, text } = job.data;
     await this.notify(tgUserId, text);

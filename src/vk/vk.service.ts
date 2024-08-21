@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import * as CryptoJS from 'crypto-js';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
+import { VkProcess } from './enums/vk.process.enum';
 
 @Injectable()
 export class VkService {
@@ -45,10 +46,10 @@ export class VkService {
   }
 
   async addToVkAvatarQueue(vkId: string) {
-    await this.vkRequestQueue.add('avatar', { vkId });
+    await this.vkRequestQueue.add(VkProcess.UPDATE_AVATAR, { vkId });
   }
 
   async addToVkNotificationQueue(vkId: string, text: string) {
-    await this.vkRequestQueue.add('notification', { vkId, text });
+    await this.vkRequestQueue.add(VkProcess.NOTIFICATION, { vkId, text });
   }
 }

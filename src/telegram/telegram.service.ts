@@ -3,6 +3,7 @@ import * as crypto from 'node:crypto';
 import { ConfigService } from '@nestjs/config';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
+import { TelegramProcess } from './enums/telegram.process.enum';
 
 @Injectable()
 export class TelegramService {
@@ -47,6 +48,9 @@ export class TelegramService {
   }
 
   async addToTelegramNotificationQueue(tgUserId: string, text: string) {
-    return this.telegramNotificationQueue.add({ tgUserId, text });
+    return this.telegramNotificationQueue.add(TelegramProcess.NOTIFICATION, {
+      tgUserId,
+      text,
+    });
   }
 }

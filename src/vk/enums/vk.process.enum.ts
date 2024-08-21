@@ -1,0 +1,4 @@
+export enum VkProcess {
+  NOTIFICATION = 'NOTIFICATION',
+  UPDATE_AVATAR = 'UPDATE_AVATAR',
+}

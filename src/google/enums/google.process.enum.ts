@@ -1,0 +1,3 @@
+export enum GoogleProcess {
+  EXPORT_SOCIAL_PASSPORTS = 'EXPORT_SOCIAL_PASSPORTS',
+}

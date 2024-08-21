@@ -1,11 +1,12 @@
 import { OnQueueError, OnQueueFailed, Process, Processor } from '@nestjs/bull';
 import { Job } from 'bull';
 import { Logger } from '@nestjs/common';
+import { GoogleProcess } from './enums/google.process.enum';
 
 @Processor('google-request-queue')
 export class GoogleRequestProcessor {
   private readonly logger = new Logger(GoogleRequestProcessor.name);
-  @Process('export-groups-social-passports')
+  @Process(GoogleProcess.EXPORT_SOCIAL_PASSPORTS)
   async handleJob(job: Job) {}
 
   @OnQueueFailed()
