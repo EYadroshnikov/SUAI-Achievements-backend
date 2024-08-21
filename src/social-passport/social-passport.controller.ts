@@ -48,7 +48,7 @@ export class SocialPassportController {
     return this.socialPassportService.findOne(req.user.uuid);
   }
 
-  @Patch('me/social-passport')
+  @Patch('students/me/social-passport')
   @ApiOperation({ summary: 'can access: student' })
   @Roles(UserRole.STUDENT)
   async updateMySocialPassport(
