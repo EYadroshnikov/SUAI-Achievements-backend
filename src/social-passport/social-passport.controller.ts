@@ -67,7 +67,7 @@ export class SocialPassportController {
     return this.socialPassportService.findOne(uuid);
   }
 
-  @Post('me/social-passport')
+  @Post('students/me/social-passport')
   @ApiOperation({ summary: 'can access: student' })
   @Roles(UserRole.STUDENT)
   @ApiOkResponse({ type: SocialPassportDto })

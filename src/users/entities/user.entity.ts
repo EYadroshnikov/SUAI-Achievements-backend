@@ -104,7 +104,7 @@ export class User {
 
   @OneToOne(() => UserSettings, (userSettings) => userSettings.user, {
     cascade: true,
-    nullable: true, //TODO: remove
+    nullable: true,
   })
   userSettings: UserSettings;
 
