@@ -66,7 +66,7 @@ export class UpdateSocialPassportDto {
   @IsString()
   region?: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, nullable: true })
   @IsOptional()
   @IsString()
   socialCategory?: string;
@@ -81,7 +81,7 @@ export class UpdateSocialPassportDto {
   @IsBoolean()
   medicalRegistration?: RegistrationStage;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, nullable: true })
   @IsOptional()
   @IsBoolean()
   militaryRegistration?: RegistrationStage;
@@ -96,12 +96,12 @@ export class UpdateSocialPassportDto {
   @IsEnum(CardStatus)
   studentIdStatus?: CardStatus;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, nullable: true })
   @IsOptional()
   @IsBoolean()
   preferentialTravelCard?: boolean;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, nullable: true })
   @IsOptional()
   @IsBoolean()
   profcomApplication?: boolean;
@@ -116,20 +116,25 @@ export class UpdateSocialPassportDto {
   @IsBoolean()
   scholarshipCardStatus?: boolean;
 
+  @ApiProperty({ required: false, nullable: true })
+  @IsOptional()
+  @IsBoolean()
+  dormitory?: boolean;
+
   @ApiProperty({ required: false })
   @IsOptional()
   @IsBoolean()
   competenceCenterTest?: boolean;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, nullable: true })
   @IsOptional()
   hobby?: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, nullable: true })
   @IsOptional()
   studios?: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, nullable: true })
   @IsOptional()
   hardSkills?: string;
 }

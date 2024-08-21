@@ -9,6 +9,7 @@ import {
   IsEnum,
   IsNumber,
   IsOptional,
+  IsString,
 } from 'class-validator';
 import { Sex } from '../enums/sex.enum';
 import { PreviousEducation } from '../enums/previous-education.enum';
@@ -52,10 +53,12 @@ export class CreateSocialPassportDto {
   educationType?: EducationType;
 
   @ApiProperty()
+  @IsString()
   region?: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, nullable: true })
   @IsOptional()
+  @IsString()
   socialCategory?: string;
 
   @ApiProperty({ enum: BskStatus, required: false })
@@ -67,7 +70,7 @@ export class CreateSocialPassportDto {
   @IsOptional()
   medicalRegistration?: RegistrationStage;
 
-  @ApiProperty({ enum: RegistrationStage, required: false })
+  @ApiProperty({ enum: RegistrationStage, required: false, nullable: true })
   @IsOptional()
   militaryRegistration?: RegistrationStage;
 
@@ -80,11 +83,11 @@ export class CreateSocialPassportDto {
   @IsEnum(CardStatus)
   studentIdStatus?: CardStatus;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, nullable: true })
   @IsOptional()
   preferentialTravelCard?: boolean;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, nullable: true })
   @IsOptional()
   profcomApplication?: boolean;
 
@@ -93,12 +96,12 @@ export class CreateSocialPassportDto {
   @IsEnum(CardStatus)
   profcomCardStatus?: CardStatus;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, nullable: true })
   @IsOptional()
   @IsBoolean()
   scholarshipCardStatus?: boolean;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, nullable: true })
   @IsOptional()
   @IsBoolean()
   dormitory?: boolean;
@@ -107,15 +110,15 @@ export class CreateSocialPassportDto {
   @IsOptional()
   competenceCenterTest?: boolean;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, nullable: true })
   @IsOptional()
   hobby?: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, nullable: true })
   @IsOptional()
   studios?: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, nullable: true })
   @IsOptional()
   hardSkills?: string;
 }

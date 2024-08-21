@@ -82,7 +82,8 @@ export class SocialPassport {
     name: 'military_registration',
     type: 'enum',
     enum: RegistrationStage,
-    default: RegistrationStage.NOT_REQUIRED,
+    nullable: true,
+    default: null,
   })
   militaryRegistration: RegistrationStage;
 

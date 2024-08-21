@@ -73,7 +73,7 @@ export class SocialPassportDto {
   @Expose()
   region: string; // Регион
 
-  @ApiProperty()
+  @ApiProperty({ nullable: true })
   @Expose()
   socialCategory: string; //Социальная категория
 
@@ -85,7 +85,7 @@ export class SocialPassportDto {
   @Expose()
   medicalRegistration: RegistrationStage | RuRegistrationStage; // Постановка на мед. учёт
 
-  @ApiProperty({ enum: RegistrationStage })
+  @ApiProperty({ enum: RegistrationStage, nullable: true })
   @Expose()
   militaryRegistration: RegistrationStage | RuRegistrationStage; // Постановка на воинский учёт
 
@@ -97,11 +97,11 @@ export class SocialPassportDto {
   @Expose()
   studentIdStatus: CardStatus | RuCardStatus; // Получение студенческого билета
 
-  @ApiProperty({ type: 'boolean' })
+  @ApiProperty({ type: 'boolean', nullable: true })
   @Expose()
   preferentialTravelCard: boolean | string; // Оформление льготного БСК
 
-  @ApiProperty({ type: 'boolean' })
+  @ApiProperty({ type: 'boolean', nullable: true })
   @Expose()
   profcomApplication: boolean | string; // Заполнение заявления в профком
 
@@ -109,9 +109,13 @@ export class SocialPassportDto {
   @Expose()
   profcomCardStatus: CardStatus | RuCardStatus; // Получение профсоюзного билета
 
-  @ApiProperty()
+  @ApiProperty({ nullable: true })
   @Expose()
   scholarshipCardStatus: boolean | string; // Получение стипендиальной карты
+
+  @ApiProperty({ nullable: true })
+  @Expose()
+  dormitory: boolean;
 
   @ApiProperty({ type: 'boolean' })
   @Expose()
@@ -121,15 +125,15 @@ export class SocialPassportDto {
   @Expose()
   groupRole: GroupRole | RuGroupRole; // Роль в группе
 
-  @ApiProperty()
+  @ApiProperty({ nullable: true })
   @Expose()
   hobby: string; // Хобби
 
-  @ApiProperty()
+  @ApiProperty({ nullable: true })
   @Expose()
   studios: string; // Принадлежность к органам студенческого самоуправления
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ nullable: true, required: false })
   @Expose()
   hardSkills?: string; // Что умеет делать профессионально
 
