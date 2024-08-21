@@ -39,7 +39,7 @@ import { UpdateSocialPassportDto } from './dtos/update-social-passport.dto';
 export class SocialPassportController {
   constructor(private readonly socialPassportService: SocialPassportService) {}
 
-  @Get('me/social-passport')
+  @Get('students/me/social-passport')
   @ApiOperation({ summary: 'can access: student' })
   @Roles(UserRole.STUDENT)
   @ApiOkResponse({ type: SocialPassportDto })
