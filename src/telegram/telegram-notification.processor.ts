@@ -5,12 +5,14 @@ import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../users/users.service';
 import { TelegramProcess } from './enums/telegram.process.enum';
+import { TelegramService } from './telegram.service';
 
 @Processor('telegram-notification-queue')
 export class TelegramNotificationProcessor {
   constructor(
     private configService: ConfigService,
     private readonly usersService: UsersService,
+    private readonly telegramService: TelegramService,
   ) {}
   private readonly logger = new Logger(TelegramNotificationProcessor.name);
 
@@ -33,16 +35,8 @@ export class TelegramNotificationProcessor {
       return;
     }
 
-    const url = `https://api.telegram.org/bot${this.configService.get('tg.botSecret', { infer: true })}/sendMessage`;
-
-    const payload = {
-      chat_id: tgUserId,
-      text: text,
-      // https://core.telegram.org/bots/api#html-style
-      parse_mode: 'html', // html | markdown
-    };
     try {
-      const res = await axios.post(url, payload);
+      await this.telegramService.sendNotification(tgUserId, text);
     } catch (error) {
       this.logger.error(error);
       throw Error;

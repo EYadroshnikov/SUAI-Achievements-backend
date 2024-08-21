@@ -5,13 +5,15 @@ import { forwardRef, Inject, Logger } from '@nestjs/common';
 import axios from 'axios';
 import { UsersService } from '../users/users.service';
 import { VkProcess } from './enums/vk.process.enum';
+import { VkService } from './vk.service';
 
 @Processor('vk-request-queue')
 export class VkRequestProcessor {
   constructor(
-    private configService: ConfigService,
+    private readonly configService: ConfigService,
     @Inject(forwardRef(() => UsersService))
-    private usersService: UsersService,
+    private readonly usersService: UsersService,
+    private readonly vkService: VkService,
   ) {}
 
   private readonly logger = new Logger(VkRequestProcessor.name);
@@ -29,29 +31,9 @@ export class VkRequestProcessor {
   }
 
   private async updateAvatar(vkId: string) {
-    const access_token = this.configService.get('vk.communityApiKey');
-
-    const data = new FormData();
-    data.append('user_ids', vkId);
-    data.append('fields', 'photo_200');
-    data.append('access_token', access_token);
-    data.append('v', '5.199');
-
-    const config = {
-      method: 'post',
-      maxBodyLength: Infinity,
-      url: 'https://api.vk.com/method/users.get',
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-      data: data,
-    };
     try {
-      const res = await axios.request(config);
-      await this.usersService.setAvatar(
-        vkId,
-        res?.data?.response?.[0]?.photo_200,
-      );
+      const avatarUrl = await this.vkService.getAvatar(vkId);
+      await this.usersService.setAvatar(vkId, avatarUrl);
     } catch (error) {
       this.logger.error(error);
       throw Error;
@@ -71,26 +53,8 @@ export class VkRequestProcessor {
       return;
     }
 
-    const access_token = this.configService.get('vk.communityApiKey');
-
-    const data = new FormData();
-    data.append('user_id', vkId);
-    data.append('random_id', '0');
-    data.append('message', text);
-    data.append('access_token', access_token);
-    data.append('v', '5.199');
-
-    const config = {
-      method: 'post',
-      maxBodyLength: Infinity,
-      url: 'https://api.vk.com/method/messages.send',
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-      data: data,
-    };
     try {
-      const res = await axios.request(config);
+      await this.vkService.sendNotification(vkId, text);
     } catch (error) {
       this.logger.error(error);
       throw Error;

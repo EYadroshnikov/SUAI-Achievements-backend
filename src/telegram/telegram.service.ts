@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { TelegramProcess } from './enums/telegram.process.enum';
+import axios from 'axios';
 
 @Injectable()
 export class TelegramService {
@@ -45,6 +46,17 @@ export class TelegramService {
     const isSignValid = hmac === vals['hash'];
     const tgId = JSON.parse(vals['user']).id;
     return { isSignValid, tgId };
+  }
+
+  async sendNotification(tgUserId: string, text: string) {
+    const url = `https://api.telegram.org/bot${this.configService.get('tg.botSecret', { infer: true })}/sendMessage`;
+
+    const payload = {
+      chat_id: tgUserId,
+      text: text,
+      parse_mode: 'html', // html | markdown
+    };
+    return axios.post(url, payload);
   }
 
   async addToTelegramNotificationQueue(tgUserId: string, text: string) {

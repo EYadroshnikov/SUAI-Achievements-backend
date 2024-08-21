@@ -48,6 +48,18 @@ export class SocialPassportController {
     return this.socialPassportService.findOne(req.user.uuid);
   }
 
+  @Post('students/me/social-passport')
+  @ApiOperation({ summary: 'can access: student' })
+  @Roles(UserRole.STUDENT)
+  @ApiOkResponse({ type: SocialPassportDto })
+  @UseInterceptors(new TransformInterceptor(SocialPassportDto))
+  async createMySocialPassport(
+    @Req() req: AuthorizedRequestDto,
+    @Body() createSocialPassportDto: CreateSocialPassportDto,
+  ) {
+    return this.socialPassportService.create(req.user, createSocialPassportDto);
+  }
+
   @Patch('students/me/social-passport')
   @ApiOperation({ summary: 'can access: student' })
   @Roles(UserRole.STUDENT)
@@ -65,18 +77,6 @@ export class SocialPassportController {
   @UseInterceptors(new TransformInterceptor(SocialPassportDto))
   async getSocialPassport(@Param('uuid', ParseUUIDPipe) uuid: string) {
     return this.socialPassportService.findOne(uuid);
-  }
-
-  @Post('students/me/social-passport')
-  @ApiOperation({ summary: 'can access: student' })
-  @Roles(UserRole.STUDENT)
-  @ApiOkResponse({ type: SocialPassportDto })
-  @UseInterceptors(new TransformInterceptor(SocialPassportDto))
-  async createMySocialPassport(
-    @Req() req: AuthorizedRequestDto,
-    @Body() createSocialPassportDto: CreateSocialPassportDto,
-  ) {
-    return this.socialPassportService.create(req.user, createSocialPassportDto);
   }
 
   @Patch('students/:uuid/social-passport/group-role')

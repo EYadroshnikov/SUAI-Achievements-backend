@@ -4,6 +4,7 @@ import * as CryptoJS from 'crypto-js';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { VkProcess } from './enums/vk.process.enum';
+import axios, { AxiosResponse } from 'axios';
 
 @Injectable()
 export class VkService {
@@ -43,6 +44,50 @@ export class VkService {
     const vkUserID = splitLaunchParamsString['vk_user_id'];
     isSignValid = true;
     return { isSignValid, vkUserID };
+  }
+
+  async getAvatar(vkId: string): Promise<string> {
+    const access_token = this.configService.get('vk.communityApiKey');
+
+    const data = new FormData();
+    data.append('user_ids', vkId);
+    data.append('fields', 'photo_200');
+    data.append('access_token', access_token);
+    data.append('v', '5.199');
+
+    const config = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: 'https://api.vk.com/method/users.get',
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      data: data,
+    };
+    const res = await axios.request(config);
+    return res?.data?.response?.[0]?.photo_200;
+  }
+
+  async sendNotification(vkId: string, text: string) {
+    const access_token = this.configService.get('vk.communityApiKey');
+
+    const data = new FormData();
+    data.append('user_id', vkId);
+    data.append('random_id', '0');
+    data.append('message', text);
+    data.append('access_token', access_token);
+    data.append('v', '5.199');
+
+    const config = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: 'https://api.vk.com/method/messages.send',
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      data: data,
+    };
+    return axios.request(config);
   }
 
   async addToVkAvatarQueue(vkId: string) {
