@@ -1,6 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class Institutes1721160946100 implements MigrationInterface {
+export class Institutes1724243990537 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
             INSERT INTO institutes (id, name, short_name, number)

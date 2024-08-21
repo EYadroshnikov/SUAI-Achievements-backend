@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class Migration1721160898719 implements MigrationInterface {
-  name = 'Migration1721160898719';
+export class InitMigration1724243990536 implements MigrationInterface {
+  name = 'InitMigration1724243990536';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
@@ -18,10 +18,11 @@ export class Migration1721160898719 implements MigrationInterface {
     await queryRunner.query(
       `CREATE TABLE "institutes"
        (
-           "id"         SERIAL            NOT NULL,
-           "name"       character varying NOT NULL,
-           "short_name" character varying,
-           "number"     integer,
+           "id"              SERIAL            NOT NULL,
+           "name"            character varying NOT NULL,
+           "short_name"      character varying,
+           "number"          integer,
+           "spread_sheet_id" character varying,
            CONSTRAINT "PK_96d2373e91ae5841128f8eb3b42" PRIMARY KEY ("id")
        )`,
     );
@@ -70,6 +71,7 @@ export class Migration1721160898719 implements MigrationInterface {
        (
            "uuid"             uuid      NOT NULL DEFAULT uuid_generate_v4(),
            "reward"           integer   NOT NULL,
+           "seen"             boolean   NOT NULL DEFAULT false,
            "created_at"       TIMESTAMP NOT NULL DEFAULT now(),
            "updated_at"       TIMESTAMP NOT NULL DEFAULT now(),
            "achievement_uuid" uuid,
@@ -77,6 +79,102 @@ export class Migration1721160898719 implements MigrationInterface {
            "student_uuid"     uuid,
            CONSTRAINT "UQ_d4514a6801b413741bc3868a809" UNIQUE ("student_uuid", "achievement_uuid"),
            CONSTRAINT "PK_1da046fab62a3d978c507961e1a" PRIMARY KEY ("uuid")
+       )`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "public"."achievement_operations_type_enum" AS ENUM('ISSUE', 'CANCEL')`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "achievement_operations"
+       (
+           "uuid"                uuid                                        NOT NULL DEFAULT uuid_generate_v4(),
+           "type"                "public"."achievement_operations_type_enum" NOT NULL,
+           "cancellation_reason" character varying,
+           "created_at"          TIMESTAMP                                   NOT NULL DEFAULT now(),
+           "updated_at"          TIMESTAMP                                   NOT NULL DEFAULT now(),
+           "achievement_uuid"    uuid,
+           "executor_uuid"       uuid,
+           "student_uuid"        uuid,
+           CONSTRAINT "PK_d1675f58b292a4f234258c329ec" PRIMARY KEY ("uuid")
+       )`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "public"."social_passport_sex_enum" AS ENUM('MALE', 'FEMALE')`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "public"."social_passport_previous_education_enum" AS ENUM('SCHOOL', 'COLLEGE', 'UNIVERSITY')`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "public"."social_passport_education_type_enum" AS ENUM('BUDGET', 'CONTRACT', 'SLAVISH')`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "public"."social_passport_bsk_status_enum" AS ENUM('NO', 'GOOGLE_FROM', 'WAITING', 'RECEIVED')`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "public"."social_passport_medical_registration_enum" AS ENUM('NOT_REQUIRED', 'NOT_STARTED', 'NOT_ENOUGH_DOCS', 'FINISHED')`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "public"."social_passport_military_registration_enum" AS ENUM('NOT_REQUIRED', 'NOT_STARTED', 'NOT_ENOUGH_DOCS', 'FINISHED')`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "public"."social_passport_student_id_status_enum" AS ENUM('NO', 'PHOTO_PROVIDED', 'RECEIVED')`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "public"."social_passport_profcom_card_status_enum" AS ENUM('NO', 'PHOTO_PROVIDED', 'RECEIVED')`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "public"."social_passport_group_role_enum" AS ENUM('LEADER', 'DEPUTY_LEADER', 'PROF_ORG', 'STUDENT')`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "social_passport"
+       (
+           "uuid"                     uuid                                                 NOT NULL DEFAULT uuid_generate_v4(),
+           "sex"                      "public"."social_passport_sex_enum"                  NOT NULL,
+           "birthday"                 date                                                 NOT NULL,
+           "phone"                    character varying                                    NOT NULL,
+           "email"                    character varying                                    NOT NULL,
+           "is_foreign"               boolean                                              NOT NULL,
+           "previous_education"       "public"."social_passport_previous_education_enum"   NOT NULL,
+           "sso_access"               boolean                                              NOT NULL DEFAULT false,
+           "competitive_score"        integer                                              NOT NULL,
+           "education_type"           "public"."social_passport_education_type_enum"       NOT NULL,
+           "region"                   character varying                                    NOT NULL,
+           "social_category"          character varying,
+           "bsk_status"               "public"."social_passport_bsk_status_enum"           NOT NULL DEFAULT 'NO',
+           "medical_registration"     "public"."social_passport_medical_registration_enum" NOT NULL DEFAULT 'NOT_STARTED',
+           "military_registration"    "public"."social_passport_military_registration_enum",
+           "dormitory"                boolean                                                       DEFAULT false,
+           "pass_status"              boolean                                              NOT NULL DEFAULT false,
+           "student_id_status"        "public"."social_passport_student_id_status_enum"    NOT NULL DEFAULT 'NO',
+           "preferential_travel_card" boolean,
+           "profcom_application"      boolean                                                       DEFAULT false,
+           "profcom_card_status"      "public"."social_passport_profcom_card_status_enum"  NOT NULL DEFAULT 'NO',
+           "scholarship_card_status"  boolean                                                       DEFAULT false,
+           "competence_center_test"   boolean                                              NOT NULL DEFAULT false,
+           "group_role"               "public"."social_passport_group_role_enum"           NOT NULL DEFAULT 'STUDENT',
+           "hobby"                    character varying,
+           "studios"                  character varying,
+           "hard_skills"              character varying,
+           "created_at"               TIMESTAMP                                            NOT NULL DEFAULT now(),
+           "updated_at"               TIMESTAMP                                            NOT NULL DEFAULT now(),
+           "user_uuid"                uuid,
+           CONSTRAINT "REL_bc1e9c9fb64a60e4700361e06c" UNIQUE ("user_uuid"),
+           CONSTRAINT "PK_714072b229d283782cc73860ec0" PRIMARY KEY ("uuid")
+       )`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "user_settings"
+       (
+           "uuid"                                uuid      NOT NULL DEFAULT uuid_generate_v4(),
+           "is_visible_in_top"                   boolean   NOT NULL DEFAULT true,
+           "show_unseen_achievements"            boolean   NOT NULL DEFAULT true,
+           "receive_tg_achievement_notification" boolean   NOT NULL DEFAULT true,
+           "receive_vk_achievement_notification" boolean   NOT NULL DEFAULT true,
+           "created_at"                          TIMESTAMP NOT NULL DEFAULT now(),
+           "updated_at"                          TIMESTAMP NOT NULL DEFAULT now(),
+           "user_uuid"                           uuid,
+           CONSTRAINT "REL_260836d0d0b24533033d3607b9" UNIQUE ("user_uuid"),
+           CONSTRAINT "PK_a293a4a27ec37370f849576673c" PRIMARY KEY ("uuid")
        )`,
     );
     await queryRunner.query(
@@ -107,20 +205,17 @@ export class Migration1721160898719 implements MigrationInterface {
        )`,
     );
     await queryRunner.query(
-      `CREATE TYPE "public"."achievement_operations_type_enum" AS ENUM('ISSUE', 'CANCEL')`,
-    );
-    await queryRunner.query(
-      `CREATE TABLE "achievement_operations"
+      `CREATE TABLE "refresh_sessions"
        (
-           "uuid"                uuid                                        NOT NULL DEFAULT uuid_generate_v4(),
-           "type"                "public"."achievement_operations_type_enum" NOT NULL,
-           "cancellation_reason" character varying,
-           "created_at"          TIMESTAMP                                   NOT NULL DEFAULT now(),
-           "updated_at"          TIMESTAMP                                   NOT NULL DEFAULT now(),
-           "achievement_uuid"    uuid,
-           "executor_uuid"       uuid,
-           "student_uuid"        uuid,
-           CONSTRAINT "PK_d1675f58b292a4f234258c329ec" PRIMARY KEY ("uuid")
+           "id"            SERIAL            NOT NULL,
+           "refresh_token" uuid              NOT NULL DEFAULT uuid_generate_v4(),
+           "user_agent"    character varying NOT NULL,
+           "fingerprint"   character varying NOT NULL,
+           "ip"            character varying NOT NULL,
+           "expires_at"    TIMESTAMP         NOT NULL,
+           "created_at"    TIMESTAMP         NOT NULL DEFAULT now(),
+           "user_uuid"     uuid,
+           CONSTRAINT "PK_9190032f6967b7971dca07d69f3" PRIMARY KEY ("id")
        )`,
     );
     await queryRunner.query(
@@ -162,14 +257,6 @@ export class Migration1721160898719 implements MigrationInterface {
           ADD CONSTRAINT "FK_abefddf3ce88f85f7dd0e4d88eb" FOREIGN KEY ("student_uuid") REFERENCES "users" ("uuid") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
-      `ALTER TABLE "users"
-          ADD CONSTRAINT "FK_d11afe6995bfdb198cb9ee0dde2" FOREIGN KEY ("institute_id") REFERENCES "institutes" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE "users"
-          ADD CONSTRAINT "FK_b8d62b3714f81341caa13ab0ff0" FOREIGN KEY ("group_id") REFERENCES "groups" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
-    );
-    await queryRunner.query(
       `ALTER TABLE "achievement_operations"
           ADD CONSTRAINT "FK_c7c46d3c50467badcf3e8756c9e" FOREIGN KEY ("achievement_uuid") REFERENCES "achievements" ("uuid") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
@@ -180,6 +267,26 @@ export class Migration1721160898719 implements MigrationInterface {
     await queryRunner.query(
       `ALTER TABLE "achievement_operations"
           ADD CONSTRAINT "FK_9877cc9d01828bf66fb8fa6a655" FOREIGN KEY ("student_uuid") REFERENCES "users" ("uuid") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "social_passport"
+          ADD CONSTRAINT "FK_bc1e9c9fb64a60e4700361e06c5" FOREIGN KEY ("user_uuid") REFERENCES "users" ("uuid") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "user_settings"
+          ADD CONSTRAINT "FK_260836d0d0b24533033d3607b9d" FOREIGN KEY ("user_uuid") REFERENCES "users" ("uuid") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "users"
+          ADD CONSTRAINT "FK_d11afe6995bfdb198cb9ee0dde2" FOREIGN KEY ("institute_id") REFERENCES "institutes" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "users"
+          ADD CONSTRAINT "FK_b8d62b3714f81341caa13ab0ff0" FOREIGN KEY ("group_id") REFERENCES "groups" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "refresh_sessions"
+          ADD CONSTRAINT "FK_3f3d0a296092e6892fed9d39388" FOREIGN KEY ("user_uuid") REFERENCES "users" ("uuid") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
       `ALTER TABLE "sputnik_groups"
@@ -201,6 +308,26 @@ export class Migration1721160898719 implements MigrationInterface {
           DROP CONSTRAINT "FK_8d6f11cdfa13e0ae12337946ded"`,
     );
     await queryRunner.query(
+      `ALTER TABLE "refresh_sessions"
+          DROP CONSTRAINT "FK_3f3d0a296092e6892fed9d39388"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "users"
+          DROP CONSTRAINT "FK_b8d62b3714f81341caa13ab0ff0"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "users"
+          DROP CONSTRAINT "FK_d11afe6995bfdb198cb9ee0dde2"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "user_settings"
+          DROP CONSTRAINT "FK_260836d0d0b24533033d3607b9d"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "social_passport"
+          DROP CONSTRAINT "FK_bc1e9c9fb64a60e4700361e06c5"`,
+    );
+    await queryRunner.query(
       `ALTER TABLE "achievement_operations"
           DROP CONSTRAINT "FK_9877cc9d01828bf66fb8fa6a655"`,
     );
@@ -211,14 +338,6 @@ export class Migration1721160898719 implements MigrationInterface {
     await queryRunner.query(
       `ALTER TABLE "achievement_operations"
           DROP CONSTRAINT "FK_c7c46d3c50467badcf3e8756c9e"`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE "users"
-          DROP CONSTRAINT "FK_b8d62b3714f81341caa13ab0ff0"`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE "users"
-          DROP CONSTRAINT "FK_d11afe6995bfdb198cb9ee0dde2"`,
     );
     await queryRunner.query(
       `ALTER TABLE "issued_achievements"
@@ -251,12 +370,40 @@ export class Migration1721160898719 implements MigrationInterface {
       `DROP INDEX "public"."IDX_8d6f11cdfa13e0ae12337946de"`,
     );
     await queryRunner.query(`DROP TABLE "sputnik_groups"`);
+    await queryRunner.query(`DROP TABLE "refresh_sessions"`);
+    await queryRunner.query(`DROP TABLE "users"`);
+    await queryRunner.query(`DROP TYPE "public"."users_role_enum"`);
+    await queryRunner.query(`DROP TABLE "user_settings"`);
+    await queryRunner.query(`DROP TABLE "social_passport"`);
+    await queryRunner.query(
+      `DROP TYPE "public"."social_passport_group_role_enum"`,
+    );
+    await queryRunner.query(
+      `DROP TYPE "public"."social_passport_profcom_card_status_enum"`,
+    );
+    await queryRunner.query(
+      `DROP TYPE "public"."social_passport_student_id_status_enum"`,
+    );
+    await queryRunner.query(
+      `DROP TYPE "public"."social_passport_military_registration_enum"`,
+    );
+    await queryRunner.query(
+      `DROP TYPE "public"."social_passport_medical_registration_enum"`,
+    );
+    await queryRunner.query(
+      `DROP TYPE "public"."social_passport_bsk_status_enum"`,
+    );
+    await queryRunner.query(
+      `DROP TYPE "public"."social_passport_education_type_enum"`,
+    );
+    await queryRunner.query(
+      `DROP TYPE "public"."social_passport_previous_education_enum"`,
+    );
+    await queryRunner.query(`DROP TYPE "public"."social_passport_sex_enum"`);
     await queryRunner.query(`DROP TABLE "achievement_operations"`);
     await queryRunner.query(
       `DROP TYPE "public"."achievement_operations_type_enum"`,
     );
-    await queryRunner.query(`DROP TABLE "users"`);
-    await queryRunner.query(`DROP TYPE "public"."users_role_enum"`);
     await queryRunner.query(`DROP TABLE "issued_achievements"`);
     await queryRunner.query(`DROP TABLE "achievements"`);
     await queryRunner.query(`DROP TYPE "public"."achievements_rarity_enum"`);
