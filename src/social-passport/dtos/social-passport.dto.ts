@@ -109,7 +109,7 @@ export class SocialPassportDto {
   @Expose()
   profcomCardStatus: CardStatus | RuCardStatus; // Получение профсоюзного билета
 
-  @ApiProperty({ nullable: true })
+  @ApiProperty({ type: 'boolean', nullable: true })
   @Expose()
   scholarshipCardStatus: boolean | string; // Получение стипендиальной карты
 
