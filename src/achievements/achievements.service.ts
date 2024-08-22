@@ -26,6 +26,8 @@ import {
   Paginated,
   PaginateQuery,
 } from 'nestjs-paginate';
+import { RedisService } from '../redis/redis.service';
+import { CacheKey } from '../redis/enums/cache-key.enum';
 
 @Injectable()
 export class AchievementsService {
@@ -39,6 +41,7 @@ export class AchievementsService {
     private readonly userService: UsersService,
     private readonly telegramService: TelegramService,
     private readonly vkService: VkService,
+    private readonly redisService: RedisService,
   ) {}
 
   static OPERATION_PAGINATION_CONFIG = {
@@ -56,21 +59,27 @@ export class AchievementsService {
   async getAchievementsForUser(
     user: AuthorizedUserDto,
   ): Promise<AchievementDto[]> {
-    if (user.role !== UserRole.STUDENT) {
-      return this.achievementsRepository.find();
-    }
-    const { achievements, issuedAchievements } =
-      await this.achievementsRepository.manager.transaction(async (manager) => {
-        const [achievements, issuedAchievements] = await Promise.all([
-          manager.find(Achievement),
-          manager.find(IssuedAchievement, {
-            where: { student: { uuid: user.uuid } },
-            relations: ['achievement'],
-          }),
-        ]);
+    let achievements = await this.redisService.get<Achievement[]>(
+      CacheKey.ALL_ACHIEVEMENTS,
+    );
 
-        return { achievements, issuedAchievements };
-      });
+    if (!achievements) {
+      achievements = await this.achievementsRepository.find();
+      await this.redisService.set(
+        CacheKey.ALL_ACHIEVEMENTS,
+        achievements,
+        3600,
+      );
+    }
+
+    if (user.role !== UserRole.STUDENT) {
+      return achievements;
+    }
+
+    const issuedAchievements = await this.issuedAchievementsRepository.find({
+      where: { student: { uuid: user.uuid } },
+      relations: ['achievement'],
+    });
 
     const issuedAchievementMap = new Map<string, IssuedAchievement>();
     issuedAchievements.forEach((ia) => {

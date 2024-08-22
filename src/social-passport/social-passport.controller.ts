@@ -67,7 +67,10 @@ export class SocialPassportController {
     @Req() req: AuthorizedRequestDto,
     @Body() updateSocialPassportDto: UpdateSocialPassportDto,
   ) {
-    return this.socialPassportService.update(req.user, updateSocialPassportDto);
+    return this.socialPassportService.update(
+      req.user.uuid,
+      updateSocialPassportDto,
+    );
   }
 
   @Get('students/:uuid/social-passport')
@@ -77,6 +80,16 @@ export class SocialPassportController {
   @UseInterceptors(new TransformInterceptor(SocialPassportDto))
   async getSocialPassport(@Param('uuid', ParseUUIDPipe) uuid: string) {
     return this.socialPassportService.findOne(uuid);
+  }
+
+  @Patch('students/:uuid/social-passport')
+  @ApiOperation({ summary: 'can access: sputnik, curator' })
+  @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
+  async updateSocialPassport(
+    @Param('uuid', ParseUUIDPipe) uuid: string,
+    @Body() updateSocialPassportDto: UpdateSocialPassportDto,
+  ) {
+    return this.socialPassportService.update(uuid, updateSocialPassportDto);
   }
 
   @Patch('students/:uuid/social-passport/group-role')

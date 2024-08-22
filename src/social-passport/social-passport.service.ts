@@ -64,11 +64,11 @@ export class SocialPassportService {
   }
 
   async update(
-    user: AuthorizedUserDto,
+    userUuid: string,
     updateSocialPassportDto: UpdateSocialPassportDto,
   ): Promise<UpdateResult> {
     return this.socialPassportRepository.update(
-      { student: { uuid: user.uuid } },
+      { student: { uuid: userUuid } },
       updateSocialPassportDto,
     );
   }

@@ -8,6 +8,8 @@ import { UsersModule } from '../users/users.module';
 import { TelegramModule } from '../telegram/telegram.module';
 import { VkModule } from '../vk/vk.module';
 import { AchievementOperation } from './entities/achievement-operation.entity';
+import { RedisService } from '../redis/redis.service';
+import { RedisModule } from '../redis/redis.module';
 
 @Module({
   imports: [
@@ -19,6 +21,7 @@ import { AchievementOperation } from './entities/achievement-operation.entity';
     UsersModule,
     TelegramModule,
     VkModule,
+    RedisModule,
   ],
   controllers: [AchievementsController],
   providers: [AchievementsService],
