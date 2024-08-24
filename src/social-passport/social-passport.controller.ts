@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Param,
+  ParseIntPipe,
   ParseUUIDPipe,
   Patch,
   Post,
@@ -31,6 +32,7 @@ import { ParseGroupRolePipe } from '../common/validation-pipes/parse-group-role.
 import { GroupRole } from './enums/group-role.enum';
 import { UpdateResult } from 'typeorm';
 import { UpdateSocialPassportDto } from './dtos/update-social-passport.dto';
+import { PartialSocialPassportDto } from './dtos/partial-social-passport.dto';
 
 @ApiTags('Social Passport')
 @ApiBearerAuth()
@@ -57,7 +59,6 @@ export class SocialPassportController {
     @Req() req: AuthorizedRequestDto,
     @Body() createSocialPassportDto: CreateSocialPassportDto,
   ) {
-    console.log(createSocialPassportDto);
     return this.socialPassportService.create(req.user, createSocialPassportDto);
   }
 
@@ -103,5 +104,14 @@ export class SocialPassportController {
     @Query('role', new ParseGroupRolePipe()) role: GroupRole,
   ) {
     return this.socialPassportService.setGroupRole(uuid, role);
+  }
+
+  @Get('groups/:id/social-passports')
+  @ApiOperation({ summary: 'can access: student, curator' })
+  @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
+  @ApiOkResponse({ type: PartialSocialPassportDto, isArray: true })
+  @UseInterceptors(new TransformInterceptor(PartialSocialPassportDto))
+  async getGroupsSocialPassport(@Param('id', ParseIntPipe) id: string) {
+    return this.socialPassportService.findSocialPassportsByGroupId(id);
   }
 }

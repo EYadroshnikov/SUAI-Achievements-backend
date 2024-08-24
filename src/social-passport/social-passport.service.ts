@@ -45,6 +45,48 @@ export class SocialPassportService {
     };
   }
 
+  async findSocialPassportsByGroupId(groupId: string) {
+    return this.socialPassportRepository
+      .createQueryBuilder('social_passport')
+      .select([
+        'social_passport.bskStatus',
+        'social_passport.medicalRegistration',
+        'social_passport.militaryRegistration',
+        'social_passport.profcomApplication',
+        'social_passport.profcomCardStatus',
+        'social_passport.ssoAccess',
+        'social_passport.passStatus',
+        'social_passport.studentIdStatus',
+        'social_passport.preferentialTravelCard',
+        'social_passport.scholarshipCardStatus',
+        'social_passport.competenceCenterTest',
+        'social_passport.studios',
+        'user.uuid',
+      ])
+      .innerJoin('social_passport.student', 'user')
+      .where('user.group_id = :groupId', { groupId })
+      .getMany()
+      .then((socialPassports) =>
+        socialPassports.map((passport) => ({
+          user_uuid: passport.student.uuid,
+          bskStatus: passport.bskStatus,
+          medicalRegistration: passport.medicalRegistration,
+          militaryRegistration: passport.militaryRegistration,
+          profcomApplication: passport.profcomApplication,
+          profcomCardStatus: passport.profcomCardStatus,
+          ssoAccess: passport.ssoAccess,
+          passStatus: passport.passStatus,
+          studentIdStatus: passport.studentIdStatus,
+          preferentialTravelCard: passport.preferentialTravelCard,
+          scholarshipCardStatus: passport.scholarshipCardStatus,
+          competenceCenterTest: passport.competenceCenterTest,
+          studiosCount: passport.studios
+            ? passport.studios.split(',').length
+            : 0,
+        })),
+      );
+  }
+
   async findGroupsPassports(groupId: number): Promise<SocialPassport[]> {
     return this.socialPassportRepository.find({
       where: { student: { group: { id: groupId } } },
