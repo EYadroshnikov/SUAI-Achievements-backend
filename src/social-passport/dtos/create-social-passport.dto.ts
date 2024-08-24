@@ -5,8 +5,10 @@ import { CardStatus } from '../enums/card-status.enum';
 import {
   IsBoolean,
   IsDate,
+  IsDateString,
   IsEmail,
   IsEnum,
+  IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
@@ -17,6 +19,7 @@ import { RegistrationStage } from '../enums/registration-stage.enum';
 
 export class CreateSocialPassportDto {
   @ApiProperty()
+  @IsNotEmpty()
   phone: string;
 
   @ApiProperty()
@@ -28,7 +31,7 @@ export class CreateSocialPassportDto {
   sex: Sex;
 
   @ApiProperty()
-  @IsDate()
+  @IsDateString()
   birthday: Date;
 
   @ApiProperty()

@@ -57,6 +57,7 @@ export class SocialPassportController {
     @Req() req: AuthorizedRequestDto,
     @Body() createSocialPassportDto: CreateSocialPassportDto,
   ) {
+    console.log(createSocialPassportDto);
     return this.socialPassportService.create(req.user, createSocialPassportDto);
   }
 
