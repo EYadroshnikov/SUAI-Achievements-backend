@@ -37,7 +37,7 @@ export class SocialPassportService {
         ' ' +
         socialPassport.student.lastName +
         ' ' +
-        socialPassport.student.lastName,
+        socialPassport.student.patronymic,
       groupName: socialPassport.student.group.name,
       vkId: socialPassport.student.vkId,
       tgUserName: socialPassport.student.tgUserName,
