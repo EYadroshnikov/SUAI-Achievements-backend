@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsBoolean,
   IsDate,
+  IsDateString,
   IsEmail,
   IsEnum,
   IsNumber,
@@ -33,7 +34,7 @@ export class UpdateSocialPassportDto {
 
   @ApiProperty({ required: false })
   @IsOptional()
-  @IsDate()
+  @IsDateString()
   birthday?: Date;
 
   @ApiProperty({ required: false })
@@ -78,12 +79,12 @@ export class UpdateSocialPassportDto {
 
   @ApiProperty({ required: false })
   @IsOptional()
-  @IsBoolean()
+  @IsEnum(RegistrationStage)
   medicalRegistration?: RegistrationStage;
 
   @ApiProperty({ required: false, nullable: true })
   @IsOptional()
-  @IsBoolean()
+  @IsEnum(RegistrationStage)
   militaryRegistration?: RegistrationStage;
 
   @ApiProperty({ required: false })
