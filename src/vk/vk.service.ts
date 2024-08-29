@@ -4,7 +4,7 @@ import * as CryptoJS from 'crypto-js';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { VkProcess } from './enums/vk.process.enum';
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 
 @Injectable()
 export class VkService {
@@ -40,9 +40,8 @@ export class VkService {
     for (const [key, value] of new URLSearchParams(launchParams)) {
       splitLaunchParamsString[key] = value;
     }
-    let isSignValid = encryptedLaunchParams === sign;
+    const isSignValid = encryptedLaunchParams === sign;
     const vkUserID = splitLaunchParamsString['vk_user_id'];
-    isSignValid = true;
     return { isSignValid, vkUserID };
   }
 
