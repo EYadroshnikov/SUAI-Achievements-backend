@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class InitMigration1724243990536 implements MigrationInterface {
-  name = 'InitMigration1724243990536';
+export class InitMigration1724943931598 implements MigrationInterface {
+  name = 'InitMigration1724943931598';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
@@ -111,10 +111,10 @@ export class InitMigration1724243990536 implements MigrationInterface {
       `CREATE TYPE "public"."social_passport_bsk_status_enum" AS ENUM('NO', 'GOOGLE_FROM', 'WAITING', 'RECEIVED')`,
     );
     await queryRunner.query(
-      `CREATE TYPE "public"."social_passport_medical_registration_enum" AS ENUM('NOT_REQUIRED', 'NOT_STARTED', 'NOT_ENOUGH_DOCS', 'FINISHED')`,
+      `CREATE TYPE "public"."social_passport_medical_registration_enum" AS ENUM('NOT_STARTED', 'NOT_ENOUGH_DOCS', 'FINISHED')`,
     );
     await queryRunner.query(
-      `CREATE TYPE "public"."social_passport_military_registration_enum" AS ENUM('NOT_REQUIRED', 'NOT_STARTED', 'NOT_ENOUGH_DOCS', 'FINISHED')`,
+      `CREATE TYPE "public"."social_passport_military_registration_enum" AS ENUM('NOT_STARTED', 'NOT_ENOUGH_DOCS', 'FINISHED')`,
     );
     await queryRunner.query(
       `CREATE TYPE "public"."social_passport_student_id_status_enum" AS ENUM('NO', 'PHOTO_PROVIDED', 'RECEIVED')`,
