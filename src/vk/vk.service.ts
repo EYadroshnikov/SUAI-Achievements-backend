@@ -1,10 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as CryptoJS from 'crypto-js';
+import * as CryptoJS from 'crypto';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { VkProcess } from './enums/vk.process.enum';
 import axios from 'axios';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class VkService {
@@ -15,32 +16,108 @@ export class VkService {
 
   private readonly logger = new Logger(VkService.name);
 
-  async verifyVkToken(launchParams: string, sign: string): Promise<any> {
-    const paramArray = launchParams.split('&');
-    const vkParams = paramArray.filter((param) => param.startsWith('vk_'));
+  async verifyLaunchParams(searchOrParsedUrlQuery, secretKey) {
+    let sign;
+    const queryParams = [];
 
-    vkParams.sort((a, b) => {
-      const keyA = a.split('=')[0];
-      const keyB = b.split('=')[0];
-      return keyA.localeCompare(keyB);
-    });
-    const vkParamsString = vkParams.join('&');
-    const hmac = CryptoJS.HmacSHA256(
-      vkParamsString,
-      this.configService.get('vk.miniAppSecret'),
-    );
-    const base64 = CryptoJS.enc.Base64.stringify(hmac);
+    /**
+     * Функция, которая обрабатывает входящий query-параметр. В случае передачи
+     * параметра, отвечающего за подпись, подменяет "sign". В случае встречи
+     * корректного в контексте подписи параметра добавляет его в массив
+     * известных параметров.
+     * @param key
+     * @param value
+     */
+    const processQueryParam = (key, value) => {
+      if (typeof value === 'string') {
+        if (key === 'sign') {
+          sign = value;
+        } else if (key.startsWith('vk_')) {
+          queryParams.push({ key, value });
+        }
+      }
+    };
 
-    const encryptedLaunchParams = base64
+    if (typeof searchOrParsedUrlQuery === 'string') {
+      // Если строка начинается с вопроса (когда передан window.location.search),
+      // его необходимо удалить.
+      const formattedSearch = searchOrParsedUrlQuery.startsWith('?')
+        ? searchOrParsedUrlQuery.slice(1)
+        : searchOrParsedUrlQuery;
+
+      // Пытаемся разобрать строку как query-параметр.
+      for (const param of formattedSearch.split('&')) {
+        const [key, value] = param.split('=');
+        processQueryParam(key, value);
+      }
+    } else {
+      for (const key of Object.keys(searchOrParsedUrlQuery)) {
+        const value = searchOrParsedUrlQuery[key];
+        processQueryParam(key, value);
+      }
+    }
+    // Обрабатываем исключительный случай, когда не найдена ни подпись в параметрах,
+    // ни один параметр, начинающийся с "vk_", чтобы избежать
+    // излишней нагрузки, образующейся в процессе работы дальнейшего кода.
+    if (!sign || queryParams.length === 0) {
+      return false;
+    }
+    // Снова создаём запрос в виде строки из уже отфильтрованных параметров.
+    const queryString = queryParams
+      // Сортируем ключи в порядке возрастания.
+      .sort((a, b) => a.key.localeCompare(b.key))
+      // Воссоздаём новый запрос в виде строки.
+      .reduce((acc, { key, value }, idx) => {
+        return (
+          acc + (idx === 0 ? '' : '&') + `${key}=${encodeURIComponent(value)}`
+        );
+      }, '');
+
+    // Создаём хеш получившейся строки на основе секретного ключа.
+    const paramsHash = crypto
+      .createHmac('sha256', secretKey)
+      .update(queryString)
+      .digest()
+      .toString('base64')
       .replace(/\+/g, '-')
       .replace(/\//g, '_')
       .replace(/=$/, '');
 
+    return paramsHash === sign;
+  }
+
+  async verifyVkToken(launchParams: string, sign: string): Promise<any> {
+    // const paramArray = launchParams.split('&');
+    // const vkParams = paramArray.filter((param) => param.startsWith('vk_'));
+    //
+    // vkParams.sort((a, b) => {
+    //   const keyA = a.split('=')[0];
+    //   const keyB = b.split('=')[0];
+    //   return keyA.localeCompare(keyB);
+    // });
+    // const vkParamsString = vkParams.join('&');
+    // const hmac = CryptoJS.HmacSHA256(
+    //   vkParamsString,
+    //   this.configService.get('vk.miniAppSecret'),
+    // );
+    // const base64 = CryptoJS.enc.Base64.stringify(hmac);
+    //
+    // const encryptedLaunchParams = base64
+    //   .replace(/\+/g, '-')
+    //   .replace(/\//g, '_')
+    //   .replace(/=$/, '');
+    //
     const splitLaunchParamsString = {};
     for (const [key, value] of new URLSearchParams(launchParams)) {
       splitLaunchParamsString[key] = value;
     }
-    const isSignValid = encryptedLaunchParams === sign;
+    // console.log(encryptedLaunchParams);
+    // console.log(sign);
+    // const isSignValid = encryptedLaunchParams === sign;
+    const isSignValid = await this.verifyLaunchParams(
+      launchParams + '&sign=' + sign,
+      this.configService.get('vk.miniAppSecret'),
+    );
     const vkUserID = splitLaunchParamsString['vk_user_id'];
     return { isSignValid, vkUserID };
   }
