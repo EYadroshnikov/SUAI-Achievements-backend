@@ -15,8 +15,8 @@ before_script:
 
 build:
   stage: build
-  tags:
-    - suai
+#  tags:
+#    - suai
   script:
     - docker build -t $DOCKERHUB_REPO:${IMAGE_TAG}_${CI_PIPELINE_ID} .
     - docker push $DOCKERHUB_REPO:${IMAGE_TAG}_${CI_PIPELINE_ID}
