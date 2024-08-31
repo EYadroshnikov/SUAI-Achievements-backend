@@ -1,8 +1,13 @@
-import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  ForbiddenException,
+  forwardRef,
+  Inject,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import {
-  ArrayContains,
   DataSource,
   EntityManager,
   FindOneOptions,
@@ -104,17 +109,36 @@ export class UsersService {
     updateStudentDto: UpdateStudentDto,
     user: AuthorizedUserDto,
   ): Promise<UpdateResult> {
-    const criteria = {
-      uuid: uuid,
-      role: UserRole.STUDENT,
-    };
-    if (user.role == UserRole.SPUTNIK) {
-      criteria['group'] = { sputniks: ArrayContains([user.uuid]) };
-    }
-    return this.userRepository.update(criteria, {
-      firstName: updateStudentDto.firstName,
-      lastName: updateStudentDto.lastName,
-      patronymic: updateStudentDto.patronymic,
+    return this.userRepository.manager.transaction(async (manager) => {
+      const [student, editor] = await Promise.all([
+        manager.findOneOrFail(User, { where: { uuid } }),
+        user.role === UserRole.SPUTNIK
+          ? manager.findOneOrFail(User, {
+              where: { uuid: user.uuid },
+              relations: ['sputnikGroups'],
+            })
+          : manager.findOneOrFail(User, { where: { uuid: user.uuid } }),
+      ]);
+
+      if (user.role === UserRole.SPUTNIK) {
+        const isStudentInSputnikGroup = editor.sputnikGroups.some(
+          (group) => group.id === student.group.id,
+        );
+
+        if (!isStudentInSputnikGroup) {
+          throw new ForbiddenException(
+            'You can only update students from your groups',
+          );
+        }
+      } else if (user.role === UserRole.CURATOR) {
+        if (student.institute.id !== editor.institute.id) {
+          throw new ForbiddenException(
+            'You can only update students from your institute',
+          );
+        }
+      }
+
+      return manager.update(User, { uuid }, updateStudentDto);
     });
   }
 
