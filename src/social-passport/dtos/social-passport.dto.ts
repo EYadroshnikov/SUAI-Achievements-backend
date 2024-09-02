@@ -14,6 +14,7 @@ import { RuPreviousEducation } from '../enums/ru-previous-education.enum';
 import { RuSex } from '../enums/ru-sex.enum';
 import { RegistrationStage } from '../enums/registration-stage.enum';
 import { RuRegistrationStage } from '../enums/ru-registration-stage.enum';
+import { ProfcomCardStatus } from '../enums/profcom-card-status';
 
 @Exclude()
 export class SocialPassportDto {
@@ -105,9 +106,9 @@ export class SocialPassportDto {
   @Expose()
   profcomApplication: boolean | string; // Заполнение заявления в профком
 
-  @ApiProperty({ enum: CardStatus })
+  @ApiProperty({ enum: ProfcomCardStatus })
   @Expose()
-  profcomCardStatus: CardStatus | RuCardStatus; // Получение профсоюзного билета
+  profcomCardStatus: ProfcomCardStatus | RuCardStatus; // Получение профсоюзного билета
 
   @ApiProperty({ type: 'boolean', nullable: true })
   @Expose()

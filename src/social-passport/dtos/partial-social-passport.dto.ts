@@ -3,6 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { BskStatus } from '../enums/bsk-status.enum';
 import { CardStatus } from '../enums/card-status.enum';
 import { RegistrationStage } from '../enums/registration-stage.enum';
+import { ProfcomCardStatus } from '../enums/profcom-card-status';
 
 @Exclude()
 export class PartialSocialPassportDto {
@@ -26,9 +27,9 @@ export class PartialSocialPassportDto {
   @Expose()
   profcomApplication: boolean;
 
-  @ApiProperty({ enum: CardStatus })
+  @ApiProperty({ enum: ProfcomCardStatus })
   @Expose()
-  profcomCardStatus: CardStatus;
+  profcomCardStatus: ProfcomCardStatus;
 
   @ApiProperty({ type: 'boolean' })
   @Expose()

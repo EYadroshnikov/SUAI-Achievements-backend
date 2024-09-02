@@ -5,7 +5,6 @@ const translations: {
   [key in BskStatus]: RuBskStatus;
 } = {
   [BskStatus.NO]: RuBskStatus.NO,
-  [BskStatus.GOOGLE_FROM]: RuBskStatus.GOOGLE_FROM,
   [BskStatus.WAITING]: RuBskStatus.WAITING,
   [BskStatus.RECEIVED]: RuBskStatus.RECEIVED,
 };

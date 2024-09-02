@@ -15,7 +15,8 @@ import { CardStatus } from '../enums/card-status.enum';
 import { Sex } from '../enums/sex.enum';
 import { PreviousEducation } from '../enums/previous-education.enum';
 import { RegistrationStage } from '../enums/registration-stage.enum';
-//TODO: добавить новые поля
+import { ProfcomCardStatus } from '../enums/profcom-card-status';
+
 export class UpdateSocialPassportDto {
   @ApiProperty({ required: false })
   @IsOptional()
@@ -107,10 +108,10 @@ export class UpdateSocialPassportDto {
   @IsBoolean()
   profcomApplication?: boolean;
 
-  @ApiProperty({ enum: CardStatus, required: false })
+  @ApiProperty({ enum: ProfcomCardStatus, required: false })
   @IsOptional()
-  @IsEnum(CardStatus)
-  profcomCardStatus?: CardStatus;
+  @IsEnum(ProfcomCardStatus)
+  profcomCardStatus?: ProfcomCardStatus;
 
   @ApiProperty({ required: false })
   @IsOptional()

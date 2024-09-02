@@ -1,0 +1,5 @@
+export enum ProfcomCardStatus {
+  NOT_DOWNLOADED = 'NOT_DOWNLOADED',
+  REGISTERED = 'REGISTERED',
+  CONFIRMED = 'CONFIRMED',
+}

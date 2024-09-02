@@ -15,6 +15,7 @@ import { CardStatus } from '../enums/card-status.enum';
 import { Sex } from '../enums/sex.enum';
 import { PreviousEducation } from '../enums/previous-education.enum';
 import { RegistrationStage } from '../enums/registration-stage.enum';
+import { ProfcomCardStatus } from '../enums/profcom-card-status';
 
 @Entity('social_passport')
 export class SocialPassport {
@@ -68,7 +69,7 @@ export class SocialPassport {
     enum: BskStatus,
     default: BskStatus.NO,
   })
-  bskStatus: BskStatus;
+  bskStatus: BskStatus; //TODO:
 
   @Column({
     name: 'medical_registration',
@@ -125,10 +126,10 @@ export class SocialPassport {
   @Column({
     name: 'profcom_card_status',
     type: 'enum',
-    enum: CardStatus,
-    default: CardStatus.NO,
+    enum: ProfcomCardStatus,
+    default: ProfcomCardStatus.NOT_DOWNLOADED,
   })
-  profcomCardStatus: CardStatus;
+  profcomCardStatus: ProfcomCardStatus; //TODO не скачал, зарегался, подтвердил
 
   @Column({
     name: 'scholarship_card_status',

@@ -16,6 +16,7 @@ import {
 import { Sex } from '../enums/sex.enum';
 import { PreviousEducation } from '../enums/previous-education.enum';
 import { RegistrationStage } from '../enums/registration-stage.enum';
+import { ProfcomCardStatus } from '../enums/profcom-card-status';
 
 export class CreateSocialPassportDto {
   @ApiProperty()
@@ -94,10 +95,10 @@ export class CreateSocialPassportDto {
   @IsOptional()
   profcomApplication?: boolean;
 
-  @ApiProperty({ enum: CardStatus, required: false })
+  @ApiProperty({ enum: ProfcomCardStatus, required: false })
   @IsOptional()
-  @IsEnum(CardStatus)
-  profcomCardStatus?: CardStatus;
+  @IsEnum(ProfcomCardStatus)
+  profcomCardStatus?: ProfcomCardStatus;
 
   @ApiProperty({ required: false, nullable: true })
   @IsOptional()
