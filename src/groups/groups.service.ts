@@ -34,6 +34,13 @@ export class GroupsService {
     return repo.findOneOrFail({ where: { id } });
   }
 
+  async findOneWithStudents(id: number) {
+    return this.groupRepository.findOneOrFail({
+      where: { id },
+      relations: ['students', 'institute'],
+    });
+  }
+
   async findAndCountBy(
     ids: number[],
     institute: Institute,

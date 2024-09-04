@@ -24,4 +24,11 @@ export class InstitutesService {
   async getAllWithGroups(): Promise<Institute[]> {
     return this.instituteRepository.find({ relations: ['groups'] });
   }
+
+  async findOneWithGroups(id: number): Promise<Institute> {
+    return this.instituteRepository.findOneOrFail({
+      where: { id },
+      relations: ['groups'],
+    });
+  }
 }

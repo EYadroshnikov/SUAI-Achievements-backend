@@ -114,4 +114,25 @@ export class SocialPassportController {
   async getGroupsSocialPassport(@Param('id', ParseIntPipe) id: string) {
     return this.socialPassportService.findSocialPassportsByGroupId(id);
   }
+
+  @Get('social-passports/export')
+  @ApiOperation({ summary: 'can access: admin only' })
+  @Roles(UserRole.ADMIN)
+  async export() {
+    return this.socialPassportService.export();
+  }
+
+  @Get('institutes/:id/social-passports/export')
+  @ApiOperation({ summary: 'can access: admin only' })
+  @Roles(UserRole.ADMIN)
+  async exportInstitute(@Param('id', ParseIntPipe) id: number) {
+    return this.socialPassportService.exportInstitute(id);
+  }
+
+  @Get('groups/:id/social-passports/export')
+  @ApiOperation({ summary: 'can access: admin only' })
+  @Roles(UserRole.ADMIN)
+  async exportGroup(@Param('id', ParseIntPipe) id: number) {
+    return this.socialPassportService.exportGroup(id);
+  }
 }

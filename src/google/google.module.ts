@@ -1,6 +1,9 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { GoogleService } from './google.service';
 import { BullModule } from '@nestjs/bull';
+import { GoogleRequestProcessor } from './google-request.processor';
+import { SocialPassportService } from '../social-passport/social-passport.service';
+import { SocialPassportModule } from '../social-passport/social-passport.module';
 
 @Module({
   imports: [
@@ -14,8 +17,9 @@ import { BullModule } from '@nestjs/bull';
         removeOnComplete: true,
       },
     }),
+    forwardRef(() => SocialPassportModule),
   ],
-  providers: [GoogleService],
+  providers: [GoogleService, GoogleRequestProcessor],
   exports: [GoogleService],
 })
 export class GoogleModule {}
