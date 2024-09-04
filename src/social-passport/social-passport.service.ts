@@ -141,6 +141,7 @@ export class SocialPassportService {
       for (const group of institute.groups) {
         await this.googleService.exportGroup(group, institute.spreadSheetId);
       }
+      this.logger.log(`institute "${institute.name}" added to export queue`);
     }
   }
 
@@ -149,10 +150,12 @@ export class SocialPassportService {
     for (const group of institute.groups) {
       await this.googleService.exportGroup(group, institute.spreadSheetId);
     }
+    this.logger.log(`institute "${institute.name}" added to export queue`);
   }
 
   async exportGroup(id: number) {
     const group = await this.groupsService.findOneWithStudents(id);
     await this.googleService.exportGroup(group, group.institute.spreadSheetId);
+    this.logger.log(`group "${group.name}" added to export queue`);
   }
 }
