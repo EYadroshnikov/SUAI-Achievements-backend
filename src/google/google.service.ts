@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { sheets, sheets_v4 } from '@googleapis/sheets';
 import { GoogleAuth } from 'google-auth-library';
-import { SocialPassportDto } from '../social-passport/dtos/social-passport.dto';
 import { IExportConfigService } from './interfaces/export-config-service.interface';
 import { Group } from '../groups/entities/group.entity';
 import { GoogleProcess } from './enums/google.process.enum';
