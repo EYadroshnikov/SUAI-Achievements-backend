@@ -23,7 +23,7 @@ export class SocialPassportService {
     private readonly googleService: GoogleService,
     private readonly groupsService: GroupsService,
   ) {}
-  private readonly logger: Logger = new Logger(SocialPassportDto.name);
+  private readonly logger: Logger = new Logger(SocialPassportService.name);
 
   async findOne(studentUuid: string): Promise<SocialPassportDto> {
     const socialPassport = await this.socialPassportRepository.findOneOrFail({
