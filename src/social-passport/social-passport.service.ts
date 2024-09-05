@@ -171,7 +171,7 @@ export class SocialPassportService {
           institute.spreadSheetId,
         );
       }
-      this.logger.log(`institute "${institute.name}" added to export queue`);
+      this.logger.log(`institute "${institute.name}" added to format queue`);
     }
   }
 }

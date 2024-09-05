@@ -45,7 +45,7 @@ export class GoogleRequestProcessor {
 
   @Process(GoogleProcess.FORMAT_SOCIAL_PASSPORTS)
   async handleFormat(job: Job<{ sheetName: string; spreadsheetId: string }>) {
-    await this.googleService.formatSheet(
+    await this.googleService.processFormatSheet(
       job.data.sheetName,
       job.data.spreadsheetId,
     );
