@@ -97,7 +97,7 @@ export class GoogleService {
     });
   }
 
-  async formatSheet(spreadsheetId: string, sheetName: string) {
+  async formatSheet(sheetName: string, spreadsheetId: string) {
     await this.googleRequestQueue.add(GoogleProcess.FORMAT_SOCIAL_PASSPORTS, {
       spreadsheetId,
       sheetName,
