@@ -139,7 +139,7 @@ export class SocialPassportExportConfigService implements IExportConfigService {
     educationType: {
       [EducationType.BUDGET]: 'Бюджет',
       [EducationType.CONTRACT]: 'Контракт',
-      [EducationType.SLAVISH]: 'Целевое обучение',
+      [EducationType.SLAVISH]: 'Целевое',
     },
     groupRole: {
       [GroupRole.STUDENT]: 'Студент',
@@ -202,11 +202,11 @@ export class SocialPassportExportConfigService implements IExportConfigService {
       return this.translations['boolean'][value] || value;
     }
 
-    if (fieldType === 'vkLink') {
+    if (fieldType === 'tgLink') {
       return `t.me/${value}`;
     }
 
-    if (fieldType === 'tgLink') {
+    if (fieldType === 'vkLink') {
       return `vk.com/id${value}`;
     }
 

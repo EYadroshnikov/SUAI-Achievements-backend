@@ -135,4 +135,11 @@ export class SocialPassportController {
   async exportGroup(@Param('id', ParseIntPipe) id: number) {
     return this.socialPassportService.exportGroup(id);
   }
+
+  @Get('social-passports/format')
+  @ApiOperation({ summary: 'can access: admin only' })
+  @Roles(UserRole.ADMIN)
+  async formatSheets() {
+    return this.socialPassportService.formatAllSheets();
+  }
 }

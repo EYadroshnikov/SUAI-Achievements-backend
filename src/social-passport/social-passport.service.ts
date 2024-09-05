@@ -123,7 +123,7 @@ export class SocialPassportService {
   preparePassportData(passport: SocialPassport): any {
     const student = passport.student;
     return {
-      name: `${student.firstName} ${student.lastName} ${student.patronymic}`,
+      name: `${student.lastName} ${student.firstName} ${student.patronymic}`,
       groupName: student.group.name,
       vkId: student.vkId,
       tgUserName: student.tgUserName,
@@ -157,5 +157,21 @@ export class SocialPassportService {
     const group = await this.groupsService.findOneWithStudents(id);
     await this.googleService.exportGroup(group, group.institute.spreadSheetId);
     this.logger.log(`group "${group.name}" added to export queue`);
+  }
+
+  async formatAllSheets() {
+    const institutes = await this.instituteService.getAllWithGroups();
+    for (const institute of institutes) {
+      if (!institute.spreadSheetId) {
+        continue;
+      }
+      for (const group of institute.groups) {
+        await this.googleService.formatSheet(
+          group.name,
+          institute.spreadSheetId,
+        );
+      }
+      this.logger.log(`institute "${institute.name}" added to export queue`);
+    }
   }
 }

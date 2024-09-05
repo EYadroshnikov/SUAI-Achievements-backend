@@ -43,6 +43,14 @@ export class GoogleRequestProcessor {
     );
   }
 
+  @Process(GoogleProcess.FORMAT_SOCIAL_PASSPORTS)
+  async handleFormat(job: Job<{ sheetName: string; spreadsheetId: string }>) {
+    await this.googleService.formatSheet(
+      job.data.sheetName,
+      job.data.spreadsheetId,
+    );
+  }
+
   @OnQueueFailed()
   async onQueueFailed(job: Job, error: any) {
     this.logger.error(`Task ${job.id} failed: ${error.message}`, error.stack);
