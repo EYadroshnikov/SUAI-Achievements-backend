@@ -198,7 +198,7 @@ export class StudentsController {
     const student = await this.usersService.getStudent(req.user.uuid);
     return this.usersService.getTopStudents(req.user, {
       ...paginateDto,
-      filter: { 'user.institute.id': '$eq:' + student.institute.id },
+      filter: { 'institute.id': '$eq:' + student.institute.id },
     });
   }
 

@@ -65,8 +65,8 @@ export class AuthController {
 
   @Post('/refresh')
   async refresh(@Req() req: Request, @Res() res: Response) {
+    console.log(req.cookies);
     const fullAuthResponseDto = await this.authService.refresh(req);
-    console.log(fullAuthResponseDto);
     res.cookie(
       'refreshToken',
       fullAuthResponseDto.refreshToken,
