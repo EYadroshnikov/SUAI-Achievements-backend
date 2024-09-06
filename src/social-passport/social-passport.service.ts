@@ -120,6 +120,15 @@ export class SocialPassportService {
     );
   }
 
+  async getSpreadsheetLink(userUuid: string) {
+    const user = await this.userService.find({
+      where: { uuid: userUuid },
+      loadEagerRelations: false,
+      relations: ['institute'],
+    });
+    return `https://docs.google.com/spreadsheets/d/${user.institute.spreadSheetId}`;
+  }
+
   preparePassportData(passport: SocialPassport): any {
     const student = passport.student;
     return {

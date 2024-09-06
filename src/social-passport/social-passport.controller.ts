@@ -33,6 +33,7 @@ import { GroupRole } from './enums/group-role.enum';
 import { UpdateResult } from 'typeorm';
 import { UpdateSocialPassportDto } from './dtos/update-social-passport.dto';
 import { PartialSocialPassportDto } from './dtos/partial-social-passport.dto';
+import { SpreadSheetLinkDto } from './dtos/spread-sheet-link.dto';
 
 @ApiTags('Social Passport')
 @ApiBearerAuth()
@@ -122,21 +123,29 @@ export class SocialPassportController {
     return this.socialPassportService.export();
   }
 
-  @Get('institutes/:id/social-passports/export')
+  @Get('social-passports/spreadsheet')
+  @ApiOperation({ summary: 'can access: sputnik, curator' })
+  @Roles(UserRole.SPUTNIK, UserRole.CURATOR)
+  @ApiOkResponse({ type: SpreadSheetLinkDto })
+  async getSpreadSheetId(@Req() req: AuthorizedRequestDto) {
+    return this.socialPassportService.getSpreadsheetLink(req.user.uuid);
+  }
+
+  @Post('institutes/:id/social-passports/export')
   @ApiOperation({ summary: 'can access: admin only' })
   @Roles(UserRole.ADMIN)
   async exportInstitute(@Param('id', ParseIntPipe) id: number) {
     return this.socialPassportService.exportInstitute(id);
   }
 
-  @Get('groups/:id/social-passports/export')
+  @Post('groups/:id/social-passports/export')
   @ApiOperation({ summary: 'can access: admin only' })
   @Roles(UserRole.ADMIN)
   async exportGroup(@Param('id', ParseIntPipe) id: number) {
     return this.socialPassportService.exportGroup(id);
   }
 
-  @Get('social-passports/format')
+  @Patch('social-passports/format')
   @ApiOperation({ summary: 'can access: admin only' })
   @Roles(UserRole.ADMIN)
   async formatSheets() {
