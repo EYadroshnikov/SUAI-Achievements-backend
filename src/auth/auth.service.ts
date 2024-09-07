@@ -100,6 +100,9 @@ export class AuthService {
     const refreshSession = await this.refreshSessionsService.findRefreshSession(
       req.cookies['refreshToken'],
     );
+    console.log(refreshSession);
+    console.log(req.body['fingerprint']);
+    console.log(req.headers['user-agent']);
     if (
       !refreshSession ||
       refreshSession.expiresAt.getTime() < Date.now() ||
