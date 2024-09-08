@@ -9,6 +9,8 @@ import { InstitutesModule } from '../institues/institutes.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { SocialPassportExportConfigService } from './social-passport-export-config.service';
 import { GroupsModule } from '../groups/groups.module';
+import { TelegramModule } from '../telegram/telegram.module';
+import { VkModule } from '../vk/vk.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { GroupsModule } from '../groups/groups.module';
     InstitutesModule,
     forwardRef(() => GoogleModule),
     GroupsModule,
+    TelegramModule,
+    VkModule,
   ],
   controllers: [SocialPassportController],
   providers: [SocialPassportService, SocialPassportExportConfigService],
