@@ -108,7 +108,7 @@ export class SocialPassportController {
   }
 
   @Get('groups/:id/social-passports')
-  @ApiOperation({ summary: 'can access: student, curator' })
+  @ApiOperation({ summary: 'can access: sputnik, curator' })
   @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
   @ApiOkResponse({ type: SocialPassportDto, isArray: true })
   @UseInterceptors(new TransformInterceptor(SocialPassportDto))
