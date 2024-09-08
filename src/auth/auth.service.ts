@@ -97,14 +97,17 @@ export class AuthService {
   }
 
   async refresh(req: Request): Promise<FullAuthResponseDto> {
-    console.log('REFRESH TOKEN: ' + req.cookies['refreshToken']);
-    console.log(req.body['fingerprint']);
-    console.log(req.headers['user-agent']);
+    // console.log('REFRESH TOKEN: ' + req.cookies['refreshToken']);
+    // console.log(req.body['fingerprint']);
+    // console.log(req.headers['user-agent']);
+    if (!req.cookies['refreshToken']) {
+      throw new UnauthorizedException('No refresh token provided');
+    }
     const refreshSession = await this.refreshSessionsService.findRefreshSession(
       req.cookies['refreshToken'],
     );
-    console.log('FOUND SESSION');
-    console.log(refreshSession);
+    // console.log('FOUND SESSION');
+    // console.log(refreshSession);
     if (
       !refreshSession ||
       refreshSession.expiresAt.getTime() < Date.now() ||
