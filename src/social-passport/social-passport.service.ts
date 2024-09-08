@@ -12,6 +12,9 @@ import { UpdateSocialPassportDto } from './dtos/update-social-passport.dto';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { GoogleService } from '../google/google.service';
 import { GroupsService } from '../groups/groups.service';
+import { UserRole } from '../users/enums/user-role.enum';
+import { TelegramService } from '../telegram/telegram.service';
+import { VkService } from '../vk/vk.service';
 
 @Injectable()
 export class SocialPassportService {
@@ -22,6 +25,8 @@ export class SocialPassportService {
     private readonly instituteService: InstitutesService,
     private readonly googleService: GoogleService,
     private readonly groupsService: GroupsService,
+    private readonly telegramService: TelegramService,
+    private readonly vkService: VkService,
   ) {}
   private readonly logger: Logger = new Logger(SocialPassportService.name);
 
@@ -77,7 +82,7 @@ export class SocialPassportService {
   }
 
   async getSpreadsheetLink(userUuid: string) {
-    const user = await this.userService.find({
+    const user = await this.userService.findOne({
       where: { uuid: userUuid },
       loadEagerRelations: false,
       relations: ['institute'],
@@ -138,5 +143,25 @@ export class SocialPassportService {
       }
       this.logger.log(`institute "${institute.name}" added to format queue`);
     }
+  }
+
+  async notifyToFillPassport() {
+    const students = await this.userService.find({
+      where: { role: UserRole.STUDENT },
+    });
+    const telegramMessage = `📝 <b>Напоминание:</b> Пожалуйста обновите свой <b>Социальный паспорт</b> в приложении ачивки в ВК! 🎓
+https://vk.com/app51729664`;
+    const vkMessage = `📝 Напоминание: Пожалуйста обновите свой Социальный паспорт в приложении ачивки в ВК! 🎓 
+    https://vk.com/app51729664`;
+    for (const student of students) {
+      if (student.tgId) {
+        await this.telegramService.addToTelegramNotificationQueue(
+          student.tgId,
+          telegramMessage,
+        );
+      }
+      await this.vkService.addToVkNotificationQueue(student.vkId, vkMessage);
+    }
+    return true;
   }
 }

@@ -41,7 +41,7 @@ export class VkRequestProcessor {
   }
 
   private async notify(vkId: string, text: string) {
-    const user = await this.usersService.find({
+    const user = await this.usersService.findOne({
       where: { vkId: vkId },
       loadEagerRelations: false,
       relations: ['userSettings'],

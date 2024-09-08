@@ -10,7 +10,9 @@ import { User } from './entities/user.entity';
 import {
   DataSource,
   EntityManager,
+  FindManyOptions,
   FindOneOptions,
+  FindOptions,
   In,
   Not,
   Repository,
@@ -60,13 +62,22 @@ export class UsersService {
   ) {}
   private readonly logger: Logger = new Logger(UsersService.name);
 
-  async find(
+  async findOne(
     options: FindOneOptions<User>,
     transactionEntityManager?: EntityManager,
   ) {
     const repo =
       transactionEntityManager?.getRepository(User) || this.userRepository;
     return repo.findOneOrFail(options);
+  }
+
+  async find(
+    options: FindManyOptions<User>,
+    transactionEntityManager?: EntityManager,
+  ) {
+    const repo =
+      transactionEntityManager?.getRepository(User) || this.userRepository;
+    return repo.find(options);
   }
 
   // async updateAndReturn(options: FindOneOptions<User>) {}

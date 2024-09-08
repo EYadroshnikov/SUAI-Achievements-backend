@@ -32,7 +32,6 @@ import { ParseGroupRolePipe } from '../common/validation-pipes/parse-group-role.
 import { GroupRole } from './enums/group-role.enum';
 import { UpdateResult } from 'typeorm';
 import { UpdateSocialPassportDto } from './dtos/update-social-passport.dto';
-import { PartialSocialPassportDto } from './dtos/partial-social-passport.dto';
 import { SpreadSheetLinkDto } from './dtos/spread-sheet-link.dto';
 
 @ApiTags('Social Passport')
@@ -150,5 +149,12 @@ export class SocialPassportController {
   @Roles(UserRole.ADMIN)
   async formatSheets() {
     return this.socialPassportService.formatAllSheets();
+  }
+
+  @Post('social-passports/notification')
+  @ApiOperation({ summary: 'can access: admin only' })
+  @Roles(UserRole.ADMIN)
+  async notification() {
+    return this.socialPassportService.notifyToFillPassport();
   }
 }

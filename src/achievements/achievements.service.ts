@@ -162,7 +162,7 @@ export class AchievementsService {
           },
         );
 
-        const issuer = await this.userService.find(
+        const issuer = await this.userService.findOne(
           {
             where: { uuid: user.uuid, role: Not(UserRole.STUDENT) },
             loadEagerRelations: false,
@@ -224,7 +224,7 @@ export class AchievementsService {
     manager: EntityManager,
   ) {
     if (issuer.role === UserRole.CURATOR) {
-      return this.userService.find(
+      return this.userService.findOne(
         {
           where: {
             uuid: studentUuid,
@@ -236,7 +236,7 @@ export class AchievementsService {
         manager,
       );
     } else {
-      return this.userService.find(
+      return this.userService.findOne(
         {
           where: {
             uuid: studentUuid,
@@ -256,7 +256,7 @@ export class AchievementsService {
   ) {
     const result = await this.issuedAchievementsRepository.manager.transaction(
       async (transactionalEntityManager) => {
-        const canceler = await this.userService.find(
+        const canceler = await this.userService.findOne(
           {
             where: { uuid: user.uuid, role: Not(UserRole.STUDENT) },
             loadEagerRelations: false,

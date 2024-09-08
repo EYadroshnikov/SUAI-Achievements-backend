@@ -23,7 +23,7 @@ export class TelegramNotificationProcessor {
   }
 
   private async notify(tgUserId: string, text: string) {
-    const user = await this.usersService.find({
+    const user = await this.usersService.findOne({
       where: { tgId: tgUserId },
       loadEagerRelations: false,
       relations: ['userSettings'],
