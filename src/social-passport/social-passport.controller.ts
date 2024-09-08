@@ -110,10 +110,10 @@ export class SocialPassportController {
   @Get('groups/:id/social-passports')
   @ApiOperation({ summary: 'can access: student, curator' })
   @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
-  @ApiOkResponse({ type: PartialSocialPassportDto, isArray: true })
-  @UseInterceptors(new TransformInterceptor(PartialSocialPassportDto))
-  async getGroupsSocialPassport(@Param('id', ParseIntPipe) id: string) {
-    return this.socialPassportService.findSocialPassportsByGroupId(id);
+  @ApiOkResponse({ type: SocialPassportDto, isArray: true })
+  @UseInterceptors(new TransformInterceptor(SocialPassportDto))
+  async getGroupsSocialPassport(@Param('id', ParseIntPipe) id: number) {
+    return this.socialPassportService.findGroupsPassports(id);
   }
 
   @Get('social-passports/export')
