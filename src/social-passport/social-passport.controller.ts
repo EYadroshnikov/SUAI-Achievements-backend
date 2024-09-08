@@ -113,7 +113,7 @@ export class SocialPassportController {
   @ApiOkResponse({ type: SocialPassportDto, isArray: true })
   @UseInterceptors(new TransformInterceptor(SocialPassportDto))
   async getGroupsSocialPassport(@Param('id', ParseIntPipe) id: number) {
-    return this.socialPassportService.findGroupsPassports(id);
+    return this.socialPassportService.findManyByGroupId(id);
   }
 
   @Get('social-passports/export')

@@ -29,60 +29,16 @@ export class SocialPassportService {
     const socialPassport = await this.socialPassportRepository.findOneOrFail({
       where: { student: { uuid: studentUuid } },
     });
-    return {
-      name:
-        socialPassport.student.firstName +
-        ' ' +
-        socialPassport.student.lastName +
-        ' ' +
-        socialPassport.student.patronymic,
-      groupName: socialPassport.student.group.name,
-      vkId: socialPassport.student.vkId,
-      tgUserName: socialPassport.student.tgUserName,
-      ...socialPassport,
-    };
+    return SocialPassportDto.fromEntity(socialPassport);
   }
 
-  async findSocialPassportsByGroupId(groupId: string) {
-    return this.socialPassportRepository
-      .createQueryBuilder('social_passport')
-      .select([
-        'social_passport.bskStatus',
-        'social_passport.medicalRegistration',
-        'social_passport.militaryRegistration',
-        'social_passport.profcomApplication',
-        'social_passport.profcomCardStatus',
-        'social_passport.ssoAccess',
-        'social_passport.passStatus',
-        'social_passport.studentIdStatus',
-        'social_passport.preferentialTravelCard',
-        'social_passport.scholarshipCardStatus',
-        'social_passport.competenceCenterTest',
-        'social_passport.studios',
-        'user.uuid',
-      ])
-      .innerJoin('social_passport.student', 'user')
-      .where('user.group_id = :groupId', { groupId })
-      .getMany()
-      .then((socialPassports) =>
-        socialPassports.map((passport) => ({
-          user_uuid: passport.student.uuid,
-          bskStatus: passport.bskStatus,
-          medicalRegistration: passport.medicalRegistration,
-          militaryRegistration: passport.militaryRegistration,
-          profcomApplication: passport.profcomApplication,
-          profcomCardStatus: passport.profcomCardStatus,
-          ssoAccess: passport.ssoAccess,
-          passStatus: passport.passStatus,
-          studentIdStatus: passport.studentIdStatus,
-          preferentialTravelCard: passport.preferentialTravelCard,
-          scholarshipCardStatus: passport.scholarshipCardStatus,
-          competenceCenterTest: passport.competenceCenterTest,
-          studiosCount: passport.studios
-            ? passport.studios.split(',').length
-            : 0,
-        })),
-      );
+  async findManyByGroupId(id: number): Promise<SocialPassportDto[]> {
+    const socialPassports = await this.socialPassportRepository.find({
+      where: { student: { group: { id } } },
+    });
+    return socialPassports.map((passport) =>
+      SocialPassportDto.fromEntity(passport),
+    );
   }
 
   async findGroupsPassports(groupId: number): Promise<SocialPassport[]> {
