@@ -80,8 +80,6 @@ export class UsersService {
     return repo.find(options);
   }
 
-  // async updateAndReturn(options: FindOneOptions<User>) {}
-
   async findByVkId(vkId: string): Promise<User | undefined> {
     return this.userRepository.findOneOrFail({
       where: { vkId: vkId },
@@ -453,6 +451,8 @@ export class UsersService {
       dto.uuid = user.uuid;
       dto.firstName = user.firstName;
       dto.lastName = user.lastName;
+      dto.institute = user.institute;
+      dto.group = user.group;
       dto.avatar = user.avatar;
       dto.balance = user.balance;
 
@@ -468,6 +468,8 @@ export class UsersService {
         dto.uuid = null;
         dto.firstName = null;
         dto.lastName = null;
+        dto.institute = null;
+        dto.group = null;
         dto.avatar = null;
       }
 
@@ -513,6 +515,8 @@ export class UsersService {
         dto.uuid = user.uuid;
         dto.firstName = user.firstName;
         dto.lastName = user.lastName;
+        dto.institute = user.institute;
+        dto.group = user.group;
         dto.avatar = user.avatar;
         dto.balance = user.balance;
 
@@ -528,6 +532,8 @@ export class UsersService {
           dto.uuid = null;
           dto.firstName = null;
           dto.lastName = null;
+          dto.institute = null;
+          dto.group = null;
           dto.avatar = null;
         }
 

@@ -141,8 +141,8 @@ export class StudentsController {
   @ApiOperation({ summary: 'can access: all' })
   @Roles(UserRole.STUDENT, UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
   @ApiPaginationQuery({ sortableColumns: ['balance'] })
-  @ApiOkPaginatedResponse(StudentDto, { sortableColumns: ['balance'] })
-  @UseInterceptors(new PaginatedTransformInterceptor(StudentDto))
+  @ApiOkPaginatedResponse(TopStudentDto, { sortableColumns: ['balance'] })
+  @UseInterceptors(new PaginatedTransformInterceptor(TopStudentDto))
   async getTopStudents(
     @Req() req: AuthorizedRequestDto,
     @Paginate() query: PaginateDto,
