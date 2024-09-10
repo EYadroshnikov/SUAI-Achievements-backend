@@ -468,7 +468,6 @@ export class UsersService {
         dto.uuid = null;
         dto.firstName = null;
         dto.lastName = null;
-        dto.institute = null;
         dto.group = null;
         dto.avatar = null;
       }
@@ -532,7 +531,6 @@ export class UsersService {
           dto.uuid = null;
           dto.firstName = null;
           dto.lastName = null;
-          dto.institute = null;
           dto.group = null;
           dto.avatar = null;
         }
