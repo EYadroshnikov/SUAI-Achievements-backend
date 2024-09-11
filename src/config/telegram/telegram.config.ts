@@ -7,6 +7,9 @@ import validateConfig from '../../common/utils/validate-config';
 class EnvironmentVariablesValidator {
   @IsString()
   TG_BOT_SECRET: string;
+
+  @IsString()
+  DEV_TG_BOT_SECRET: string;
 }
 
 export default registerAs<TelegramConfig>('tg', () => {
@@ -14,5 +17,6 @@ export default registerAs<TelegramConfig>('tg', () => {
 
   return {
     botSecret: process.env.TG_BOT_SECRET,
+    devBotSecret: process.env.DEV_TG_BOT_SECRET,
   };
 });

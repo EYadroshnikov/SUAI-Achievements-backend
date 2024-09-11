@@ -21,6 +21,7 @@ export class TelegramService {
     params.forEach((value, key) => {
       vals[key] = decodeURIComponent(value);
     });
+    const tgId = JSON.parse(vals['user']).id;
 
     if (Math.floor(Date.now() / 1000) - +vals['auth_date'] > 5 * 60) {
       return { isSignValid: false };
@@ -34,18 +35,36 @@ export class TelegramService {
     const dataCheckString = dataCheckArray.join('\n');
 
     // Calculate HMAC
+    const hmac = await this.calculateHmac(
+      dataCheckString,
+      this.configService.get('tg.botSecret'),
+    );
+
+    let isSignValid = hmac === vals['hash'];
+    if (!isSignValid) {
+      const secondHmac = await this.calculateHmac(
+        dataCheckString,
+        this.configService.get('tg.devBotSecret'),
+      );
+      isSignValid = secondHmac === vals['hash'];
+    }
+
+    return { isSignValid, tgId };
+  }
+
+  async calculateHmac(
+    dataCheckString: string,
+    secret: string,
+  ): Promise<string> {
     const secretKey = crypto
       .createHmac('sha256', 'WebAppData')
-      .update(this.configService.get('tg.botSecret'))
+      .update(secret)
       .digest();
     const hmac = crypto
       .createHmac('sha256', secretKey)
       .update(dataCheckString)
       .digest('hex');
-
-    const isSignValid = hmac === vals['hash'];
-    const tgId = JSON.parse(vals['user']).id;
-    return { isSignValid, tgId };
+    return hmac;
   }
 
   async sendNotification(tgUserId: string, text: string) {

@@ -2,7 +2,6 @@ import { OnQueueError, OnQueueFailed, Process, Processor } from '@nestjs/bull';
 import { Job } from 'bull';
 import { ConfigService } from '@nestjs/config';
 import { forwardRef, Inject, Logger } from '@nestjs/common';
-import axios from 'axios';
 import { UsersService } from '../users/users.service';
 import { VkProcess } from './enums/vk.process.enum';
 import { VkService } from './vk.service';
