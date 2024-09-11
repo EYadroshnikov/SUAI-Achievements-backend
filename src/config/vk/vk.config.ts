@@ -9,6 +9,9 @@ class EnvironmentVariablesValidator {
   VK_MINI_APP_SECRET: string;
 
   @IsString()
+  VK_MINI_APP_SERVICE_KEY: string;
+
+  @IsString()
   VK_COMMUNITY_API_KEY: string;
 }
 
@@ -17,6 +20,7 @@ export default registerAs<VkConfig>('vk', () => {
 
   return {
     miniAppSecret: process.env.VK_MINI_APP_SECRET,
+    miniAppServiceKey: process.env.VK_MINI_APP_SERVICE_KEY,
     communityApiKey: process.env.VK_COMMUNITY_API_KEY,
   };
 });

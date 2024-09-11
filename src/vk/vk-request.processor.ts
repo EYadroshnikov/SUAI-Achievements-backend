@@ -30,6 +30,12 @@ export class VkRequestProcessor {
     await this.notify(vkId, text);
   }
 
+  @Process(VkProcess.MINI_APP_CHECK_PUSH_PERMISSIONS)
+  async handleMiniAppCheckPushPermissions(job: Job) {
+    const vkId = job.data.vkId;
+    await this.checkPermissions(vkId);
+  }
+
   private async updateAvatar(vkId: string) {
     try {
       const avatarUrl = await this.vkService.getAvatar(vkId);
@@ -55,6 +61,19 @@ export class VkRequestProcessor {
 
     try {
       await this.vkService.sendNotification(vkId, text);
+    } catch (error) {
+      this.logger.error(error);
+      throw Error;
+    }
+  }
+
+  async checkPermissions(vkId: string) {
+    try {
+      const response = await this.vkService.checkPushPermissionsRequest(vkId);
+      await this.vkService.upsertPushPermission(
+        vkId,
+        response.data.response['is_allowed'],
+      );
     } catch (error) {
       this.logger.error(error);
       throw Error;

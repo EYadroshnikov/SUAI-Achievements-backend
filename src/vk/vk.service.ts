@@ -1,17 +1,24 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as CryptoJS from 'crypto';
+import * as crypto from 'crypto';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { VkProcess } from './enums/vk.process.enum';
 import axios from 'axios';
-import * as crypto from 'crypto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { MiniAppPushPermission } from './entities/mini-app-push-permission.entity';
+import { UsersService } from '../users/users.service';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class VkService {
   constructor(
     private configService: ConfigService,
     @InjectQueue('vk-request-queue') private vkRequestQueue: Queue,
+    @InjectRepository(MiniAppPushPermission)
+    private readonly miniAppPushPermissionRepository: Repository<MiniAppPushPermission>,
+    @Inject(forwardRef(() => UsersService))
+    private readonly usersService: UsersService,
   ) {}
 
   private readonly logger = new Logger(VkService.name);
@@ -39,13 +46,10 @@ export class VkService {
     };
 
     if (typeof searchOrParsedUrlQuery === 'string') {
-      // Если строка начинается с вопроса (когда передан window.location.search),
-      // его необходимо удалить.
       const formattedSearch = searchOrParsedUrlQuery.startsWith('?')
         ? searchOrParsedUrlQuery.slice(1)
         : searchOrParsedUrlQuery;
 
-      // Пытаемся разобрать строку как query-параметр.
       for (const param of formattedSearch.split('&')) {
         const [key, value] = param.split('=');
         processQueryParam(key, value);
@@ -56,24 +60,19 @@ export class VkService {
         processQueryParam(key, value);
       }
     }
-    // Обрабатываем исключительный случай, когда не найдена ни подпись в параметрах,
-    // ни один параметр, начинающийся с "vk_", чтобы избежать
-    // излишней нагрузки, образующейся в процессе работы дальнейшего кода.
+
     if (!sign || queryParams.length === 0) {
       return false;
     }
-    // Снова создаём запрос в виде строки из уже отфильтрованных параметров.
+
     const queryString = queryParams
-      // Сортируем ключи в порядке возрастания.
       .sort((a, b) => a.key.localeCompare(b.key))
-      // Воссоздаём новый запрос в виде строки.
       .reduce((acc, { key, value }, idx) => {
         return (
           acc + (idx === 0 ? '' : '&') + `${key}=${encodeURIComponent(value)}`
         );
       }, '');
 
-    // Создаём хеш получившейся строки на основе секретного ключа.
     const paramsHash = crypto
       .createHmac('sha256', secretKey)
       .update(queryString)
@@ -87,33 +86,11 @@ export class VkService {
   }
 
   async verifyVkToken(launchParams: string, sign: string): Promise<any> {
-    // const paramArray = launchParams.split('&');
-    // const vkParams = paramArray.filter((param) => param.startsWith('vk_'));
-    //
-    // vkParams.sort((a, b) => {
-    //   const keyA = a.split('=')[0];
-    //   const keyB = b.split('=')[0];
-    //   return keyA.localeCompare(keyB);
-    // });
-    // const vkParamsString = vkParams.join('&');
-    // const hmac = CryptoJS.HmacSHA256(
-    //   vkParamsString,
-    //   this.configService.get('vk.miniAppSecret'),
-    // );
-    // const base64 = CryptoJS.enc.Base64.stringify(hmac);
-    //
-    // const encryptedLaunchParams = base64
-    //   .replace(/\+/g, '-')
-    //   .replace(/\//g, '_')
-    //   .replace(/=$/, '');
-    //
     const splitLaunchParamsString = {};
     for (const [key, value] of new URLSearchParams(launchParams)) {
       splitLaunchParamsString[key] = value;
     }
-    // console.log(encryptedLaunchParams);
-    // console.log(sign);
-    // const isSignValid = encryptedLaunchParams === sign;
+
     const isSignValid = await this.verifyLaunchParams(
       launchParams + '&sign=' + sign,
       this.configService.get('vk.miniAppSecret'),
@@ -166,11 +143,69 @@ export class VkService {
     return axios.request(config);
   }
 
+  async sendPush(vkId: string, text: string) {
+    const access_token = this.configService.get('vk.miniAppServiceKey');
+
+    const data = new FormData();
+    data.append('user_id', vkId);
+    data.append('random_id', '0');
+    data.append('message', text);
+    data.append('access_token', access_token);
+    data.append('v', '5.199');
+
+    const config = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: 'https://api.vk.com/method/notifications.sendMessage',
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      data: data,
+    };
+    return axios.request(config);
+  }
+
+  async checkPushPermissionsRequest(vkId: string) {
+    const access_token = this.configService.get('vk.miniAppServiceKey');
+
+    const data = new FormData();
+    data.append('user_id', vkId);
+    data.append('access_token', access_token);
+    data.append('v', '5.199');
+
+    const config = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: 'https://api.vk.com/method/apps.isNotificationsAllowed',
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      data: data,
+    };
+    return axios.request(config);
+  }
+
   async addToVkAvatarQueue(vkId: string) {
     await this.vkRequestQueue.add(VkProcess.UPDATE_AVATAR, { vkId });
   }
 
   async addToVkNotificationQueue(vkId: string, text: string) {
     await this.vkRequestQueue.add(VkProcess.NOTIFICATION, { vkId, text });
+  }
+
+  async checkPushPermissions() {
+    const users = await this.usersService.find({ select: ['vkId'] });
+    for (const user of users) {
+      await this.vkRequestQueue.add(VkProcess.MINI_APP_CHECK_PUSH_PERMISSIONS, {
+        vkId: user.vkId,
+      });
+    }
+  }
+
+  async upsertPushPermission(vkId: string, isAllowed: boolean): Promise<void> {
+    console.log(vkId, isAllowed);
+    await this.miniAppPushPermissionRepository.upsert({ vkId, isAllowed }, [
+      'vkId',
+    ]);
   }
 }
