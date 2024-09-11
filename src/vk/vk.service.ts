@@ -203,7 +203,6 @@ export class VkService {
   }
 
   async upsertPushPermission(vkId: string, isAllowed: boolean): Promise<void> {
-    console.log(vkId, isAllowed);
     await this.miniAppPushPermissionRepository.upsert({ vkId, isAllowed }, [
       'vkId',
     ]);
