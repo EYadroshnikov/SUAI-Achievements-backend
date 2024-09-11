@@ -443,7 +443,7 @@ export class UsersService {
         'institute.id': [FilterOperator.EQ],
       },
       defaultSortBy: [['balance', 'DESC']],
-      relations: ['group', 'institute', 'userSettings'],
+      relations: ['group', 'institute', 'userSettings', 'group.speciality'],
     });
 
     const topStudents = paginatedUsers.data.map((user) => {
@@ -507,7 +507,7 @@ export class UsersService {
         },
         loadEagerRelations: false,
         order: { balance: 'DESC' },
-        relations: ['userSettings'],
+        relations: ['group', 'institute', 'userSettings', 'group.speciality'],
       });
       return users.map((user) => {
         const dto = new TopStudentDto();
