@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import * as crypto from 'node:crypto';
 import { ConfigService } from '@nestjs/config';
 import { InjectQueue } from '@nestjs/bull';
@@ -22,6 +22,9 @@ export class TelegramService {
       vals[key] = decodeURIComponent(value);
     });
     const tgId = JSON.parse(vals['user']).id;
+    if (!tgId) {
+      throw new UnauthorizedException('No tg id provided');
+    }
 
     if (Math.floor(Date.now() / 1000) - +vals['auth_date'] > 5 * 60) {
       return { isSignValid: false };
