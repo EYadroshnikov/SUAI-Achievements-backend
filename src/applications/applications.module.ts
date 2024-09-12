@@ -14,7 +14,7 @@ import { ProofFile } from './entities/proof-file.entity';
     AchievementsModule,
     UsersModule,
   ],
-  controllers: [ApplicationsController],
+  // controllers: [ApplicationsController],
   providers: [ApplicationsService, FileUploadService],
 })
 export class ApplicationsModule {}

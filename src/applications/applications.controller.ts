@@ -51,7 +51,6 @@ export class ApplicationsController {
     if (!files || files.length === 0) {
       throw new BadRequestException('At least one file required');
     }
-    console.log(files.files);
     return await this.applicationsService.createApplication(
       req.user,
       requestDto,
