@@ -101,7 +101,7 @@ export class SocialPassportService {
     };
   }
 
-  @Cron(CronExpression.EVERY_DAY_AT_2AM)
+  @Cron(CronExpression.EVERY_3_HOURS)
   async export() {
     const institutes = await this.instituteService.getAllWithGroups();
     for (const institute of institutes) {

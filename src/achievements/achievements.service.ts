@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, In, Not, Repository } from 'typeorm';
+import { EntityManager, FindOneOptions, In, Not, Repository } from 'typeorm';
 import { Achievement } from './entities/achievement.entity';
 import { IssuedAchievement } from './entities/issued-achievement.entity';
 import { UserRole } from '../users/enums/user-role.enum';
@@ -55,6 +55,16 @@ export class AchievementsService {
     defaultSortBy: [['createdAt', 'DESC']],
     relations: ['executor', 'achievement', 'student'],
   } as PaginateConfig<AchievementOperation>;
+
+  async findOne(
+    options: FindOneOptions<Achievement>,
+    transactionEntityManager?: EntityManager,
+  ) {
+    const repo =
+      transactionEntityManager?.getRepository(Achievement) ||
+      this.achievementsRepository;
+    return repo.findOneOrFail(options);
+  }
 
   async getAchievementsForUser(
     user: AuthorizedUserDto,

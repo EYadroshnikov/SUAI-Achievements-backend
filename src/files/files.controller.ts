@@ -30,7 +30,6 @@ import { UserRole } from '../users/enums/user-role.enum';
 export class FilesController {
   constructor(private readonly filesService: FilesService) {}
 
-  //TODO: check file type and size
   @Post('upload')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)

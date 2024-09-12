@@ -22,6 +22,7 @@ import { UserSettingsModule } from './user-settings/user-settings.module';
 import { FilesModule } from './files/files.module';
 import { HealthModule } from './health/health.module';
 import { RedisModule } from './redis/redis.module';
+import { ApplicationsModule } from './applications/applications.module';
 import vkConfig from './config/vk/vk.config';
 import telegramConfig from './config/telegram/telegram.config';
 import googleConfig from './config/google/google.config';
@@ -72,15 +73,9 @@ import googleConfig from './config/google/google.config';
     AuthModule,
     GroupsModule,
     InstitutesModule,
-    VkModule,
-    // ServeStaticModule.forRoot({
-    //   rootPath: join(__dirname, '..', 'achievement-icons'),
-    //   serveRoot: '/achievement-icons',
-    //   serveStaticOptions: {
-    //     dotfiles: 'deny',
-    //   },
-    // }),
     SpecialtiesModule,
+    ApplicationsModule,
+    VkModule,
     TelegramModule,
     SocialPassportModule,
     GoogleModule,

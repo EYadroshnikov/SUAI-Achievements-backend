@@ -25,5 +25,6 @@ import { RedisModule } from '../redis/redis.module';
   ],
   controllers: [AchievementsController],
   providers: [AchievementsService],
+  exports: [AchievementsService],
 })
 export class AchievementsModule {}
