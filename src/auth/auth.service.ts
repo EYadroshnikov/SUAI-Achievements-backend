@@ -89,7 +89,7 @@ export class AuthService {
         vals[key] = decodeURIComponent(value);
       });
       const tgUserObj = JSON.parse(vals['user']);
-
+      console.log(tgUserObj.username);
       user = await this.usersService.findByTgUsername(tgUserObj.username);
       await this.usersService.updateUserTgId(user.uuid, tgId);
     }
