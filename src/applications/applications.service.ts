@@ -157,7 +157,10 @@ export class ApplicationsService {
     });
   }
 
-  async getPendingApplications(user: AuthorizedUserDto) {
+  async getApplicationsForUser(
+    user: AuthorizedUserDto,
+    status?: ApplicationStatus,
+  ) {
     const reviewer = await this.userService.findOne({
       where: { uuid: user.uuid, role: Not(UserRole.STUDENT) },
       loadEagerRelations: false,
@@ -175,7 +178,10 @@ export class ApplicationsService {
       };
     }
     return this.applicationRepository.find({
-      where: { ...options.where, status: ApplicationStatus.PENDING },
+      where: {
+        ...options.where,
+        ...(status ? { status: ApplicationStatus.PENDING } : {}),
+      },
     });
   }
 }

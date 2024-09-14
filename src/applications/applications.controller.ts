@@ -2,8 +2,11 @@ import {
   BadRequestException,
   Body,
   Controller,
+  FileTypeValidator,
   Get,
+  MaxFileSizeValidator,
   Param,
+  ParseFilePipe,
   ParseUUIDPipe,
   Patch,
   Post,
@@ -29,6 +32,7 @@ import { UserRole } from '../users/enums/user-role.enum';
 import { TransformInterceptor } from '../common/interceptors/transform.interceptor';
 import { ApplicationDto } from './dtos/application.dto';
 import { RejectDto } from './dtos/reject.dto';
+import { ApplicationStatus } from './enums/application-status.enum';
 
 @ApiTags('Applications')
 @ApiBearerAuth()
@@ -45,10 +49,18 @@ export class ApplicationsController {
   @Roles(UserRole.STUDENT)
   async createApplication(
     @Body() requestDto: RequestDto,
-    @UploadedFiles() files,
+    @UploadedFiles(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 268435456 }),
+          new FileTypeValidator({ fileType: 'image/jpeg' }),
+        ],
+      }),
+    )
+    files: { files?: Express.Multer.File[] },
     @Req() req: AuthorizedRequestDto,
   ) {
-    if (!files || files.length === 0) {
+    if (!files?.files || files?.files.length === 0) {
       throw new BadRequestException('At least one file required');
     }
     return await this.applicationsService.createApplication(
@@ -110,12 +122,24 @@ export class ApplicationsController {
     );
   }
 
-  @Get('applications/pending')
-  @ApiOperation({ summary: 'Can access: sputnik' })
-  @Roles(UserRole.SPUTNIK)
+  @Get('reviewer/applications/pending')
+  @ApiOperation({ summary: 'Can access: sputnik, curator' })
+  @Roles(UserRole.SPUTNIK, UserRole.CURATOR)
   @ApiOkResponse({ type: ApplicationDto, isArray: true })
   @UseInterceptors(new TransformInterceptor(ApplicationDto))
   async getPendingApplications(@Req() req: AuthorizedRequestDto) {
-    return this.applicationsService.getPendingApplications(req.user);
+    return this.applicationsService.getApplicationsForUser(
+      req.user,
+      ApplicationStatus.PENDING,
+    );
+  }
+
+  @Get('reviewer/applications/all')
+  @ApiOperation({ summary: 'Can access: sputnik, curator' })
+  @Roles(UserRole.SPUTNIK, UserRole.CURATOR)
+  @ApiOkResponse({ type: ApplicationDto, isArray: true })
+  @UseInterceptors(new TransformInterceptor(ApplicationDto))
+  async getAllApplications(@Req() req: AuthorizedRequestDto) {
+    return this.applicationsService.getApplicationsForUser(req.user);
   }
 }

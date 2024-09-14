@@ -89,7 +89,7 @@ export class UsersService {
 
   async findByTgId(tgId: string): Promise<User | undefined> {
     return this.userRepository.findOneOrFail({
-      where: { tgId: tgId },
+      where: { tgId },
       loadEagerRelations: false,
     });
   }
