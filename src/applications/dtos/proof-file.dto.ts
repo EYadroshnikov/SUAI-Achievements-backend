@@ -5,6 +5,10 @@ import { ApiProperty } from '@nestjs/swagger';
 export class ProofFileDto {
   @ApiProperty()
   @Expose()
+  uuid: string;
+
+  @ApiProperty()
+  @Expose()
   type: string;
 
   @ApiProperty()
@@ -14,10 +18,6 @@ export class ProofFileDto {
   @ApiProperty()
   @Expose()
   size: number;
-
-  @ApiProperty()
-  @Expose()
-  originalname: string;
 
   @ApiProperty()
   @Expose()

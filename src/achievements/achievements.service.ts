@@ -66,6 +66,21 @@ export class AchievementsService {
     return repo.findOneOrFail(options);
   }
 
+  async isReceived(
+    achievementUuid: string,
+    studentUuid: string,
+    manager?: EntityManager,
+  ) {
+    const repo =
+      manager?.getRepository(IssuedAchievement) || this.achievementsRepository;
+    return repo.exists({
+      where: {
+        achievement: { uuid: achievementUuid },
+        student: { uuid: studentUuid },
+      },
+    });
+  }
+
   async getAchievementsForUser(
     user: AuthorizedUserDto,
   ): Promise<AchievementDto[]> {
@@ -162,8 +177,11 @@ export class AchievementsService {
   async issueAchievement(
     user: AuthorizedUserDto,
     issueAchievementDto: IssueAchievementDto,
+    transactionalEntityManager?: EntityManager,
   ) {
-    const result = await this.issuedAchievementsRepository.manager.transaction(
+    const manager =
+      transactionalEntityManager || this.issuedAchievementsRepository.manager;
+    const result = await manager.transaction(
       async (transactionalEntityManager) => {
         const achievement = await transactionalEntityManager.findOneOrFail(
           Achievement,
@@ -215,16 +233,16 @@ export class AchievementsService {
         return { issuedAchievement, student, issuer };
       },
     );
-    if (result.student.tgId) {
-      await this.telegramService.addToTelegramNotificationQueue(
-        result.student.tgId,
-        generateTgIssueMessage(result.issuedAchievement),
-      );
-    }
-    await this.vkService.addToVkNotificationQueue(
-      result.student.vkId,
-      generateVkIssueMessage(result.issuedAchievement),
-    );
+    // if (result.student.tgId) {
+    //   await this.telegramService.addToTelegramNotificationQueue(
+    //     result.student.tgId,
+    //     generateTgIssueMessage(result.issuedAchievement),
+    //   );
+    // }
+    // await this.vkService.addToVkNotificationQueue(
+    //   result.student.vkId,
+    //   generateVkIssueMessage(result.issuedAchievement),
+    // );
     return result;
   }
 
@@ -263,8 +281,11 @@ export class AchievementsService {
   async cancelIssuing(
     user: AuthorizedUserDto,
     cancelAchievementDto: CancelAchievementDto,
+    transactionalEntityManager?: EntityManager,
   ) {
-    const result = await this.issuedAchievementsRepository.manager.transaction(
+    const manager =
+      transactionalEntityManager || this.issuedAchievementsRepository.manager;
+    const result = await manager.transaction(
       async (transactionalEntityManager) => {
         const canceler = await this.userService.findOne(
           {
@@ -326,24 +347,24 @@ export class AchievementsService {
       },
     );
 
-    if (result.student.tgId) {
-      await this.telegramService.addToTelegramNotificationQueue(
-        result.student.tgId,
-        generateTgCancelMessage(
-          result.achievement,
-          result.canceler,
-          cancelAchievementDto.cancellationReason,
-        ),
-      );
-    }
-    await this.vkService.addToVkNotificationQueue(
-      result.student.vkId,
-      generateVkCancelMessage(
-        result.achievement,
-        result.canceler,
-        cancelAchievementDto.cancellationReason,
-      ),
-    );
+    // if (result.student.tgId) {
+    //   await this.telegramService.addToTelegramNotificationQueue(
+    //     result.student.tgId,
+    //     generateTgCancelMessage(
+    //       result.achievement,
+    //       result.canceler,
+    //       cancelAchievementDto.cancellationReason,
+    //     ),
+    //   );
+    // }
+    // await this.vkService.addToVkNotificationQueue(
+    //   result.student.vkId,
+    //   generateVkCancelMessage(
+    //     result.achievement,
+    //     result.canceler,
+    //     cancelAchievementDto.cancellationReason,
+    //   ),
+    // );
     return result;
   }
 

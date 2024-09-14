@@ -5,15 +5,15 @@ import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class FileUploadService {
-  async uploadFile(file: Express.Multer.File): Promise<string> {
-    const uploadDir = path.join(__dirname, '../../uploads');
+  readonly uploadDir = path.join(__dirname, '../../uploads');
 
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
+  async uploadFile(file: Express.Multer.File): Promise<string> {
+    if (!fs.existsSync(this.uploadDir)) {
+      fs.mkdirSync(this.uploadDir, { recursive: true });
     }
 
     const fileName = `${uuidv4()}-${file.originalname}`;
-    const filePath = path.join(uploadDir, fileName);
+    const filePath = path.join(this.uploadDir, fileName);
 
     await fs.promises.writeFile(filePath, file.buffer);
 

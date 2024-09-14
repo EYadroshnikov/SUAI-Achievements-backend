@@ -12,22 +12,24 @@ export class ProofFile {
   @PrimaryGeneratedColumn('uuid')
   uuid: string;
 
-  @ManyToOne(() => Application, (application) => application.proofFiles)
+  @ManyToOne(() => Application, (application) => application.proofFiles, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'application_uuid' })
   application: Application;
 
-  @Column({ name: 'type', type: 'varchar' })
+  @Column({ name: 'type', type: 'varchar', nullable: true })
   type: string;
 
-  @Column({ name: 'mimetype', type: 'varchar' })
+  @Column({ name: 'mimetype', type: 'varchar', nullable: true })
   mimetype: string;
 
-  @Column({ name: 'size', type: 'integer' })
+  @Column({ name: 'size', type: 'integer', nullable: true })
   size: number;
 
-  @Column({ name: 'originalname', type: 'varchar' })
+  @Column({ name: 'originalname', type: 'varchar', nullable: true })
   originalname: string;
 
   @Column({ name: 'file_name', type: 'varchar' })
   fileName: string;
-} //TODO: make nullable
+}

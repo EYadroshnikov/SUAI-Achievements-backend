@@ -18,7 +18,7 @@ export class Application {
   @PrimaryGeneratedColumn('uuid')
   uuid: string;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { eager: true })
   @JoinColumn({ name: 'student_uuid' })
   student: User;
 
@@ -29,6 +29,9 @@ export class Application {
   @ManyToOne(() => Achievement, { eager: true })
   @JoinColumn({ name: 'achievement_uuid' })
   achievement: Achievement;
+
+  @Column({ name: 'message', type: 'varchar', nullable: true })
+  message: string;
 
   @Column({
     name: 'status',
@@ -44,12 +47,12 @@ export class Application {
   proofFiles?: ProofFile[];
 
   @Column({
-    name: 'rejection_reason',
+    name: 'response',
     type: 'varchar',
     nullable: true,
     default: null,
   })
-  rejectionReason?: string;
+  response?: string;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;

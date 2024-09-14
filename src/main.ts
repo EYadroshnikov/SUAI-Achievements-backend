@@ -20,6 +20,32 @@ async function bootstrap() {
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
+  const customRoutes = {
+    '/achievement-icons/:filename': {
+      get: {
+        contentType: 'image/png',
+        summary: 'Returns the achievement icon',
+        produces: ['image/png'],
+        responses: {
+          200: {
+            description: 'A PNG image file',
+            content: {
+              'image/png': {
+                schema: {
+                  type: 'string',
+                  format: 'binary',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  };
+  document.paths = {
+    ...document.paths,
+    ...customRoutes,
+  };
   fs.writeFileSync('./swagger-spec.json', JSON.stringify(document));
   SwaggerModule.setup('docs', app, document);
 

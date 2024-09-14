@@ -1,5 +1,4 @@
 import { Exclude, Expose, Transform, Type } from 'class-transformer';
-import { PrimaryGeneratedColumn } from 'typeorm';
 import { ApplicationStatus } from '../enums/application-status.enum';
 import { ApiProperty } from '@nestjs/swagger';
 import { StudentDto } from '../../users/dtos/student.dto';
@@ -27,6 +26,10 @@ export class ApplicationDto {
   @Expose()
   achievementUuid: string;
 
+  @ApiProperty({ required: false })
+  @Expose()
+  message: string;
+
   @ApiProperty()
   @Expose()
   status: ApplicationStatus;
@@ -38,7 +41,7 @@ export class ApplicationDto {
 
   @ApiProperty({ required: false })
   @Expose()
-  rejectionReason?: string;
+  response?: string;
 
   @ApiProperty()
   @Expose()
