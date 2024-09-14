@@ -73,7 +73,7 @@ export class AuthService {
     const { isSignValid, tgId } = await this.telegramService.verifyInitData(
       tgAuthDto.initData,
     );
-    console.log(tgId);
+
     if (!isSignValid) {
       throw new UnauthorizedException('Invalid signature');
     }
@@ -89,7 +89,9 @@ export class AuthService {
         vals[key] = decodeURIComponent(value);
       });
       const tgUserObj = JSON.parse(vals['user']);
-      console.log(tgUserObj.username);
+      if (!tgUserObj.username) {
+        throw new UnauthorizedException('No tg username provided');
+      }
       user = await this.usersService.findByTgUsername(tgUserObj.username);
       await this.usersService.updateUserTgId(user.uuid, tgId);
     }
