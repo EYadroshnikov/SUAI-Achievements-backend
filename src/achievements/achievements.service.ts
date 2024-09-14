@@ -233,16 +233,16 @@ export class AchievementsService {
         return { issuedAchievement, student, issuer };
       },
     );
-    // if (result.student.tgId) {
-    //   await this.telegramService.addToTelegramNotificationQueue(
-    //     result.student.tgId,
-    //     generateTgIssueMessage(result.issuedAchievement),
-    //   );
-    // }
-    // await this.vkService.addToVkNotificationQueue(
-    //   result.student.vkId,
-    //   generateVkIssueMessage(result.issuedAchievement),
-    // );
+    if (result.student.tgId) {
+      await this.telegramService.addToTelegramNotificationQueue(
+        result.student.tgId,
+        generateTgIssueMessage(result.issuedAchievement),
+      );
+    }
+    await this.vkService.addToVkNotificationQueue(
+      result.student.vkId,
+      generateVkIssueMessage(result.issuedAchievement),
+    );
     return result;
   }
 
@@ -347,24 +347,24 @@ export class AchievementsService {
       },
     );
 
-    // if (result.student.tgId) {
-    //   await this.telegramService.addToTelegramNotificationQueue(
-    //     result.student.tgId,
-    //     generateTgCancelMessage(
-    //       result.achievement,
-    //       result.canceler,
-    //       cancelAchievementDto.cancellationReason,
-    //     ),
-    //   );
-    // }
-    // await this.vkService.addToVkNotificationQueue(
-    //   result.student.vkId,
-    //   generateVkCancelMessage(
-    //     result.achievement,
-    //     result.canceler,
-    //     cancelAchievementDto.cancellationReason,
-    //   ),
-    // );
+    if (result.student.tgId) {
+      await this.telegramService.addToTelegramNotificationQueue(
+        result.student.tgId,
+        generateTgCancelMessage(
+          result.achievement,
+          result.canceler,
+          cancelAchievementDto.cancellationReason,
+        ),
+      );
+    }
+    await this.vkService.addToVkNotificationQueue(
+      result.student.vkId,
+      generateVkCancelMessage(
+        result.achievement,
+        result.canceler,
+        cancelAchievementDto.cancellationReason,
+      ),
+    );
     return result;
   }
 
