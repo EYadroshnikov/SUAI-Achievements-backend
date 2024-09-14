@@ -73,6 +73,7 @@ export class AuthService {
     const { isSignValid, tgId } = await this.telegramService.verifyInitData(
       tgAuthDto.initData,
     );
+    console.log(tgId);
     if (!isSignValid) {
       throw new UnauthorizedException('Invalid signature');
     }
