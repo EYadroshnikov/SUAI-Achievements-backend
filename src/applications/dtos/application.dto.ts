@@ -34,7 +34,7 @@ export class ApplicationDto {
   @Expose()
   status: ApplicationStatus;
 
-  @ApiProperty({ type: ProofFileDto })
+  @ApiProperty({ type: ProofFileDto, isArray: true })
   @Type(() => ProofFileDto)
   @Expose()
   proofFiles: ProofFileDto[];
