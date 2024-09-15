@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { AuthorizedUserDto } from '../common/dtos/authorized-user.dto';
 import { RequestDto } from './dtos/request.dto';
-import { EntityManager, FindManyOptions, In, Not, Repository } from 'typeorm';
+import { EntityManager, In, Not, Repository } from 'typeorm';
 import { Application } from './entities/application.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UsersService } from '../users/users.service';
@@ -17,7 +17,13 @@ import * as Path from 'node:path';
 import { UserRole } from '../users/enums/user-role.enum';
 import { ApplicationStatus } from './enums/application-status.enum';
 import { ReviewDto } from './dtos/review.dto';
-import { IssuedAchievement } from '../achievements/entities/issued-achievement.entity';
+import {
+  FilterOperator,
+  paginate,
+  PaginateConfig,
+  Paginated,
+  PaginateQuery,
+} from 'nestjs-paginate';
 
 @Injectable()
 export class ApplicationsService {
@@ -30,6 +36,16 @@ export class ApplicationsService {
     private readonly achievementsService: AchievementsService,
     private readonly fileUploadService: FileUploadService,
   ) {}
+
+  static APPLICATION_PAGINATION_CONFIG = {
+    sortableColumns: ['createdAt'],
+    filterableColumns: {
+      status: [FilterOperator.EQ, FilterOperator.IN],
+      'achievement.(uuid)': [FilterOperator.EQ, FilterOperator.IN],
+    },
+    defaultSortBy: [['createdAt', 'DESC']],
+    relations: ['student', 'achievement', 'reviewer'],
+  } as PaginateConfig<Application>;
 
   async isExists(
     achievementUuid: string,
@@ -99,7 +115,11 @@ export class ApplicationsService {
     });
   }
 
-  async getStudentsApplications(studentUuid: string, user: AuthorizedUserDto) {
+  async getStudentsApplications(
+    studentUuid: string,
+    user: AuthorizedUserDto,
+    query: PaginateQuery,
+  ) {
     return this.applicationRepository.manager.transaction(async (manager) => {
       if (user.uuid !== studentUuid) {
         const [student, notStudent] = await Promise.all([
@@ -138,12 +158,19 @@ export class ApplicationsService {
         }
       }
 
-      return manager.find(Application, {
-        where: {
-          student: { uuid: studentUuid },
-          status: Not(ApplicationStatus.CANCELED),
-        },
-      });
+      const queryBuilder = manager
+        .createQueryBuilder(Application, 'application')
+        .innerJoin('application.student', 'student')
+        .where('student.uuid = :studentUuid', { studentUuid })
+        .andWhere('application.status != :status', {
+          status: ApplicationStatus.CANCELED,
+        });
+
+      return paginate<Application>(
+        query,
+        queryBuilder,
+        ApplicationsService.APPLICATION_PAGINATION_CONFIG,
+      );
     });
   }
 
@@ -217,33 +244,41 @@ export class ApplicationsService {
     });
   }
 
-  async getApplicationsForUser(
+  async getApplicationsForReviewer(
     user: AuthorizedUserDto,
-    status?: ApplicationStatus,
-  ) {
+    query: PaginateQuery,
+  ): Promise<Paginated<Application>> {
     const reviewer = await this.userService.findOne({
       where: { uuid: user.uuid, role: Not(UserRole.STUDENT) },
       loadEagerRelations: false,
       relations: ['institute', 'sputnikGroups'],
     });
 
-    const options: FindManyOptions<Application> = {};
+    const queryBuilder = this.applicationRepository
+      .createQueryBuilder('application')
+      .innerJoin('application.student', 'student');
+
     if (user.role === UserRole.CURATOR) {
-      options.where = { student: { institute: reviewer.institute } };
+      queryBuilder
+        .innerJoin('student.institute', 'institute')
+        .where('institute.id = :id', { id: reviewer.institute.id });
     } else if (user.role === UserRole.SPUTNIK) {
-      options.where = {
-        student: {
-          group: { id: In(reviewer.sputnikGroups.map((group) => group.id)) },
-        },
-      };
+      queryBuilder
+        .innerJoin('student.group', 'group')
+        .where('group.id IN (:...groupIds)', {
+          groupIds: reviewer.sputnikGroups.map((group) => group.id),
+        });
     }
-    return this.applicationRepository.find({
-      where: {
-        ...options.where,
-        ...(status ? { status: ApplicationStatus.PENDING } : {}),
-        status: Not(ApplicationStatus.CANCELED),
-      },
+
+    queryBuilder.andWhere('application.status != :status', {
+      status: ApplicationStatus.CANCELED,
     });
+
+    return paginate<Application>(
+      query,
+      queryBuilder,
+      ApplicationsService.APPLICATION_PAGINATION_CONFIG,
+    );
   }
 
   async cancelApplication(uuid: string, user: AuthorizedUserDto) {

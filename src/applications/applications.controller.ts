@@ -31,11 +31,12 @@ import { UserRole } from '../users/enums/user-role.enum';
 import { TransformInterceptor } from '../common/interceptors/transform.interceptor';
 import { ApplicationDto } from './dtos/application.dto';
 import { ReviewDto } from './dtos/review.dto';
-import { ApplicationStatus } from './enums/application-status.enum';
 import { createReadStream, existsSync } from 'fs';
 import { Response } from 'express';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
+import { Paginate, PaginatedSwaggerDocs, PaginateQuery } from 'nestjs-paginate';
+import { PaginatedTransformInterceptor } from '../common/interceptors/paginated-transform.interceptor';
 
 @ApiTags('Applications')
 @ApiBearerAuth()
@@ -86,12 +87,19 @@ export class ApplicationsController {
   @Get('students/me/applications')
   @ApiOperation({ summary: 'Can access: student' })
   @Roles(UserRole.STUDENT)
-  @ApiOkResponse({ type: ApplicationDto, isArray: true })
-  @UseInterceptors(new TransformInterceptor(ApplicationDto))
-  async getMyApplications(@Req() req: AuthorizedRequestDto) {
+  @PaginatedSwaggerDocs(
+    ApplicationDto,
+    ApplicationsService.APPLICATION_PAGINATION_CONFIG,
+  )
+  @UseInterceptors(new PaginatedTransformInterceptor(ApplicationDto))
+  async getMyApplications(
+    @Paginate() query: PaginateQuery,
+    @Req() req: AuthorizedRequestDto,
+  ) {
     return this.applicationsService.getStudentsApplications(
       req.user.uuid,
       req.user,
+      query,
     );
   }
 
@@ -108,15 +116,20 @@ export class ApplicationsController {
   @Get('students/:uuid/applications')
   @ApiOperation({ summary: 'Can access: sputnik, curator' })
   @Roles(UserRole.SPUTNIK, UserRole.CURATOR, UserRole.ADMIN)
-  @ApiOkResponse({ type: ApplicationDto, isArray: true })
-  @UseInterceptors(new TransformInterceptor(ApplicationDto))
+  @PaginatedSwaggerDocs(
+    ApplicationDto,
+    ApplicationsService.APPLICATION_PAGINATION_CONFIG,
+  )
+  @UseInterceptors(new PaginatedTransformInterceptor(ApplicationDto))
   async getStudentsApplications(
+    @Paginate() query: PaginateQuery,
     @Param('uuid', ParseUUIDPipe) studentUuid: string,
     @Req() req: AuthorizedRequestDto,
   ) {
     return this.applicationsService.getStudentsApplications(
       studentUuid,
       req.user,
+      query,
     );
   }
 
@@ -167,24 +180,18 @@ export class ApplicationsController {
     );
   }
 
-  @Get('reviewer/applications/pending')
+  @Get('reviewer/applications')
   @ApiOperation({ summary: 'Can access: sputnik, curator' })
   @Roles(UserRole.SPUTNIK, UserRole.CURATOR)
-  @ApiOkResponse({ type: ApplicationDto, isArray: true })
-  @UseInterceptors(new TransformInterceptor(ApplicationDto))
-  async getPendingApplications(@Req() req: AuthorizedRequestDto) {
-    return this.applicationsService.getApplicationsForUser(
-      req.user,
-      ApplicationStatus.PENDING,
-    );
-  }
-
-  @Get('reviewer/applications/all')
-  @ApiOperation({ summary: 'Can access: sputnik, curator' })
-  @Roles(UserRole.SPUTNIK, UserRole.CURATOR)
-  @ApiOkResponse({ type: ApplicationDto, isArray: true })
-  @UseInterceptors(new TransformInterceptor(ApplicationDto))
-  async getAllApplications(@Req() req: AuthorizedRequestDto) {
-    return this.applicationsService.getApplicationsForUser(req.user);
+  @PaginatedSwaggerDocs(
+    ApplicationDto,
+    ApplicationsService.APPLICATION_PAGINATION_CONFIG,
+  )
+  @UseInterceptors(new PaginatedTransformInterceptor(ApplicationDto))
+  async getAllApplications(
+    @Paginate() query: PaginateQuery,
+    @Req() req: AuthorizedRequestDto,
+  ) {
+    return this.applicationsService.getApplicationsForReviewer(req.user, query);
   }
 }
