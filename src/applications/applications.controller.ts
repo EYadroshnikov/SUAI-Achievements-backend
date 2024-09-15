@@ -45,7 +45,7 @@ import { PaginatedTransformInterceptor } from '../common/interceptors/paginated-
 export class ApplicationsController {
   constructor(private readonly applicationsService: ApplicationsService) {}
 
-  @Post('students/applications')
+  @Post('students/me/applications')
   @ApiOperation({ summary: 'Can access: student' })
   @ApiOkResponse({ type: ApplicationDto })
   @ApiConsumes('multipart/form-data')
@@ -103,7 +103,7 @@ export class ApplicationsController {
     );
   }
 
-  @Delete('students/applications/:uuid')
+  @Delete('students/me/applications/:uuid')
   @ApiOperation({ summary: 'Can access: student' })
   @Roles(UserRole.STUDENT)
   async cancelApplication(
@@ -180,7 +180,7 @@ export class ApplicationsController {
     );
   }
 
-  @Get('reviewer/applications')
+  @Get('applications')
   @ApiOperation({ summary: 'Can access: sputnik, curator' })
   @Roles(UserRole.SPUTNIK, UserRole.CURATOR)
   @PaginatedSwaggerDocs(
