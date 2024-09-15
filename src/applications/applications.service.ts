@@ -58,7 +58,7 @@ export class ApplicationsService {
       where: {
         student: { uuid: studentUuid },
         achievement: { uuid: achievementUuid },
-        status: Not(ApplicationStatus.CANCELED),
+        status: ApplicationStatus.PENDING,
       },
     });
   }
