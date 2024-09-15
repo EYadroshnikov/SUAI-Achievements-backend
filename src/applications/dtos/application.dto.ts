@@ -11,12 +11,12 @@ export class ApplicationDto {
   @Expose()
   uuid: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: StudentDto })
   @Type(() => StudentDto)
   @Expose()
   student: StudentDto;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, type: UserDto })
   @Type(() => UserDto)
   @Expose()
   reviewer?: UserDto;
@@ -28,13 +28,13 @@ export class ApplicationDto {
 
   @ApiProperty({ required: false })
   @Expose()
-  message: string;
+  message?: string;
 
-  @ApiProperty()
+  @ApiProperty({ enum: ApplicationStatus })
   @Expose()
   status: ApplicationStatus;
 
-  @ApiProperty()
+  @ApiProperty({ type: ProofFileDto })
   @Type(() => ProofFileDto)
   @Expose()
   proofFiles: ProofFileDto[];

@@ -7,7 +7,7 @@ export class RequestDto {
   @IsUUID()
   achievementUuid: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
   message?: string;
