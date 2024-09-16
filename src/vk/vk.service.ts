@@ -147,7 +147,7 @@ export class VkService {
     const access_token = this.configService.get('vk.miniAppServiceKey');
 
     const data = new FormData();
-    data.append('user_id', vkId);
+    data.append('user_ids', vkId);
     data.append('random_id', '0');
     data.append('message', text);
     data.append('access_token', access_token);
@@ -191,6 +191,10 @@ export class VkService {
 
   async addToVkNotificationQueue(vkId: string, text: string) {
     await this.vkRequestQueue.add(VkProcess.NOTIFICATION, { vkId, text });
+  }
+
+  async addToPushQueue(vkId: string, text: string) {
+    await this.vkRequestQueue.add(VkProcess.MINI_APP_PUSH, { vkId, text });
   }
 
   async checkPushPermissions() {

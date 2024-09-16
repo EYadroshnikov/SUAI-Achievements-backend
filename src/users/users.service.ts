@@ -12,7 +12,6 @@ import {
   EntityManager,
   FindManyOptions,
   FindOneOptions,
-  FindOptions,
   In,
   Not,
   Repository,
@@ -46,6 +45,7 @@ import { UpdateSputnikDto } from './dtos/update.sputnik.dto';
 import { RankDto } from './dtos/rank.dto';
 import { TopStudentDto } from './dtos/top-student.dto';
 import { UserSettings } from '../user-settings/entities/user-settings.entity';
+import { MiniAppPushPermission } from '../vk/entities/mini-app-push-permission.entity';
 
 @Injectable()
 export class UsersService {
@@ -98,6 +98,19 @@ export class UsersService {
     return this.userRepository.findOneOrFail({
       where: { tgUserName: username },
     });
+  }
+
+  async getAllowedPushStudents() {
+    return await this.userRepository
+      .createQueryBuilder('user')
+      .innerJoin(
+        MiniAppPushPermission,
+        'permission',
+        'user.vkId = permission.vkId',
+      )
+      .where('permission.isAllowed = :isAllowed', { isAllowed: true })
+      .andWhere('user.role = :role', { role: UserRole.STUDENT })
+      .getMany();
   }
 
   async getStudentMe(uuid: string): Promise<User> {

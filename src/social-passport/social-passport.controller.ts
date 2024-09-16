@@ -157,4 +157,11 @@ export class SocialPassportController {
   async notification() {
     return this.socialPassportService.notifyToFillPassport();
   }
+
+  @Post('social-passports/push')
+  @ApiOperation({ summary: 'can access: admin only' })
+  @Roles(UserRole.ADMIN)
+  async push() {
+    return this.socialPassportService.pushToFillPassport();
+  }
 }

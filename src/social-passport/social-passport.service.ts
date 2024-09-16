@@ -164,4 +164,12 @@ https://vk.com/app51729664`;
     }
     return true;
   }
+
+  async pushToFillPassport() {
+    const students = await this.userService.getAllowedPushStudents();
+    const message = 'Время обновить информацию в социальном паспорте!';
+    for (const student of students) {
+      await this.vkService.addToPushQueue(student.vkId, message);
+    }
+  }
 }
