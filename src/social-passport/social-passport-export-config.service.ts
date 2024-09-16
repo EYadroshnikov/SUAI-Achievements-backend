@@ -62,7 +62,7 @@ export class SocialPassportExportConfigService implements IExportConfigService {
     passStatus: 'boolean',
     studentIdStatus: 'enum',
     preferentialTravelCard: 'enum',
-    profcomApplication: 'boolean',
+    profcomApplication: 'enum',
     profcomCardStatus: 'enum',
     scholarshipCardStatus: 'boolean',
     dormitory: 'enum',
@@ -171,6 +171,11 @@ export class SocialPassportExportConfigService implements IExportConfigService {
       [CardStatus.NO]: 'Нет',
       [CardStatus.PHOTO_PROVIDED]: 'Предоставил фото',
       [CardStatus.RECEIVED]: 'Получил',
+    },
+    profcomApplication: {
+      true: 'Да',
+      false: 'Нет',
+      null: 'Отказался вступать',
     },
     profcomCardStatus: {
       [ProfcomCardStatus.NOT_DOWNLOADED]: 'Не скачал(а)',
