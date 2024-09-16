@@ -146,9 +146,7 @@ export class SocialPassportService {
   }
 
   async notifyToFillPassport() {
-    const students = await this.userService.find({
-      where: { role: UserRole.STUDENT },
-    });
+    const students = await this.userService.getAllowedPushStudents(false);
     const telegramMessage = `📝 <b>Напоминание:</b> Пожалуйста обновите свой <b>Социальный паспорт</b> в приложении ачивки в ВК! 🎓
 https://vk.com/app51729664`;
     const vkMessage = `📝 Напоминание: Пожалуйста обновите свой Социальный паспорт в приложении ачивки в ВК! 🎓 
@@ -166,7 +164,7 @@ https://vk.com/app51729664`;
   }
 
   async pushToFillPassport() {
-    const students = await this.userService.getAllowedPushStudents();
+    const students = await this.userService.getAllowedPushStudents(true);
     const message = 'Время обновить информацию в социальном паспорте!';
     for (const student of students) {
       await this.vkService.addToPushQueue(student.vkId, message);

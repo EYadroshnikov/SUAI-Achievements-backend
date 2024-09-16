@@ -100,7 +100,7 @@ export class UsersService {
     });
   }
 
-  async getAllowedPushStudents() {
+  async getAllowedPushStudents(isAllowed: boolean) {
     return await this.userRepository
       .createQueryBuilder('user')
       .innerJoin(
@@ -108,7 +108,7 @@ export class UsersService {
         'permission',
         'user.vkId = permission.vkId',
       )
-      .where('permission.isAllowed = :isAllowed', { isAllowed: true })
+      .where('permission.isAllowed = :isAllowed', { isAllowed: isAllowed })
       .andWhere('user.role = :role', { role: UserRole.STUDENT })
       .getMany();
   }
