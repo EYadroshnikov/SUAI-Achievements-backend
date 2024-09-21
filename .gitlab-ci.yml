@@ -4,6 +4,7 @@ services:
   - docker:dind
 
 stages:
+  - test
   - build
   - deploy
 
@@ -34,3 +35,6 @@ deploy:
     - docker image prune -a -f
   only:
     - main
+
+include:
+  - template: Jobs/SAST.gitlab-ci.yml
