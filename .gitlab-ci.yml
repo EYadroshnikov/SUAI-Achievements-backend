@@ -4,8 +4,8 @@ services:
   - docker:dind
 
 stages:
-  - test
   - build
+  - test
   - deploy
 
 variables:
@@ -23,6 +23,14 @@ build:
     - docker push $DOCKERHUB_REPO:${IMAGE_TAG}_${CI_PIPELINE_ID}
   only:
     - main
+
+sast:
+  stage: test
+  before_script: []
+  script:
+    - echo "Running SAST analysis"
+  include:
+    - template: Jobs/SAST.gitlab-ci.yml
 
 deploy:
   stage: deploy
