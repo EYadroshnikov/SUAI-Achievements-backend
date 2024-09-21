@@ -29,8 +29,6 @@ sast:
   before_script: []
   script:
     - echo "Running SAST analysis"
-  include:
-    - template: Jobs/SAST.gitlab-ci.yml
 
 deploy:
   stage: deploy
