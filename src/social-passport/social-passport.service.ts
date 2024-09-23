@@ -150,7 +150,7 @@ export class SocialPassportService {
     const telegramMessage = `📝 <b>Напоминание:</b> Пожалуйста обновите свой <b>Социальный паспорт</b> в приложении ачивки в ВК! 🎓
 https://vk.com/app51729664`;
     const vkMessage = `📝 Напоминание: Пожалуйста обновите свой Социальный паспорт в приложении ачивки в ВК! 🎓 
-    https://vk.com/app51729664`;
+    https://vk.com/app51729664#/edit_social_passport/`;
     for (const student of students) {
       if (student.tgId) {
         await this.telegramService.addToTelegramNotificationQueue(
