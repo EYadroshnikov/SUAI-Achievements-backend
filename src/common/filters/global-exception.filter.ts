@@ -67,7 +67,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         try {
           if ((exception as any).code === 'ENOENT') {
             status = HttpStatus.NOT_FOUND;
-            // message = exception.message; //TODO: remove path from message
             message = 'ENOENT: no such file or directory';
             code = (exception as any).code;
             break;
