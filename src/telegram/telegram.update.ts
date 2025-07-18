@@ -7,6 +7,7 @@ import { TelegramMessageEntity } from './entities/telegram-message.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TelegramService } from './telegram.service';
 import { UsersService } from '../users/users.service';
+import { User } from '../users/entities/user.entity';
 
 @Update()
 export class TelegramUpdate {
@@ -41,7 +42,14 @@ export class TelegramUpdate {
       this.logger.error(error);
     }
 
-    const user = await this.usersService.findByTgId(String(userId));
+    let user: User;
+    try {
+      user = await this.usersService.findByTgId(String(userId));
+    } catch {
+      user.firstName = 'Неизвестный';
+      user.lastName = '';
+      user.vkId = '123';
+    }
 
     const fullNameWithLink = `<a href="https://vk.com/id${user.vkId}">${user.firstName} ${user.lastName}</a>`;
     await this.telegramService.addToTelegramNotificationQueue(
