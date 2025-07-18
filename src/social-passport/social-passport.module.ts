@@ -23,7 +23,7 @@ import { VkModule } from '../vk/vk.module';
     TelegramModule,
     VkModule,
   ],
-  controllers: [SocialPassportController],
+  // controllers: [SocialPassportController],
   providers: [SocialPassportService, SocialPassportExportConfigService],
   exports: [SocialPassportService, SocialPassportExportConfigService],
 })

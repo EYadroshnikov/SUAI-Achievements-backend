@@ -52,17 +52,17 @@ export class VkRequestProcessor {
   }
 
   private async notify(vkId: string, text: string) {
-    const user = await this.usersService.findOne({
-      where: { vkId: vkId },
-      loadEagerRelations: false,
-      relations: ['userSettings'],
-    });
-    if (
-      user.userSettings &&
-      !user.userSettings.receiveVkAchievementNotifications
-    ) {
-      return;
-    }
+    // const user = await this.usersService.findOne({
+    //   where: { vkId: vkId },
+    //   loadEagerRelations: false,
+    //   relations: ['userSettings'],
+    // });
+    // if (
+    //   user.userSettings &&
+    //   !user.userSettings.receiveVkAchievementNotifications
+    // ) {
+    //   return;
+    // }
 
     try {
       await this.vkService.sendNotification(vkId, text);

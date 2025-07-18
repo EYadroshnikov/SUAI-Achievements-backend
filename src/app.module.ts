@@ -23,6 +23,7 @@ import { FilesModule } from './files/files.module';
 import { HealthModule } from './health/health.module';
 import { RedisModule } from './redis/redis.module';
 import { ApplicationsModule } from './applications/applications.module';
+import { MessagingHubModule } from './messaging-hub/messaging-hub.module';
 import vkConfig from './config/vk/vk.config';
 import telegramConfig from './config/telegram/telegram.config';
 import googleConfig from './config/google/google.config';
@@ -83,6 +84,7 @@ import googleConfig from './config/google/google.config';
     FilesModule,
     HealthModule,
     RedisModule,
+    MessagingHubModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -23,17 +23,17 @@ export class TelegramNotificationProcessor {
   }
 
   private async notify(tgUserId: string, text: string) {
-    const user = await this.usersService.findOne({
-      where: { tgId: tgUserId },
-      loadEagerRelations: false,
-      relations: ['userSettings'],
-    });
-    if (
-      user.userSettings &&
-      !user.userSettings.receiveTgAchievementNotifications
-    ) {
-      return;
-    }
+    // const user = await this.usersService.findOne({
+    //   where: { tgId: tgUserId },
+    //   loadEagerRelations: false,
+    //   relations: ['userSettings'],
+    // });
+    // if (
+    //   user.userSettings &&
+    //   !user.userSettings.receiveTgAchievementNotifications
+    // ) {
+    //   return;
+    // }
 
     try {
       await this.telegramService.sendNotification(tgUserId, text);
