@@ -45,13 +45,11 @@ export class TelegramUpdate {
     let user: User;
     try {
       user = await this.usersService.findByTgId(String(userId));
-    } catch {
-      user.firstName = 'Неизвестный';
-      user.lastName = '';
-      user.vkId = '123';
-    }
+    } catch {}
 
-    const fullNameWithLink = `<a href="https://vk.com/id${user.vkId}">${user.firstName} ${user.lastName}</a>`;
+    const fullNameWithLink = user
+      ? `<a href="https://vk.com/id${user.vkId}">${user.firstName} ${user.lastName}</a>`
+      : 'Неизвестный';
     await this.telegramService.addToTelegramNotificationQueue(
       '888830551',
       `${fullNameWithLink}: ${msg}`,
