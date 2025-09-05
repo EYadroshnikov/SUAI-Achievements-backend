@@ -7,7 +7,7 @@ function generateTgCancelMessage(
   cancellationReason: string,
 ): string {
   return `
-🚩 К сожалению, достижение <b>${achievement.name}</b> было отменено по причине <b>${cancellationReason}</b>
+🚩 Ха, попался, дебилка! достижение <b>${achievement.name}</b> было отменено по причине <b>${cancellationReason}</b>
 <b>Отменил:</b> ${canceler.firstName} ${canceler.lastName}
 `;
 }

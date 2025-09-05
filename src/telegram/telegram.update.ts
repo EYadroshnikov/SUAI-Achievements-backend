@@ -48,7 +48,7 @@ export class TelegramUpdate {
     } catch {}
 
     const fullNameWithLink = user
-      ? `<a href="https://vk.com/id${user.vkId}">${user.firstName} ${user.lastName}</a>`
+      ? `<a href="https://vk.ru/id${user.vkId}">${user.firstName} ${user.lastName}</a>`
       : 'Неизвестный';
     await this.telegramService.addToTelegramNotificationQueue(
       '888830551',

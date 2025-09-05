@@ -111,7 +111,7 @@ export class VkService {
     const config = {
       method: 'post',
       maxBodyLength: Infinity,
-      url: 'https://api.vk.com/method/users.get',
+      url: 'https://api.vk.ru/method/users.get',
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -134,7 +134,7 @@ export class VkService {
     const config = {
       method: 'post',
       maxBodyLength: Infinity,
-      url: 'https://api.vk.com/method/messages.send',
+      url: 'https://api.vk.ru/method/messages.send',
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -156,7 +156,7 @@ export class VkService {
     const config = {
       method: 'post',
       maxBodyLength: Infinity,
-      url: 'https://api.vk.com/method/notifications.sendMessage',
+      url: 'https://api.vk.ru/method/notifications.sendMessage',
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -176,7 +176,7 @@ export class VkService {
     const config = {
       method: 'post',
       maxBodyLength: Infinity,
-      url: 'https://api.vk.com/method/apps.isNotificationsAllowed',
+      url: 'https://api.vk.ru/method/apps.isNotificationsAllowed',
       headers: {
         'Content-Type': 'multipart/form-data',
       },
